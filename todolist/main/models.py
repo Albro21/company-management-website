@@ -36,7 +36,7 @@ class Task(models.Model):
     categories = models.ManyToManyField(Category, blank=True)
 
     title = models.CharField(max_length=200)
-    text = models.TextField()
+    text = models.TextField(blank=True)
     due_date = models.DateField()
 
     is_completed = models.BooleanField(default=False)
@@ -44,6 +44,9 @@ class Task(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ['due_date']
+    
     def __str__(self):
         return self.title
 
