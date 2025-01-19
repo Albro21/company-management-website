@@ -4,6 +4,7 @@ body {
     font-size: 15px;
     color: #333;
     line-height: 1.6;
+    min-height: 100vh;
 }
 
 *,
@@ -35,13 +36,10 @@ i {
 }
  /* page*/
 .todolist__page {
-    overflow: hidden;
-
-    height: 100%;
     margin: 0;
-    overflow: hidden;
     padding: 0;
     position: relative;
+    min-height: 100vh;
 
 }
 
@@ -52,14 +50,15 @@ img {
 
 
 .todolist__page {
-    width: 100vw;
-    height: 100vh;
+    width: 100;
+    height: 100%;
 }
 
 .page__inner {
     display: flex;
     width: 100%;
     height: 100%;
+    min-height: 100vh;
 
 }
 
@@ -77,7 +76,7 @@ img {
 
 .main__todolist {
     width: 100vw;
-    height: 100vh;
+    height: 100%;
     margin: 0;
 }
 
@@ -142,7 +141,6 @@ img {
 
 .sidebar__todolist {
     width: 25%;
-    height: 100%;
     background-color: #f2efed;
     position: relative;
 
@@ -443,7 +441,102 @@ img {
 }
 
 
+.task_date {
+    display: flex;
+    position: absolute;
+    right: 0;
+    bottom: -12px;
+}
+
+.task_inner {
+    position: relative;
+    width: 100%;
+}
+
+.task_header {
+    position: relative;
+    display: flex;
+}
+
+.task_flag {
+    padding-left: 10px;
+}
 
 
+.bi-flag-fill {
+    color: #eb8909;
+}
+
+.task_text {
+    margin-right: 60px;
+    text-align: justify;
+    overflow-x:hidden
+
+}
+
+.note_path {
+    padding-right: 10px;
+    display: flex;
+    opacity: 0.4;
+    font-size: 14px;
+    
+}
+
+#btn_add{
+    top: 50vh;
+    left: 50vw;
+    z-index:1;
+}
+#content_window{
+    
+    z-index: 10;
+    height:100%;
+    width: 100%;
+    min-width: 800px;
+    z-index:10;
+    background:lightgrey;
+    display:none;
+
+    top: 50%;
+    left: 50%;
+    /* коррекция положения элемента */
+    
+
+    border: 3px solid #eb8909;
+   }
 
 
+.plus_add_button {
+    width: 20px;
+    height: 10px;
+}
+.close_form_btn {
+    position:absolute;
+    width: 20px;
+    height: 10px;
+    right: 0;
+    top: 0 ;
+}
+
+.icon_close {
+    transform: rotate(45deg);
+    
+    background-color: #eb8909;
+}
+
+
+.note-form {
+    width: 90%;
+}
+
+#calendarlink0 svg{
+    text-decoration: none;
+}
+.vDateField {
+    text-decoration: none;
+}
+
+.form-control {
+    height: fit-content;
+    overflow: hidden;
+}
