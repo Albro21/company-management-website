@@ -2,24 +2,29 @@
 {% block title %}Register{% endblock title %}
 
 {% block content %}
-    <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
-        <div class="col-9 col-lg-6 col-xl-4 bg-body-tertiary card border border-primary border-5 rounded-5 p-5 shadow-lg">
+    <div class="container-md d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div class="col-12 col-lg-7 col-xl-6 bg-body-tertiary card border border-primary border-5 rounded-5 p-5 shadow-lg">
             <form method="post" action="{% url 'register' %}">
                 {% csrf_token %}
 
-                <h1 class="text-center">Register</h1>
-                <!-- Username field -->
-                <div class="mb-3">
-                    <label for="{{ form.username.id_for_label }}" class="form-label fs-5">{{ form.username.label }}:</label>
-                    {% if form.username.errors %}
-                        <div class="error bg-danger bg-opacity-25 border border-danger mb-3 p-1">
-                            {% for error in form.username.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                    <input type="{{ form.username.field.widget.input_type }}" class="form-control {% if form.username.errors %}is-invalid{% endif %}" id="{{ form.username.id_for_label }}" name="{{ form.username.html_name }}" value="{{ form.username.value|default:'' }}">
-                </div>
+                <!-- Title -->
+                <h1 class="text-center mb-3">Register</h1>
+
+                <!-- Username & Email -->
+                <div class="d-flex flex-column flex-sm-row mb-3 justify-content-around">
+
+                    <!-- Username -->
+                    <div class="me-3 w-100 w-md-50">
+                        <label for="{{ form.username.id_for_label }}" class="form-label fs-5">{{ form.username.label }}:</label>
+                        {% if form.username.errors %}
+                            <div class="error bg-danger bg-opacity-25 border border-danger mb-3 p-1">
+                                {% for error in form.username.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <input type="{{ form.username.field.widget.input_type }}" class="form-control {% if form.username.errors %}is-invalid{% endif %}" id="{{ form.username.id_for_label }}" name="{{ form.username.html_name }}" value="{{ form.username.value|default:'' }}">
+                    </div>
 
                     <!-- Email -->
                     <div class="w-100 w-md-50 mt-3 mt-sm-0">
@@ -70,28 +75,28 @@
 
                     <!-- Password1 -->
                     <div class="me-3 w-100 w-md-50">
-                    <label for="{{ form.password1.id_for_label }}" class="form-label fs-5">{{ form.password1.label }}:</label>
-                    {% if form.password1.errors %}
-                        <div class="error bg-danger bg-opacity-25 border border-danger mb-3 p-1">
-                            {% for error in form.password1.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                    <input type="{{ form.password1.field.widget.input_type }}" class="form-control {% if form.password1.errors %}is-invalid{% endif %}" id="{{ form.password1.id_for_label }}" name="{{ form.password1.html_name }}" value="{{ form.password1.value|default:'' }}">
-                </div>
+                        <label for="{{ form.password1.id_for_label }}" class="form-label fs-5">{{ form.password1.label }}:</label>
+                        {% if form.password1.errors %}
+                            <div class="error bg-danger bg-opacity-25 border border-danger mb-3 p-1">
+                                {% for error in form.password1.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <input type="{{ form.password1.field.widget.input_type }}" class="form-control {% if form.password1.errors %}is-invalid{% endif %}" id="{{ form.password1.id_for_label }}" name="{{ form.password1.html_name }}" value="{{ form.password1.value|default:'' }}">
+                    </div>
 
                     <!-- Password2 -->
                     <div class="w-100 w-md-50 mt-3 mt-sm-0">
-                    <label for="{{ form.password2.id_for_label }}" class="form-label fs-5">{{ form.password2.label }}:</label>
-                    {% if form.password2.errors %}
-                        <div class="error bg-danger bg-opacity-25 border border-danger mb-3 p-1">
-                            {% for error in form.password2.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                    <input type="{{ form.password2.field.widget.input_type }}" class="form-control {% if form.password2.errors %}is-invalid{% endif %}" id="{{ form.password2.id_for_label }}" name="{{ form.password2.html_name }}" value="{{ form.password2.value|default:'' }}">
+                        <label for="{{ form.password2.id_for_label }}" class="form-label fs-5">{{ form.password2.label }}:</label>
+                        {% if form.password2.errors %}
+                            <div class="error bg-danger bg-opacity-25 border border-danger mb-3 p-1">
+                                {% for error in form.password2.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <input type="{{ form.password2.field.widget.input_type }}" class="form-control {% if form.password2.errors %}is-invalid{% endif %}" id="{{ form.password2.id_for_label }}" name="{{ form.password2.html_name }}" value="{{ form.password2.value|default:'' }}">
                     </div>
                 </div>
 
