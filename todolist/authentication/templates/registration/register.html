@@ -21,8 +21,55 @@
                     <input type="{{ form.username.field.widget.input_type }}" class="form-control {% if form.username.errors %}is-invalid{% endif %}" id="{{ form.username.id_for_label }}" name="{{ form.username.html_name }}" value="{{ form.username.value|default:'' }}">
                 </div>
 
-                <!-- Password field -->
-                <div class="mb-3">
+                    <!-- Email -->
+                    <div class="w-100 w-md-50 mt-3 mt-sm-0">
+                        <label for="{{ form.email.id_for_label }}" class="form-label fs-5">{{ form.email.label }}:</label>
+                        {% if form.email.errors %}
+                            <div class="error bg-danger bg-opacity-25 border border-danger mb-3 p-1">
+                                {% for error in form.email.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <input type="{{ form.email.field.widget.input_type }}" class="form-control {% if form.email.errors %}is-invalid{% endif %}" id="{{ form.email.id_for_label }}" name="{{ form.email.html_name }}" value="{{ form.email.value|default:'' }}">
+                    </div>
+                </div>
+
+                <!-- First & Last Name -->
+                <div class="d-flex flex-column flex-sm-row mb-3 justify-content-around">
+
+                    <!-- First Name -->
+                    <div class="me-3 w-100 w-md-50">
+                        <label for="{{ form.first_name.id_for_label }}" class="form-label fs-5">{{ form.first_name.label }}:</label>
+                        {% if form.first_name.errors %}
+                            <div class="error bg-danger bg-opacity-25 border border-danger mb-3 p-1">
+                                {% for error in form.first_name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <input type="{{ form.first_name.field.widget.input_type }}" class="form-control {% if form.first_name.errors %}is-invalid{% endif %}" id="{{ form.first_name.id_for_label }}" name="{{ form.first_name.html_name }}" value="{{ form.first_name.value|default:'' }}">
+                    </div>
+                    
+                    <!-- Last Name -->
+                    <div class="w-100 w-md-50 mt-3 mt-sm-0">
+                        <label for="{{ form.last_name.id_for_label }}" class="form-label fs-5">{{ form.last_name.label }}:</label>
+                        {% if form.last_name.errors %}
+                            <div class="error bg-danger bg-opacity-25 border border-danger mb-3 p-1">
+                                {% for error in form.last_name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <input type="{{ form.last_name.field.widget.input_type }}" class="form-control {% if form.last_name.errors %}is-invalid{% endif %}" id="{{ form.last_name.id_for_label }}" name="{{ form.last_name.html_name }}" value="{{ form.last_name.value|default:'' }}">
+                    </div>
+                </div>
+
+                <!-- Password1 & Password2 -->
+                <div class="d-flex flex-column flex-sm-row mb-3 justify-content-around">
+
+                    <!-- Password1 -->
+                    <div class="me-3 w-100 w-md-50">
                     <label for="{{ form.password1.id_for_label }}" class="form-label fs-5">{{ form.password1.label }}:</label>
                     {% if form.password1.errors %}
                         <div class="error bg-danger bg-opacity-25 border border-danger mb-3 p-1">
@@ -34,7 +81,8 @@
                     <input type="{{ form.password1.field.widget.input_type }}" class="form-control {% if form.password1.errors %}is-invalid{% endif %}" id="{{ form.password1.id_for_label }}" name="{{ form.password1.html_name }}" value="{{ form.password1.value|default:'' }}">
                 </div>
 
-                <div class="mb-3">
+                    <!-- Password2 -->
+                    <div class="w-100 w-md-50 mt-3 mt-sm-0">
                     <label for="{{ form.password2.id_for_label }}" class="form-label fs-5">{{ form.password2.label }}:</label>
                     {% if form.password2.errors %}
                         <div class="error bg-danger bg-opacity-25 border border-danger mb-3 p-1">
@@ -44,6 +92,7 @@
                         </div>
                     {% endif %}
                     <input type="{{ form.password2.field.widget.input_type }}" class="form-control {% if form.password2.errors %}is-invalid{% endif %}" id="{{ form.password2.id_for_label }}" name="{{ form.password2.html_name }}" value="{{ form.password2.value|default:'' }}">
+                    </div>
                 </div>
 
                 <!-- Non-field errors -->
@@ -56,7 +105,7 @@
                 {% endif %}
 
                 <!-- Login button -->
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Register</button>
+                <button type="submit" class="btn btn-primary w-100">Register</button>
             </form>
 
             <!-- Register link -->

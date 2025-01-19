@@ -3,9 +3,9 @@
 
 {% block content %}
     <div class="container d-flex flex-column justify-content-center align-items-center" style="height: 100vh;">
-        <div class="d-flex flex-column col-9 col-lg-6 col-xl-4" style="height: 65%;">
+        <div class="d-flex flex-column col-9 col-lg-6 col-xl-4 h-65">
             {% if messages %}
-                <div class="messages" style="width: 100%;">
+                <div class="messages w-100">
                     {% for message in messages %}
                         <div class="alert alert-{{ message.tags }}">{{ message }}</div>
                     {% endfor %}
@@ -15,7 +15,9 @@
                 <form method="post" action="{% url 'login' %}">
                     {% csrf_token %}
 
+                    <!-- Title -->
                     <h1 class="text-center">Log in</h1>
+                    
                     <!-- Username field -->
                     <div class="mb-3">
                         <label for="{{ form.username.id_for_label }}" class="form-label fs-5">{{ form.username.label }}:</label>
@@ -52,7 +54,7 @@
                     {% endif %}
 
                     <!-- Login button -->
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
 
                     <!-- Forgot password link -->
                     <p class="pt-1 text-center"><a href="{% url 'password_reset' %}" class="link-secondary text-decoration-none">Forgot password?</a></p>
