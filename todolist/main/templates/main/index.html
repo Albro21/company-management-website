@@ -27,7 +27,12 @@
                                 <li><a class="dropdown-item" href="#">Settings</a></li>
                                 <li><a class="dropdown-item" href="#">Profile</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#">Sign out</a></li>
+                                <li>
+                                    <form method="post" class="dropdown-item" action="{% url 'logout' %}">
+                                        {% csrf_token %}
+                                        <button type="submit" style="background: none; border: none; padding: 0; margin: 0; color: inherit; text-align: left; cursor: pointer;">Sign out</button>
+                                    </form>
+                                </li>
                             </ul>
                         </div>
 
