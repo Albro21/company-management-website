@@ -10,10 +10,15 @@ body {
 *,
 *:before,
 *:after {
-    box-sizing:border-box;
+    box-sizing: border-box;
 }
 
-h1,h2,h3,h4,h5,h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     margin: 0;
 }
 
@@ -30,11 +35,13 @@ hr {
 li {
     list-style-type: none;
 }
+
 i {
     z-index: 10;
 
 }
- /* page*/
+
+/* page*/
 .todolist__page {
     margin: 0;
     padding: 0;
@@ -66,7 +73,7 @@ img {
 /* ---------------------- header --------------*/
 
 
-.container{
+.container {
     width: 100%;
     padding: 0px 15px;
     max-width: 1230px;
@@ -157,25 +164,26 @@ img {
 
 
 }
+
 .sidebar__button {
     display: flex;
     align-items: center;
     margin-top: 10px;
     z-index: 10;
     border: none;
- 
+
 }
 
 .sidebar__button:hover {
     opacity: 0.9;
     background-color: #d8d8d8;
     border-radius: 5%;
-    transition:  background-color .2s linear;
- 
+    transition: background-color .2s linear;
+
 }
 
 .sidebar__avatar {
-    
+
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -191,10 +199,10 @@ img {
 
     color: #272727;
     text-decoration: none;
-    
+
 }
 
-.sidebar__item{
+.sidebar__item {
     overflow: hidden;
     text-decoration: none;
 
@@ -206,7 +214,7 @@ img {
 
 }
 
-.sidebar__item:active{
+.sidebar__item:active {
     color: #a81f00;
 }
 
@@ -214,7 +222,7 @@ img {
 .sidebar__item:hover {
     background-color: #d8d8d8;
     border-radius: 5%;
-    transition:  background-color .2s linear;
+    transition: background-color .2s linear;
 }
 
 
@@ -226,11 +234,11 @@ img {
     width: 100%;
 }
 
-.add__note:hover{
+.add__note:hover {
 
     background-color: #d8d8d8;
     border-radius: 5%;
-    transition:  background-color .2s linear;
+    transition: background-color .2s linear;
 }
 
 
@@ -240,7 +248,7 @@ img {
 
 }
 
-.add__note__text{
+.add__note__text {
     padding-left: 20px;
 
 }
@@ -251,11 +259,12 @@ img {
     font-weight: 400;
     text-align: left;
 }
-.my__projects:hover{
+
+.my__projects:hover {
     background-color: #d8d8d8;
     border-radius: 5%;
-    transition:  background-color .2s linear;
-    transition:  color .2s linear;
+    transition: background-color .2s linear;
+    transition: color .2s linear;
     color: #202020;
 }
 
@@ -294,10 +303,10 @@ img {
     align-items: center;
     background-color: #fff;
     font-size: 28px;
-    
+
 }
 
-.add__mission svg{
+.add__mission svg {
     width: 30px;
     height: 30px;
 }
@@ -306,13 +315,13 @@ img {
 
     background-color: #d8d8d8;
     border-radius: 5%;
-    transition:  background-color .2s linear;
-    transition:  color .2s linear;
+    transition: background-color .2s linear;
+    transition: color .2s linear;
 
-    
+
 }
 
-.project__name{
+.project__name {
     font-weight: 400;
     font-size: 36px;
     font-style: normal;
@@ -345,6 +354,8 @@ img {
 
 .list-group-item:hover {
     position: relative;
+    transform: scale(1.009);
+    transition: transform 0.15s linear;
 }
 
 
@@ -395,7 +406,7 @@ img {
 }
 
 
-.btn__orange .checkmate{
+.btn__orange .checkmate {
     position: absolute;
     opacity: 0;
     color: #eb8909;
@@ -405,7 +416,7 @@ img {
 }
 
 
-.btn__orange:hover .checkmate{
+.btn__orange:hover .checkmate {
     opacity: 1;
     color: #eb8909;
 
@@ -417,11 +428,39 @@ img {
     display: block;
     padding-top: 10px;
 }
-.plus_add_button {
 
+.plus_add_button {
+    width: 10px;
+    height: 10px;
+    display: block;
     border: none;
     background-color: transparent;
-    position: relative;
+    position: absolute;
+
+}
+.close_add_button {
+
+    display: block;
+    border: none;
+    background-color: transparent;
+    position: absolute;
+    right: -10px;
+
+
+}
+
+.close_add_button:hover {
+
+    display: block;
+    border: none;
+    background-color: transparent;
+    position: absolute;
+    right: -10px;
+
+    transform: scale(1.2);
+    transition: transform 0.2s linear;
+
+
 }
 
 .icon_add {
@@ -433,7 +472,8 @@ img {
     left: -20px;
     top: 0;
 }
-.plus_add_button_inner:hover .icon_add{
+
+.plus_add_button_inner:hover .icon_add {
     background-color: #dc4c3e;
     color: #ffffff;
     transition: background-color 1.9s;
@@ -470,8 +510,7 @@ img {
 .task_text {
     margin-right: 60px;
     text-align: justify;
-    overflow-x:hidden
-
+    overflow-x: hidden
 }
 
 .note_path {
@@ -479,59 +518,53 @@ img {
     display: flex;
     opacity: 0.4;
     font-size: 14px;
-    
+
 }
 
-#btn_add{
-    top: 50vh;
-    left: 50vw;
-    z-index:1;
-}
-#content_window{
-    
+
+
+#content_window {
+
     z-index: 10;
-    height:100%;
+    height: 100%;
     width: 100%;
     min-width: 800px;
-    z-index:10;
-    background:lightgrey;
-    display:none;
+    z-index: 10;
+
+    display: none;
 
     top: 50%;
     left: 50%;
     /* коррекция положения элемента */
-    
 
-    border: 3px solid #eb8909;
-   }
+    border: 1px solid rgba(204, 204, 204, 0.774);
 
 
-.plus_add_button {
-    width: 20px;
-    height: 10px;
+
 }
-.close_form_btn {
-    position:absolute;
-    width: 20px;
-    height: 10px;
-    right: 0;
-    top: 0 ;
-}
+
+
+
+
+
 
 .icon_close {
+   position: absolute;
     transform: rotate(45deg);
+    width: 20px;
     
-    background-color: #eb8909;
 }
 
 
 .note-form {
-    width: 90%;
+    width: 100%;
+    position: relative;
 }
 
-#calendarlink0 svg{
+#calendarlink0 svg {
     text-decoration: none;
 }
+
 .vDateField {
     text-decoration: none;
 }
@@ -539,4 +572,107 @@ img {
 .form-control {
     height: fit-content;
     overflow: hidden;
+}
+
+.btn-add-final {
+    margin-bottom: 20px;
+}
+
+.note-title {
+    display: block;
+
+    width: 90%;
+    padding-right: 20px;
+    margin-right: 20px;
+}
+
+.note-text {
+    margin-left: 0;
+    padding-left: 0;
+
+
+}
+
+.field-due_date {
+    display: flex;
+    justify-content: space-between;
+    margin-right: 10px;
+}
+
+.penis {
+    white-space: nowrap;
+}
+
+.datalists-chose {
+    margin-top: 15px;
+    display: flex;
+    text-align: center;
+    width: 100%;
+    margin-bottom: 15px;
+    
+
+}
+
+.datalists-item {
+    right: 0;
+    width: 25%;
+    white-space: nowrap;
+
+    align-items: center;
+
+
+    
+}
+
+
+
+.datalists-item:last-child {
+    right: 0;
+    width: 30%;
+
+}
+
+.checkbox_inner {
+    padding: 5px 5px;
+    margin-left: 10px;
+}
+
+
+.task_flag {
+    padding-top: 2px;
+    margin-top: 2px;
+    position: relative;
+}
+
+.task_flag_nofill {
+    position: absolute;
+}
+
+.task_flag_fill {
+    position: absolute;
+}
+
+
+
+
+
+
+
+
+
+
+
+@media (min-width: 720px) {
+    .datalists-item {
+        right: 0;
+        width: 50%;
+        white-space: nowrap;
+        flex-wrap: wrap;
+    
+        align-items: center;
+    
+    
+        
+    }
+    
 }
