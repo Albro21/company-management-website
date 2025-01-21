@@ -9,6 +9,18 @@ function closeWindow(){
   }
 
 
+function show(){
+    let el = document.getElementById("project-form");
+    el.style.display = 'block';
+  }
+
+
+
+
+
+
+
+
 
 
 

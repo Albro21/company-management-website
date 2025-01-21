@@ -25,7 +25,7 @@
                                 <strong>{{ user.first_name }} {{ user.last_name }}</strong>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                                <li><a class="dropdown-item" href="#">New project..</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="show()">New project..</a></li>
                                 <li><a class="dropdown-item" href="#">Settings</a></li>
                                 <li><a class="dropdown-item" href="#">Profile</a></li>
                                 <li><hr class="dropdown-divider"></li>
@@ -55,15 +55,48 @@
 
                             <li class="border-top my-3"></li>
                             <li class="mb-1">
-                                <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
-                                    My Projects
+                                <button class="btn btn-toggle d-inline-flex rounded border-0 collapsed mb-3 " data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
+                                    <p class="oiloil">My Projects</p>
                                 </button>
                                 <div class="collapse" id="account-collapse" style="">
                                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                        
                                         {% for project in projects %}
-                                            <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">{{ project.title }}</a></li>
+
+                                            <li class="project-item rounded-3 border">
+  
+                                                <div class="shadow-sm p-3">
+                                                    <a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">{{ project.title }}</a>
+                                                <div
+
+                                            </li>
+                                            
                                         {% endfor %}
-                                        <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">+ Create new project</a></li> <!-- Кнопка Добавления новой заметки-->
+
+                                        
+                                        <!--Create new project form-->
+                                        <li class="project-item rounded-3 border"">
+                                            
+                                                <form id="project-form">
+                                                    <div class="shadow-sm p-2 form-inner">
+
+                                                        <input class="form-control form-control-sm my-2 project-area" type="text" placeholder="project name" required="" aria-label=".form-control-sm">
+
+                                                        
+                                                    </div>
+
+                                                </form>
+                                            
+                                            </li>
+                                    
+
+                                        <li class="btn-create-project mt-4 rounded-5" >
+                                            
+                                            <a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded px-5"onclick="show()">
+                                                Create new project   
+                                            </a>
+                                        
+                                        </li> <!-- Кнопка Добавления новой заметки-->
                                     </ul>
                                 </div>
                             </li>
@@ -93,9 +126,12 @@
                                                     <h6 class="mb-0">{{ task.title }}</h6>
                                                     <!-- Это иконка категории -->
                                                     <h6><span class="badge text-bg-warning" id="categoryID">
+        
                                                         {% for category in task.categories.all %}
-                                                            {{ category.title }}
+
+                                                            {{category.title }} 
                                                         {% endfor %}
+                                                        
                                                     </span></h6>
 
                                                     <!-- Это иконка с флажком (если задача с приоритетом флажок будет закрашен в желтый цвет) -->
@@ -216,22 +252,16 @@
                                                     <div class="form-check text-start d-flex w-50">
                                                     <!-- IS HIGH PRIORITY-->
                                                     
-                                                    <div class="checkbox_inner">
+                                                    <div class="checkbox_inner py-2">
                                                         <input class="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault" onclick="SwitchFlag()">
-                                                        <label class="form-check-label" for="flexCheckDefault">
-                                                            High priority
+                                                        <label class="form-check-label d-flex" for="flexCheckDefault">
+                                                            Is High Priority
+                                                            <i class="bi bi-flag-fill falg-checbox px-2"></i>
                                                         </label>
                                                     </div>
                                                    
 
-                                                        <div class="task_flag">
-                                                            <div class="task_flag_fill">
-                                                                <i class="bi bi-flag-fill"></i>
-                                                            </div>
-                                                            <div class="task_flag_nofill">
-                                                                <i class="bi bi-flag"></i>
-                                                            </div>
-                                                        </div>
+                                                        
 
                                                     </div>
 

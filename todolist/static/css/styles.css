@@ -376,7 +376,7 @@ img {
 .btn-toggle::before {
     width: 1.25em;
     line-height: 0;
-    content: url(assets/download.svg);
+    content: url(static/assets/download.svg);
 
     transition: transform .35s ease;
     transform-origin: .5em 50%;
@@ -422,6 +422,12 @@ img {
 
     transition: opacity 0.2s linear;
 }
+
+
+#categoryID:empty{
+    display: none;
+}
+
 
 
 .plus_add_button_inner {
@@ -624,7 +630,11 @@ img {
     
 }
 
+.oiloil {
 
+    font-size: 30px;
+    font-weight: 700;
+}
 
 .datalists-item:last-child {
     right: 0;
@@ -654,6 +664,52 @@ img {
 
 
 
+.btn-create-project {
+    opacity: 1;
+    background-color: #eb8909;
+}
+
+
+.btn-create-project:hover {
+    opacity: 1;
+    background-color: #eb8909;
+    transform: scale(1.09);
+    transition: transform 0.2s linear;
+}
+.project-item:hover {
+    transform: scale(1.01);
+    
+    background-color: #ccc;
+
+    transition: transform 0.2s linear;
+    transition: transform 0.2s linear;
+
+}
+
+
+
+.falg-checbox {
+    display: none;
+}
+
+
+.form-check-input:checked ~ * .falg-checbox {
+    display: block;
+    color: #eb8909;
+}
+
+#project-form {
+    display: none;
+}
+
+.project-area{
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #bdbdbd;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+}
 
 
 
