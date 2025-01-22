@@ -69,6 +69,10 @@ img {
 
 }
 
+button{
+    z-index: 10;
+}
+
 
 /* ---------------------- header --------------*/
 
@@ -348,6 +352,7 @@ img {
     position: relative;
     border-bottom: 1px solid #ccc;
     display: flex;
+    
 
     padding-left: 30px;
 }
@@ -355,7 +360,11 @@ img {
 .list-group-item:hover {
     position: relative;
     transform: scale(1.009);
-    transition: transform 0.15s linear;
+
+    box-shadow: 2px 2px 5px #c4b6b6;
+
+    transition: transform 0.2s linear;
+    transition: box-shadow 0.2s linear;
 }
 
 
@@ -431,8 +440,10 @@ img {
 
 
 .plus_add_button_inner {
-    display: block;
+    align-items: center;
     padding-top: 10px;
+
+    
 }
 
 .plus_add_button {
@@ -441,7 +452,7 @@ img {
     display: block;
     border: none;
     background-color: transparent;
-    position: absolute;
+    position: relative;
 
 }
 .close_add_button {
@@ -555,7 +566,9 @@ img {
 
 
 .icon_close {
-   position: absolute;
+    position: absolute;
+    top: -10px;
+    right: 10px;
     transform: rotate(45deg);
     width: 20px;
     
@@ -607,6 +620,11 @@ img {
 
 .penis {
     white-space: nowrap;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
 }
 
 .datalists-chose {
@@ -676,6 +694,10 @@ img {
     transform: scale(1.09);
     transition: transform 0.2s linear;
 }
+
+.project-item {
+    background-color: #e9e5e5;
+}
 .project-item:hover {
     transform: scale(1.01);
     
@@ -711,6 +733,133 @@ img {
 
 }
 
+.header-title {
+    text-align: center;
+    padding-bottom: 15px;
+}
+
+
+
+
+/* ---------------------- setting menu --------------*/
+
+.half-page {
+    position: relative;
+    display: flex;
+    top: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+
+
+}
+
+.tool-bar {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+
+    transform:translate(0, -50%);
+
+    
+}
+
+.category_item {
+    border: 1px solid #bdbdbd;
+}
+
+.category_inner {
+    
+    margin-bottom: 5px;
+    padding: 5px;
+}
+
+.list-group-item-settings {
+    position: relative;
+    border: 1px solid #ccc;
+    display: flex;
+    text-decoration: none;
+    
+
+    padding-left: 30px;
+}
+
+.list-group-item-settings:hover {
+    position: relative;
+    transform: scale(1.009);
+
+    box-shadow: 2px 2px 5px #c4b6b6;
+
+    transition: transform 0.2s linear;
+    transition: box-shadow 0.2s linear;
+}
+
+.category_case {
+    color: #e5e5e5;
+    width: fit-content;
+    background-color: #ff9100;
+}
+
+.color-selector {
+    height: 0;
+    width: 0px;
+    opacity: 0;
+    
+    
+}
+.input-category {
+    background: none ;
+    border: none;
+    outline: none;
+
+    pointer-events: auto;
+
+}
+
+
+
+.input-category::placeholder {
+    color: #000000;
+}
+
+.btn-edit:active .input-category {
+    pointer-events: auto;
+    border: #202020;
+    background-color: #fff;
+}
+
+
+.project-window {
+    display: none;
+    width: 90%;
+}
+
+.category-window {
+    display: none;
+    width: 90%;
+}
+
+.btn_center {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.color-btn {
+    right: 10px;;
+    height: 50px;
+}
+
+
+.category-window .close_add_button {
+
+    display: block;
+    border: none;
+    background-color: transparent;
+    position: absolute;
+    right: -30px;
+
+
+}
 
 
 
@@ -718,6 +867,12 @@ img {
 
 
 
+
+
+
+
+
+/* ---------------------- adaptating --------------*/
 @media (min-width: 720px) {
     .datalists-item {
         right: 0;

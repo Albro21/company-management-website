@@ -3,17 +3,86 @@ function showWindow(){
     el.style.display = 'block';
   }
 
+  function showWindowProject(){
+    let el = document.getElementById("content_window project-window");
+    el.style.display = 'block';
+  }
+
+  function showWindowCategory(){
+    let el = document.getElementById("content_window category-window");
+    el.style.display = 'block';
+  }
+
 function closeWindow(){
     let el = document.getElementById("content_window");
     el.style.display = 'none';
   }
 
-
-function show(){
-    let el = document.getElementById("project-form");
-    el.style.display = 'block';
+function closeWindowProject(){
+    let el = document.getElementById("content_window project-window");
+    el.style.display = 'none';
+  }  
+function closeWindowCategory(){
+    let el = document.getElementById("content_window category-window");
+    el.style.display = 'none';
   }
 
+
+
+
+
+
+
+
+/*
+function showCategoryForm(){
+  let el = document.getElementById("content_window_category");
+    el.style.display = 'block';
+
+}
+function closeWindowCategory(){
+  let el = document.getElementById("content_window_category");
+  el.style.display = 'none';
+}
+
+function showProjectForm(){
+  let el = document.getElementById("content-project");
+    el.style.display = 'block';
+}
+
+function closeWindowProject(){
+  let el = document.getElementById("content-project");
+  el.style.display = 'none';
+}
+
+*/
+
+
+
+/* визуальное изменение цвета в settings
+let colorPicker;
+const defaultColor = "#ff9100";
+  
+window.addEventListener("load", startup, false);
+
+function startup() {
+    colorPicker = document.getElementById("#color-picker");
+    colorPicker.value = defaultColor;
+    colorPicker.addEventListener("input", updateFirst, false);
+    colorPicker.addEventListener("change", updateAll, false);
+    colorPicker.select();
+    console.log(colorPicker)
+  }
+
+function updateFirst(event) {
+    const p = document.querySelector("category_case");
+    const bg = "background-color"
+    if (p) {
+      p.style.bg = event.target.value;
+    }
+  }
+
+*/
 
 
 
