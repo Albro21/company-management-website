@@ -36,16 +36,16 @@
 										<!-- Categories -->
 										<h6 style="position: relative; top: -2px;">
 											{% if task.categories.all %} 
-													{% for category in task.categories.all %} 
+												{% for category in task.categories.all %} 
 													<span class="badge text-bg-warning" style="font-size: 11px;"> 
 														{{category.title }} 
 													</span>
-													{% endfor %}
+												{% endfor %}
 											{% endif %} 
 										</h6>
 
 										<!-- High priority flag -->
-										<div class="task_flag">
+										<div class="task_flag mt-0" style="position: relative; top: -4px;">
 											{% if task.is_high_priority %}
 												<i class="bi bi-flag-fill"></i>
 											{% else %}
