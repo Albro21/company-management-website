@@ -32,3 +32,7 @@ def index(request):
     }
 
     return render(request, 'main/index.html', context)
+
+@login_required
+def archive(request):
+    return render(request, 'main/archive.html')
