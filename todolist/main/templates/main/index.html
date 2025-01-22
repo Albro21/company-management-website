@@ -31,16 +31,16 @@
 									<div class="task_header">
 
 										<!-- Title -->
-										<h6 class="mb-0">{{ task.title }}</h6>
+										<h6 class="mb-0 me-1">{{ task.title }}</h6>
 
 										<!-- Categories -->
-										<h6>
+										<h6 style="position: relative; top: -2px;">
 											{% if task.categories.all %} 
-												<span class="badge text-bg-warning" id="categoryID"> 
 													{% for category in task.categories.all %} 
+													<span class="badge text-bg-warning" style="font-size: 11px;"> 
 														{{category.title }} 
+													</span>
 													{% endfor %}
-												</span>
 											{% endif %} 
 										</h6>
 

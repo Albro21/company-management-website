@@ -432,13 +432,6 @@ button{
     transition: opacity 0.2s linear;
 }
 
-
-#categoryID:empty{
-    display: none;
-}
-
-
-
 .plus_add_button_inner {
     align-items: center;
     padding-top: 10px;
