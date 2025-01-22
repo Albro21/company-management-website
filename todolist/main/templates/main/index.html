@@ -76,81 +76,80 @@
 								<form class="note-form" method="POST">
 									{% csrf_token %}
 									<div class="container">
-
-										<!-- Close button -->
-										<div class="close_form_btn">
-											<div id="btn_add" onclick="closeWindow()">
-												<button type="button" aria-hidden="false" data-supports-active-task="true" class="close_add_button">
-													<span class="icon_close" aria-hidden="true">
-														<svg width="13" height="13">
-															<path fill="currentColor" fill-rule="evenodd" d="M6 6V.5a.5.5 0 0 1 1 0V6h5.5a.5.5 0 1 1 0 1H7v5.5a.5.5 0 1 1-1 0V7H.5a.5.5 0 0 1 0-1H6z"></path>
-														</svg>
-													</span>
-												</button>
+										<div class="d-flex">
+											<!-- Note Title -->
+											<div class="note_title w-100">
+												<input class="form-control form-control-sm my-2 note-title {% if form.title.errors %}is-invalid{% endif %}" type="text" name="{{ form.title.name }}" value="{{ form.title.value|default:'' }}" placeholder="Note Title" aria-label=".form-control-sm">
+												<div class="invalid-feedback">{{ form.title.errors }}</div>
 											</div>
-										</div>
-
-										<!-- Note Title -->
-										<div class="note_title">
-											<input class="form-control form-control-sm my-2 note-title {% if form.title.errors %}is-invalid{% endif %}" type="text" name="{{ form.title.name }}" value="{{ form.title.value|default:'' }}" placeholder="Note Title" aria-label=".form-control-sm">
-											<div class="invalid-feedback">{{ form.title.errors }}</div>
-										</div>
-										
-										<!-- Note Text -->
-										<div class="mb-1">
-											<textarea class="form-control {% if form.text.errors %}is-invalid{% endif %}" name="{{ form.text.name }}" placeholder="Note Text" rows="3">{{ form.text.value|default:'' }}</textarea>
-										</div>
-
-										<!-- Project selector -->
-										<div class="datalists-chose">
-											<div class="datalists-item">
-												<div class="projects-datalist d-flex">
-													<select class="form-control" name="{{ form.project.name }}">
-														<option value="">Select a project</option>
-														{% for project in projects %}
-															<option value="{{ project.id }}" {% if form.project.value == project.id %}selected{% endif %}>{{ project.title }}</option>
-														{% endfor %}
-													</select>
+											<!-- Close button -->
+											<div class="close_form_btn">
+												<div id="btn_add" onclick="closeWindow()">
+													<button type="button" aria-hidden="false" data-supports-active-task="true" class="close_add_button">
+														<span class="icon_close" aria-hidden="true">
+															<svg width="13" height="13">
+																<path fill="currentColor" fill-rule="evenodd" d="M6 6V.5a.5.5 0 0 1 1 0V6h5.5a.5.5 0 1 1 0 1H7v5.5a.5.5 0 1 1-1 0V7H.5a.5.5 0 0 1 0-1H6z"></path>
+															</svg>
+														</span>
+													</button>
 												</div>
 											</div>
-
-											<!-- Category selector -->
-											<div class="datalists-item">
-												<div class="categories-datalist d-flex">
-													<select class="form-control" name="{{ form.categories.name }}" multiple>
-														{% for category in categories %}
-															<option value="{{ category.id }}" {% if category.id in form.categories.value %}selected{% endif %}>{{ category.title }}</option>
-														{% endfor %}
-													</select>
+										</div>
+										<div class="d-flex">
+											<div class="w-100">
+												<!-- Note Text -->
+												<div class="mb-1">
+													<textarea class="form-control {% if form.text.errors %}is-invalid{% endif %}" name="{{ form.text.name }}" placeholder="Note Text" rows="3">{{ form.text.value|default:'' }}</textarea>
 												</div>
-											</div>
-
-											<!-- High priority flag -->
-											<div class="datalists-item w-20">
-												<div class="form-check text-start d-flex w-50">
-													<div class="checkbox_inner py-2">
-														<input class="form-check-input" type="checkbox" name="{{ form.is_high_priority.name }}" id="{{ form.is_high_priority.id_for_label }}" {% if form.is_high_priority.value %}checked{% endif %} onclick="SwitchFlag()">
-														<label class="form-check-label d-flex" for="{{ form.is_high_priority.id_for_label }}">
-															Is High Priority
-															<i class="bi bi-flag-fill falg-checbox px-2"></i>
-														</label>
+												<!-- Project selector -->
+												<div class="datalists-chose">
+													<div class="datalists-item">
+														<div class="projects-datalist d-flex">
+															<select class="form-control" name="{{ form.project.name }}">
+																<option value="">Select a project</option>
+																{% for project in projects %}
+																	<option value="{{ project.id }}" {% if form.project.value == project.id %}selected{% endif %}>{{ project.title }}</option>
+																{% endfor %}
+															</select>
+														</div>
 													</div>
-												</div>
-											</div>
-
-											<!-- Calendar or Date select-->
-											<div class="datalists-item">
-												<div class="field-due_date date-menu">
-													<div>
-														<div id="start">
-															<input class="form-control {% if form.due_date.errors %}is-invalid{% endif %}" type="date" name="{{ form.due_date.name }}" value="{{ form.due_date.value }}">
-															<div class="invalid-feedback">{{ form.due_date.errors }}</div>
+													<!-- High priority flag -->
+													<div class="datalists-item w-20">
+														<div class="form-check text-start d-flex w-50">
+															<div class="checkbox_inner py-2">
+																<input class="form-check-input" type="checkbox" name="{{ form.is_high_priority.name }}" id="{{ form.is_high_priority.id_for_label }}" {% if form.is_high_priority.value %}checked{% endif %} onclick="SwitchFlag()">
+																<label class="form-check-label d-flex" for="{{ form.is_high_priority.id_for_label }}">
+																	Is High Priority
+																	<i class="bi bi-flag-fill falg-checbox px-2"></i>
+																</label>
+															</div>
+														</div>
+													</div>
+													<!-- Calendar or Date select-->
+													<div class="datalists-item">
+														<div class="field-due_date date-menu">
+															<div>
+																<div id="start">
+																	<input class="form-control {% if form.due_date.errors %}is-invalid{% endif %}" type="date" name="{{ form.due_date.name }}" value="{{ form.due_date.value }}">
+																	<div class="invalid-feedback">{{ form.due_date.errors }}</div>
+																</div>
+															</div>
 														</div>
 													</div>
 												</div>
 											</div>
+											<!-- Category selector -->
+											<div class="datalists-item ps-3" style="max-width: 200px;">
+												<div class="categories-datalist d-flex flex-column ps-3" style="overflow-y: auto; max-height: 144px; direction: rtl; text-align: left;">
+													{% for category in categories %}
+														<div>
+															<label class="form-check-label">{{ category.title }}</label>
+															<input class="form-check-input" type="checkbox" name="{{ form.categories.name }}" value="{{ category.id }}" {% if category.id in form.categories.value %}checked{% endif %}>
+														</div>
+													{% endfor %}
+												</div>
+											</div>
 										</div>
-										
 										<!-- Add note (submit) button -->
 										<button class="btn btn-warning w-100 py-2 btn-add-final opacity-75" type="submit">Add note</button>
 									</div>
