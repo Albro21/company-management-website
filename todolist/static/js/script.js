@@ -1,3 +1,5 @@
+window.csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
 function showWindow(){
     let el = document.getElementById("content_window");
     el.style.display = 'block';
@@ -27,6 +29,27 @@ function closeWindowCategory(){
     el.style.display = 'none';
   }
 
+  function completeNote(button) {
+    const taskId = button.getAttribute('data-task-id');
+
+    fetch(`/${taskId}/complete/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': window.csrfToken,
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Remove the completed task from the list
+            button.closest('a').remove();
+        } else {
+            console.error('Error completing task:', data.error);
+        }
+    })
+    .catch(error => console.error('Request failed:', error));
+}
 
 
 
