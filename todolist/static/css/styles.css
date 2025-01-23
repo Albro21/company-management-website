@@ -433,10 +433,10 @@ button{
 }
 
 .plus_add_button_inner {
-    align-items: center;
-    padding-top: 10px;
+    max-width: 100px;
+	margin: 0 auto;
 
-    
+    margin-top: 10px;
 }
 
 .plus_add_button {
@@ -831,11 +831,7 @@ button{
     width: 90%;
 }
 
-.btn_center {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-}
+
 
 .color-btn {
     right: 10px;;
@@ -849,9 +845,15 @@ button{
     border: none;
     background-color: transparent;
     position: absolute;
-    right: -30px;
+    right: -50px;
 
 
+}
+
+.close_form_btn {
+    position: absolute;
+    top: 15px;
+    right: 10px;
 }
 
 
