@@ -45,7 +45,7 @@
 													Edit 							
 												</button>
 		
-												<button type="button" class="btn btn-danger">
+												<button type="button" class="btn btn-danger" data-project-id="{{ project.id }}" onclick="deleteProject(this)">
 													Delete 	
 												</button>
 												</div>
@@ -169,7 +169,7 @@
 													<input type="color" value="#ff0000" id="color-picker" class="color-selector"> 									
 												</button>
 
-												<button type="button" class="btn btn-danger">
+												<button type="button" class="btn btn-danger" data-category-id="{{ category.id }}" onclick="deleteCategory(this)">
 													Delete 	
 												</button>
 												</div>
@@ -279,4 +279,5 @@
 
 {% block scripts %}
 	<script src="{% static 'js/script.js' %}"></script>
+	<script src="{% static 'js/archive.js' %}"></script>
 {% endblock scripts %}

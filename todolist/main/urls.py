@@ -1,8 +1,10 @@
 from django.urls import path
-from .views import index, archive, complete_task
+from . import views
 
 urlpatterns = [
-    path('', index, name='index'),
-    path('<int:task_id>/complete/', complete_task, name='complete_task'),
-    path('archive/', archive, name='archive'),
+    path('', views.index, name='index'),
+    path('<int:task_id>/complete/', views.complete_task, name='complete_task'),
+    path('<int:project_id>/delete-project/', views.delete_project, name='delete_project'),
+    path('<int:category_id>/delete-category/', views.delete_category, name='delete_category'),
+    path('archive/', views.archive, name='archive'),
 ]

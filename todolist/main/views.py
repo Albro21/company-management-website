@@ -75,3 +75,21 @@ def archive(request):
         'categories': categories,
     }
     return render(request, 'main/archive.html', context)
+
+
+@login_required
+def delete_project(request, project_id):
+    if request.method == 'POST':
+        project = get_object_or_404(Project, id=project_id)
+        project.delete()
+        return JsonResponse({'success': True, 'task_id': project_id})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=400)
+
+
+@login_required
+def delete_category(request, category_id):
+    if request.method == 'POST':
+        category = get_object_or_404(Category, id=category_id)
+        category.delete()
+        return JsonResponse({'success': True, 'task_id': category_id})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=400)
