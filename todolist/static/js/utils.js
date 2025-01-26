@@ -22,3 +22,23 @@ window.sendRequest = async function(url, method) {
         return false;
     }
 };
+
+document.addEventListener("DOMContentLoaded", function() {
+    const elements = document.querySelectorAll('.change-text-color');
+    elements.forEach(function(element) {
+        const backgroundColor = window.getComputedStyle(element).backgroundColor;
+        
+        const rgb = backgroundColor.match(/\d+/g);
+        const r = parseInt(rgb[0]);
+        const g = parseInt(rgb[1]);
+        const b = parseInt(rgb[2]);
+
+        const brightness = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+        if (brightness > 128) {
+            element.style.color = 'black';
+        } else {
+            element.style.color = 'white';
+        }
+    });
+});

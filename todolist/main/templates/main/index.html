@@ -37,7 +37,7 @@
 										<h6 style="position: relative; top: -2px;">
 											{% if task.categories.all %} 
 												{% for category in task.categories.all %} 
-													<span class="badge" style="font-size: 11px; background-color: {{ category.color }};"> 
+													<span class="badge change-text-color" style="font-size: 11px; background-color: {{ category.color }};"> 
 														{{category.title }} 
 													</span>
 												{% endfor %}

@@ -1,33 +1,31 @@
-window.csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
 function showWindow(){
     let el = document.getElementById("content_window");
     el.style.display = 'block';
-  }
+}
 
-  function showWindowProject(){
+function showWindowProject(){
     let el = document.getElementById("content_window project-window");
     el.style.display = 'block';
-  }
+}
 
-  function showWindowCategory(){
+function showWindowCategory(){
     let el = document.getElementById("content_window category-window");
     el.style.display = 'block';
-  }
+}
 
 function closeWindow(){
     let el = document.getElementById("content_window");
     el.style.display = 'none';
-  }
+}
 
 function closeWindowProject(){
     let el = document.getElementById("content_window project-window");
     el.style.display = 'none';
-  }  
+}  
 function closeWindowCategory(){
     let el = document.getElementById("content_window category-window");
     el.style.display = 'none';
-  }
+}
 
 async function completeNote(button) {
     const taskId = button.getAttribute('data-task-id');
@@ -42,27 +40,6 @@ async function completeNote(button) {
         console.error('Failed to complete task');
     }
 }
-
-document.addEventListener("DOMContentLoaded", function() {
-    const badges = document.querySelectorAll('.badge');
-
-    badges.forEach(function(badge) {
-        const backgroundColor = window.getComputedStyle(badge).backgroundColor;
-        
-        const rgb = backgroundColor.match(/\d+/g);
-        const r = parseInt(rgb[0]);
-        const g = parseInt(rgb[1]);
-        const b = parseInt(rgb[2]);
-
-        const brightness = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-
-        if (brightness > 128) {
-            badge.style.color = 'black';
-        } else {
-            badge.style.color = 'white';
-        }
-    });
-});
 
 
 
