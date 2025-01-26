@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Project, Category, Task
-from .forms import TaskCreationForm
+from .forms import TaskCreationForm, ProjectCreationForm, CategoryCreationForm
 
 
 @login_required
@@ -45,4 +45,33 @@ def complete_task(request, task_id):
 
 @login_required
 def archive(request):
-    return render(request, 'main/archive.html')
+    user = request.user
+    projects = Project.objects.filter(user=user)
+    categories = Category.objects.filter(user=user)
+
+    project_form = ProjectCreationForm(request.POST or None, prefix='project')
+    category_form = CategoryCreationForm(request.POST or None, prefix='category')
+
+    if request.method == 'POST':
+        if 'submit_project' in request.POST and project_form.is_valid():
+            project = project_form.save(commit=False)
+            project.user = user
+            project.save()
+            project_form.save_m2m()
+            return redirect('archive')
+
+        if 'submit_category' in request.POST and category_form.is_valid():
+            category = category_form.save(commit=False)
+            category.user = user
+            category.save()
+            category_form.save_m2m()
+            return redirect('archive')
+
+    # Render the template
+    context = {
+        'project_form': project_form,
+        'category_form': category_form,
+        'projects': projects,
+        'categories': categories,
+    }
+    return render(request, 'main/archive.html', context)
