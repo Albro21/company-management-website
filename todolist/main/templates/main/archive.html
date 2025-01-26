@@ -35,7 +35,7 @@
 												<h6 class="category_title">
 	
 													<span class="project_case rounded-3 p-2" id="categoryID" > 
-														<input class="input-category" type="text" tabindex="-1" placeholder="{{ project }}" id="input-category">
+														<input class="input-category" type="text" tabindex="-1" placeholder="{{ project }}">
 														
 													</span>	
 												</h6>	
@@ -91,7 +91,7 @@
 
 													<!-- Project Color -->
 													<div class="w-50 me-2">
-														<label for="project-{{ project_form.color.id_for_label}}" class="form-label">Color:</label>
+														<label for="{{ project_form.color.id_for_label}}" class="form-label">Color:</label>
 														<input
 															class="form-control {% if project_form.color.errors %}is-invalid{% endif %}"
 															style = "height: 38px;"
@@ -103,7 +103,7 @@
 
 													<!-- Project Status -->
 													<div class="w-50">
-														<label for="project-{{ project_form.status.id_for_label}}" class="form-label">Status:</label>
+														<label for="{{ project_form.status.id_for_label}}" class="form-label">Status:</label>
 														<select class="form-select" name="project-{{ project_form.status.name }}" id="{{ project_form.status.id_for_label }}">
 															<option value="active" {% if project_form.status == 'active' %}selected{% endif %}>Active</option>
 															<option value="archived" {% if project_form.status == 'archived' %}selected{% endif %}>Archived</option>
@@ -155,7 +155,7 @@
 												<h6 class="category_title">
 													<!-- style color -->	
 													<span class="category_case rounded-3 p-2" id="categoryID" style="background-color: #ff9100"> 
-														<input class="input-category" type="text" tabindex="-1" placeholder="{{ category }}" id="input-category">
+														<input class="input-category" type="text" tabindex="-1" placeholder="{{ category }}">
 														
 													</span>	
 												</h6>	
@@ -227,7 +227,7 @@
 
 												<!-- Category Color -->
 												<div class="d-flex mb-2">
-													<label for="category-{{ category_form.color.id_for_label}}" class="form-label me-2" style="margin-top: auto;">Color:</label>
+													<label for="{{ category_form.color.id_for_label}}" class="form-label me-2" style="margin-top: auto;">Color:</label>
 													<div class="w-100">
 														<input 
 															class="form-control {% if category_form.color.errors %}is-invalid{% endif %}"
