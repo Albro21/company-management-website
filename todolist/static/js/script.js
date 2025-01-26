@@ -29,26 +29,18 @@ function closeWindowCategory(){
     el.style.display = 'none';
   }
 
-  function completeNote(button) {
+async function completeNote(button) {
     const taskId = button.getAttribute('data-task-id');
+    const url = `/${taskId}/complete/`;
+    const method = 'POST';
 
-    fetch(`/${taskId}/complete/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': window.csrfToken,
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Remove the completed task from the list
-            button.closest('a').remove();
-        } else {
-            console.error('Error completing task:', data.error);
-        }
-    })
-    .catch(error => console.error('Request failed:', error));
+    const success = await sendRequest(url, method);
+
+    if (success) {
+        button.closest('a').remove();
+    } else {
+        console.error('Failed to complete task');
+    }
 }
 
 document.addEventListener("DOMContentLoaded", function() {

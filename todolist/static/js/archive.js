@@ -1,43 +1,27 @@
-window.csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-function deleteProject(button) {
+async function deleteProject(button) {
     const projectId = button.getAttribute('data-project-id');
+    const url = `/${projectId}/delete-project/`;
+    const method = 'DELETE';
 
-    fetch(`/${projectId}/delete-project/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': window.csrfToken,
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            button.closest('a').remove();
-        } else {
-            console.error('Error completing task:', data.error);
-        }
-    })
-    .catch(error => console.error('Request failed:', error));
+    const success = await sendRequest(url, method);
+
+    if (success) {
+        button.closest('a').remove();
+    } else {
+        console.error('Failed to delete project');
+    }
 }
 
-function deleteCategory(button) {
+async function deleteCategory(button) {
     const categoryId = button.getAttribute('data-category-id');
+    const url = `/${categoryId}/delete-category/`;
+    const method = 'DELETE';
 
-    fetch(`/${categoryId}/delete-category/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': window.csrfToken,
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            button.closest('a').remove();
-        } else {
-            console.error('Error completing task:', data.error);
-        }
-    })
-    .catch(error => console.error('Request failed:', error));
+    const success = await sendRequest(url, method);
+
+    if (success) {
+        button.closest('a').remove();
+    } else {
+        console.error('Failed to delete category');
+    }
 }
