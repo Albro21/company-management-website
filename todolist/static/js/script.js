@@ -51,6 +51,26 @@ function closeWindowCategory(){
     .catch(error => console.error('Request failed:', error));
 }
 
+document.addEventListener("DOMContentLoaded", function() {
+    const badges = document.querySelectorAll('.badge');
+
+    badges.forEach(function(badge) {
+        const backgroundColor = window.getComputedStyle(badge).backgroundColor;
+        
+        const rgb = backgroundColor.match(/\d+/g);
+        const r = parseInt(rgb[0]);
+        const g = parseInt(rgb[1]);
+        const b = parseInt(rgb[2]);
+
+        const brightness = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+        if (brightness > 128) {
+            badge.style.color = 'black';
+        } else {
+            badge.style.color = 'white';
+        }
+    });
+});
 
 
 
