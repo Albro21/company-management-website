@@ -31,11 +31,20 @@
 												<span class="category_case rounded-3" id="categoryID"> 
 													<h6 class="category_title">
 
-														<span class="project_case rounded-3 p-2" id="categoryID" > 
-															<input class="input-category change-text-color" type="text" tabindex="-1" placeholder="{{ project }}">
+														<span class="project_case rounded-3 p-2 edit-ico" id="categoryID"  > 
+															<input class="input-category" type="text" tabindex="-1" placeholder="{{ project }}" onclick="this.contentEditable="true";" style="color: black;">
 															
 														</span>	
+
+														<div class="category-description p-2 edit-ico">
+				
+															<input class="input-category description" type="text" tabindex="-1" placeholder="{{project.description }}" onclick="this.contentEditable="true";"> 
+														</div>
+
+														
+
 													</h6>	
+													
 												
 												<div class="tool-bar">
 													<button type="button" class="btn btn-edit btn-secondary" id="edit" onclick="showInput()">
@@ -74,13 +83,13 @@
 	
 											<!-- Project Title -->
 											<div class="note_title">
-												<input class="form-control form-control-sm my-2 note-title {% if project_form.title.errors %}is-invalid{% endif %}" type="text" name="project-{{ project_form.title.name }}" value="{{ project_form.title.value|default:'' }}" placeholder="Project Title" aria-label=".form-control-sm">
+												<input class="form-control form-control-sm my-2 note-title {% if project_form.title.errors %}is-invalid{% endif %}" type="text" name="project-{{ project_form.title.name }}" autocomplete="off" value="{{ project_form.title.value|default:'' }}" placeholder="Project Title" aria-label=".form-control-sm">
 												<div class="invalid-feedback">{{ project_form.title.errors }}</div>
 											</div>
 	
 											<!-- Project Description -->
 											<div class="mb-2">
-												<textarea class="form-control {% if project_form.description.errors %}is-invalid{% endif %}" name="project-{{ project_form.description.name }}" placeholder="Project Description" rows="3">{{ project_form.description.value|default:'' }}</textarea>
+												<textarea class="form-control {% if project_form.description.errors %}is-invalid{% endif %} area-text" name="project-{{ project_form.description.name }}" placeholder="Project Description" autocomplete="off" rows="3">{{ project_form.description.value|default:'' }}</textarea>
 											</div>
 
 											<!-- Project Color and Status -->
@@ -148,10 +157,18 @@
 												<span class="category_case rounded-3" id="categoryID"> 
 													<h6 class="category_title">
 														<!-- style color -->	
-														<span class="category_case rounded-3 p-2 change-text-color" id="categoryID" style="background-color: {{ category.color }}"> 
-															{{ category.title }}
-															{% comment %} <input class="input-category" type="text" tabindex="-1" placeholder="{{ category.title }}"> {% endcomment %}
-														</span>
+														<div class="category_case rounded-3 p-2 change-text-color edit-ico" id="categoryID" style="background-color: {{ category.color }};"> 
+														
+															<input class="input-category edit-ico " type="text" tabindex="-1" placeholder="{{ category.title }}" autocomplete="off" onclick="this.contentEditable="true";"> 
+
+														</div>
+
+														<div class="category-description p-2">
+															<div class="edit-ico">
+																<input class="input-category description" type="text" tabindex="-1" placeholder="{{ category.description }}" onclick="this.contentEditable="true";"> 
+															</div>
+														</div>
+
 													</h6>		
 												</span>	
 
@@ -201,6 +218,7 @@
 													type="text" 
 													name="category-{{ category_form.title.name }}" 
 													value="{{ category_form.title.value|default:'' }}" 
+													autocomplete="off"
 													placeholder="Category Title" 
 													aria-label=".form-control-sm">
 												<div class="invalid-feedback">{{ category_form.title.errors }}</div>
@@ -209,7 +227,7 @@
 											<!-- Category Description -->
 											<div class="mb-2">
 												<textarea 
-													class="form-control {% if category_form.description.errors %}is-invalid{% endif %}" 
+													class="form-control {% if category_form.description.errors %}is-invalid{% endif %} area-text" 
 													name="category-{{ category_form.description.name }}" 
 													placeholder="Category Description" 
 													rows="3">{{ category_form.description.value|default:'' }}</textarea>

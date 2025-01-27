@@ -30,33 +30,49 @@
 								<div class="task_inner">
 									<div class="task_header">
 
-										<!-- Title -->
-										<h6 class="mb-0 me-1">{{ task.title }}</h6>
+										<div class="note-header-title edit-ico">
+											<!-- Title -->
+											<h6 class="mb-0 me-1">
 
-										<!-- Categories -->
-										<h6 style="position: relative; top: -2px;">
-											{% if task.categories.all %} 
-												{% for category in task.categories.all %} 
-													<span class="badge change-text-color" style="font-size: 11px; background-color: {{ category.color }};"> 
-														{{category.title }} 
-													</span>
-												{% endfor %}
-											{% endif %} 
-										</h6>
+												<div class="edit-ico">
+													<input class="input-title" type="text" tabindex="-1" placeholder="{{ task.title }}" onclick="this.contentEditable="true";" onkeydown="this.style.width = ((this.value.length + 1) * 8) + 'px';"> 
+												</div>
+											</h6>
 
-										<!-- High priority flag -->
-										<div class="task_flag mt-0" style="position: relative; top: -4px;">
-											{% if task.is_high_priority %}
-												<i class="bi bi-flag-fill"></i>
-											{% else %}
-												<i class="bi bi-flag"></i>
-											{% endif %}
+
+
+											<!-- Categories -->
+											<h6 style="position: relative; top: -2px;">
+												{% if task.categories.all %} 
+													{% for category in task.categories.all %} 
+														<span class="badge change-text-color" style="font-size: 11px; background-color: {{ category.color }};"> 
+															{{category.title }} 
+														</span>
+														<input class="input-title badge change-text-color" style="font-size: 11px; background-color: {{ category.color }};" type="text" tabindex="-1" placeholder="{{ category.title }}" onclick="this.contentEditable="true";"> 
+													{% endfor %}
+												{% endif %} 
+											</h6>
+
+											
+
+											<!-- High priority flag -->
+											<div class="task_flag mt-0" style="position: relative; top: -4px;">
+												{% if task.is_high_priority %}
+													<i class="bi bi-flag-fill"></i>
+												{% else %}
+													<i class="bi bi-flag"></i>
+												{% endif %}
+											</div>
 										</div>
+
 									</div>
 
 									<!-- Description -->
-									<div class="task_text">
-										<p class="mb-0 opacity-75">{{ task.text }}</p>
+								
+									<div class="task_text p-2">
+										<div class="edit-ico-textarea">
+											<textarea class="input-text task-text-box mb-0 opacity-100" type="text" contenteditable="true" tabindex="-1" placeholder="{{ task.text }}" onclick="this.contentEditable="true";"></textarea>
+										</div>
 									</div>
 
 									<!-- Due date -->
@@ -85,8 +101,8 @@
 											<!-- Close button -->
 											<div class="close_form_btn">
 												<div id="btn_add" onclick="closeWindow()">
-													<button type="button" aria-hidden="false" data-supports-active-task="true" class="close_add_button">
-														<span class="icon_close" aria-hidden="true">
+													<button type="button" aria-``idden="false" data-supports-active-task="true" class="close_add_button">
+														<span class="icon_cl~ose" aria-hidden="true">
 															<svg width="13" height="13">
 																<path fill="currentColor" fill-rule="evenodd" d="M6 6V.5a.5.5 0 0 1 1 0V6h5.5a.5.5 0 1 1 0 1H7v5.5a.5.5 0 1 1-1 0V7H.5a.5.5 0 0 1 0-1H6z"></path>
 															</svg>
