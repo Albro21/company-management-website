@@ -14,8 +14,43 @@
 				<div class="d-flex flex-column flex-md-row p-3 gap-4 py-md-5 align-items-center justify-content-center">
 					<div class="list-group pb-15 w-100">
 
+						<!-- Filter Buttons -->
+						<div class="container d-flex mb-3 justify-content-center">
+							<div class="btn-group" role="group">
+								<a href="?filter=today&completed={{ request.GET.completed|default:'false' }}" class="btn btn-outline-dark {% if request.GET.filter == 'today' %}active{% endif %}">Today</a>
+								<a href="?filter=tomorrow&completed={{ request.GET.completed|default:'false' }}" class="btn btn-outline-dark {% if request.GET.filter == 'tomorrow' %}active{% endif %}">Tomorrow</a>
+								<a href="?filter=this_week&completed={{ request.GET.completed|default:'false' }}" class="btn btn-outline-dark {% if request.GET.filter == 'this_week' %}active{% endif %}">This week</a>
+								<a href="?filter=next_week&completed={{ request.GET.completed|default:'false' }}" class="btn btn-outline-dark {% if request.GET.filter == 'next_week' %}active{% endif %}">Next week</a>
+								<a href="?filter=all_time&completed={{ request.GET.completed|default:'false' }}" class="btn btn-outline-dark {% if request.GET.filter == 'all_time' %}active{% endif %}">All time</a>
+							</div>
+
+							<!-- Show completed switch -->
+							<div class="form-check form-switch align-self-center ms-3 fs-6">
+								<input 
+									class="form-check-input" 
+									type="checkbox" 
+									role="switch" 
+									id="completed-switch"
+									onchange="
+										const params = new URLSearchParams(window.location.search);
+										params.set('completed', this.checked ? 'true' : 'false');
+										window.location.search = params.toString();
+									"
+									{% if request.GET.completed == 'true' %} checked {% endif %}>
+								<label class="form-check-label" for="completed-switch">Include Completed Tasks</label>
+							</div>
+						</div>
+
 						<!-- Page Title -->
-						<h1 class="note mb-4">All pending tasks</h1>
+						<h1 class="note mb-4">
+							{% if request.GET.filter == 'today' %}Today
+							{% elif request.GET.filter == 'tomorrow' %}Tomorrow
+							{% elif request.GET.filter == 'this_week' %}This week
+							{% elif request.GET.filter == 'next_week' %}Next week
+							{% else %}All{% endif %} 
+							{% if request.GET.completed == 'false' %} pending {% endif %} 
+							tasks
+						</h1>
 
 						<!-- Tasks -->
 						{% for task in tasks %}
@@ -29,17 +64,20 @@
 							<div class="d-flex gap-2 w-100 justify-content-between">
 								<div class="task_inner">
 									<div class="task_header">
-
 										<div class="note-header-title edit-ico">
+
 											<!-- Title -->
 											<h6 class="mb-0 me-1">
-
 												<div class="edit-ico">
-													<input class="input-title" type="text" tabindex="-1" placeholder="{{ task.title }}" onclick="this.contentEditable="true";" onkeydown="this.style.width = ((this.value.length + 1) * 8) + 'px';"> 
+													<input 
+														class="input-title {% if task.is_completed %}text-decoration-line-through{% endif %}" 
+														type="text" 
+														tabindex="-1"
+														placeholder="{{ task.title }}" 
+														onclick="this.contentEditable="true";" 
+														onkeydown="this.style.width = ((this.value.length + 1) * 8) + 'px';"> 
 												</div>
 											</h6>
-
-
 
 											<!-- Categories -->
 											<h6 style="position: relative; top: -2px;">
@@ -48,12 +86,16 @@
 														<span class="badge change-text-color" style="font-size: 11px; background-color: {{ category.color }};"> 
 															{{category.title }} 
 														</span>
-														<input class="input-title badge change-text-color" style="font-size: 11px; background-color: {{ category.color }};" type="text" tabindex="-1" placeholder="{{ category.title }}" onclick="this.contentEditable="true";"> 
+														<input 
+															class="input-title badge change-text-color" 
+															style="font-size: 11px; background-color: {{ category.color }};" 
+															type="text" 
+															tabindex="-1" 
+															placeholder="{{ category.title }}" 
+															onclick="this.contentEditable="true";"> 
 													{% endfor %}
 												{% endif %} 
 											</h6>
-
-											
 
 											<!-- High priority flag -->
 											<div class="task_flag mt-0" style="position: relative; top: -4px;">
@@ -64,14 +106,19 @@
 												{% endif %}
 											</div>
 										</div>
-
 									</div>
 
 									<!-- Description -->
-								
 									<div class="task_text p-2">
 										<div class="edit-ico-textarea">
-											<textarea class="input-text task-text-box mb-0 opacity-100" type="text" contenteditable="true" tabindex="-1" placeholder="{{ task.text }}" onclick="this.contentEditable="true";"></textarea>
+											<textarea 
+												class="input-text task-text-box mb-0 opacity-100 {% if task.is_completed %}text-decoration-line-through{% endif %}" 
+												type="text" 
+												contenteditable="true" 
+												tabindex="-1" 
+												placeholder="{{ task.text }}" 
+												onclick="this.contentEditable="true";">
+											</textarea>
 										</div>
 									</div>
 
@@ -95,7 +142,13 @@
 										<div class="d-flex">
 											<!-- Note Title -->
 											<div class="note_title w-100">
-												<input class="form-control form-control-sm my-2 note-title {% if form.title.errors %}is-invalid{% endif %}" type="text" name="{{ form.title.name }}" value="{{ form.title.value|default:'' }}" placeholder="Note Title" aria-label=".form-control-sm">
+												<input 
+													class="form-control form-control-sm my-2 note-title {% if form.title.errors %}is-invalid{% endif %}" 
+													type="text" 
+													name="{{ form.title.name }}" 
+													value="{{ form.title.value|default:'' }}" 
+													placeholder="Note Title" 
+													aria-label=".form-control-sm">
 												<div class="invalid-feedback">{{ form.title.errors }}</div>
 											</div>
 											<!-- Close button -->
@@ -115,7 +168,13 @@
 											<div class="w-100">
 												<!-- Note Text -->
 												<div class="mb-1">
-													<textarea class="form-control {% if form.text.errors %}is-invalid{% endif %}" name="{{ form.text.name }}" placeholder="Note Text" rows="3">{{ form.text.value|default:'' }}</textarea>
+													<textarea 
+														class="form-control {% if form.text.errors %}is-invalid{% endif %}" 
+														name="{{ form.text.name }}"
+														placeholder="Note Text" 
+														rows="3">
+														{{ form.text.value|default:'' }}
+													</textarea>
 												</div>
 												<!-- Project selector -->
 												<div class="datalists-chose">
@@ -133,7 +192,13 @@
 													<div class="datalists-item w-20">
 														<div class="form-check text-start d-flex w-50">
 															<div class="checkbox_inner py-2">
-																<input class="form-check-input" type="checkbox" name="{{ form.is_high_priority.name }}" id="{{ form.is_high_priority.id_for_label }}" {% if form.is_high_priority.value %}checked{% endif %} onclick="SwitchFlag()">
+																<input 
+																	class="form-check-input" 
+																	type="checkbox" 
+																	name="{{ form.is_high_priority.name }}" 
+																	id="{{ form.is_high_priority.id_for_label }}" 
+																	{% if form.is_high_priority.value %}checked{% endif %} 
+																	onclick="SwitchFlag()">
 																<label class="form-check-label d-flex" for="{{ form.is_high_priority.id_for_label }}">
 																	Is High Priority
 																	<i class="bi bi-flag-fill falg-checbox px-2"></i>
@@ -146,7 +211,11 @@
 														<div class="field-due_date date-menu">
 															<div>
 																<div id="start">
-																	<input class="form-control {% if form.due_date.errors %}is-invalid{% endif %}" type="date" name="{{ form.due_date.name }}" value="{{ form.due_date.value }}">
+																	<input 
+																		class="form-control {% if form.due_date.errors %}is-invalid{% endif %}" 
+																		type="date" 
+																		name="{{ form.due_date.name }}" 
+																		value="{{ form.due_date.value }}">
 																	<div class="invalid-feedback">{{ form.due_date.errors }}</div>
 																</div>
 															</div>
@@ -160,7 +229,12 @@
 													{% for category in categories %}
 														<div>
 															<label class="form-check-label">{{ category.title }}</label>
-															<input class="form-check-input" type="checkbox" name="{{ form.categories.name }}" value="{{ category.id }}" {% if category.id in form.categories.value %}checked{% endif %}>
+															<input 
+																class="form-check-input" 
+																type="checkbox" 
+																name="{{ form.categories.name }}" 
+																value="{{ category.id }}" 
+																{% if category.id in form.categories.value %}checked{% endif %}>
 														</div>
 													{% endfor %}
 												</div>

@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -11,7 +12,34 @@ def index(request):
     
     projects = Project.objects.filter(user=user)
     categories = Category.objects.filter(user=user)
-    tasks = Task.objects.filter(user=user, is_completed=False)
+    tasks = Task.objects.filter(user=user)
+    
+    filter_type = request.GET.get('filter', 'all_time')
+    show_completed = request.GET.get('completed', 'false') == 'true'
+    
+    if not show_completed:
+        tasks = tasks.filter(user=user, is_completed=False)
+    
+    if filter_type == 'today':
+        tasks = tasks.filter(due_date=date.today())
+    elif filter_type == 'tomorrow':
+        tasks = tasks.filter(due_date=date.today() + timedelta(days=1))
+    elif filter_type == 'this_week':
+        today = date.today()
+        start_of_week = today - timedelta(days=today.weekday())
+        end_of_week = start_of_week + timedelta(days=4)
+        tasks = tasks.filter(
+            due_date__gte=start_of_week,
+            due_date__lt=end_of_week
+        )
+    elif filter_type == 'next_week':
+        today = date.today()
+        start_of_next_week = today + timedelta(days=7 - today.weekday())
+        end_of_next_week = start_of_next_week + timedelta(days=4)
+        tasks = tasks.filter(
+            due_date__gte=start_of_next_week,
+            due_date__lt=end_of_next_week
+        )
     
     if request.method == 'POST':
         form = TaskCreationForm(request.POST)
