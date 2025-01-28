@@ -501,6 +501,7 @@ button{
 .task_inner {
     position: relative;
     width: 100%;
+    padding-left: 20px;
 }
 
 .task_header {
@@ -596,6 +597,13 @@ button{
     width: 90%;
     padding-right: 20px;
     margin-right: 20px;
+    vertical-align: auto;
+
+    background: none ;
+    border: none;
+    outline: none;
+    border-bottom: 2px solid #ccc;
+    border-left: 2px solid #ccc;
 }
 
 .note-text {
@@ -786,10 +794,12 @@ button{
     transition: box-shadow 0.2s linear;
 }
 
-.category_case {
+.category_case{
     color: #e5e5e5;
     width: fit-content;
     background-color: #ff9100;
+
+    
 }
 
 .color-selector {
@@ -804,7 +814,9 @@ button{
     border: none;
     outline: none;
 
-    pointer-events: auto;
+    
+
+    color: #000000;
 
 }
 
@@ -856,12 +868,119 @@ button{
     right: 10px;
 }
 
+.category-decription {
+    color: #000000;
+}
+
+.area-text {
+    background: none ;
+    border: none;
+    outline: none;
+    border-bottom: 2px solid #ccc;
+    border-left: 2px solid #ccc;
+}
+
+.description::placeholder {
+    color: #ccc;
+    opacity: 0.8;
+}
+
+.description:hover {
+    background-color: #fafafa;
+
+    transition: background-color .2s;
+}
+
+.edit-btn {
+    border: none;
+    background-color: white;
+}
 
 
 
+.edit-ico:hover::before {
+    content: "✎";
+    position: absolute;
+    right: 0;
+    left: -25px;
+    color: #292727;
+
+
+    width: 24px;
+    height: 24px;
+    border-radius: 5px;
+
+    border: 1px solid black;
+    font-stretch: normal;
+
+
+    display: flex;
+    justify-content: center;
+    text-decoration: none;
+    align-items: center;
+
+    
+}
+
+.category-description {
+    position: relative;
+}
+
+.category_title {
+    position: relative;
+}
+
+.task-text-box {
+    position: relative;
+    border: none;
+    outline: none;
+    background-color: inherit;
+
+    width: fit-content;
+    overflow: hidden;
+    resize: none;
+    width: 100%;
+}
+
+.note-header-title {
+    width: 100%;
+    display: flex;
+}
+
+.input-title {
+
+    width: 100%px;
+
+    border: none;
+    outline: none;
+    background-color: inherit;
+}
 
 
 
+.edit-ico-textarea:hover::before {
+    content: "✎";
+    position: absolute;
+    right: 0;
+    left: -5px;
+    color: #292727;
+
+
+    width: 24px;
+    height: 24px;
+    border-radius: 5px;
+
+    border: 1px solid black;
+    font-stretch: normal;
+
+
+    display: flex;
+    justify-content: center;
+    text-decoration: none;
+    align-items: center;
+
+    
+}
 
 
 
