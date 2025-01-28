@@ -69,13 +69,13 @@
 											<!-- Title -->
 											<h6 class="mb-0 me-1">
 												<div class="edit-ico">
-													<input 
+													<textarea 
 														class="input-title {% if task.is_completed %}text-decoration-line-through{% endif %}" 
 														type="text" 
 														tabindex="-1"
-														placeholder="{{ task.title }}" 
-														onclick="this.contentEditable="true";" 
-														onkeydown="this.style.width = ((this.value.length + 1) * 8) + 'px';"> 
+														maxlength="100"
+														onclick="this.contentEditable='true';" 
+														onkeydown="this.style.width = ((this.value.length + 1) * 8) + 'px';">{{ task.title }}</textarea>
 												</div>
 											</h6>
 
@@ -110,15 +110,14 @@
 
 									<!-- Description -->
 									<div class="task_text p-2">
-										<div class="edit-ico-textarea">
+										<div class="edit-ico-textarea" contenteditable = 'true'>
 											<textarea 
 												class="input-text task-text-box mb-0 opacity-100 {% if task.is_completed %}text-decoration-line-through{% endif %}" 
+												id="elastic"
 												type="text" 
-												contenteditable="true" 
+												contenteditable = 'true'
 												tabindex="-1" 
-												placeholder="{{ task.text }}" 
-												onclick="this.contentEditable="true";">
-											</textarea>
+												onclick="this.contentEditable='true';">{{task.text}}</textarea>
 										</div>
 									</div>
 

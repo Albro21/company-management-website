@@ -43,6 +43,17 @@ async function completeNote(button) {
 
 
 
+const textarea = document.querySelectorAll(".edit-ico-textarea textarea");
+
+[].forEach.call(textarea, function(el){
+  el.addEventListener('keyup', e =>{
+    let scHeight = e.target.scrollHeight;
+    console.log(scHeight);
+    el.style.height = `${scHeight}px`; 
+  });
+});
+
+
 
 
 
@@ -113,8 +124,3 @@ function WriteDate() {
   console.log(dateControl.valueAsNumber);
 }
 */
-
-
-
-
-  
