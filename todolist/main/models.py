@@ -35,7 +35,7 @@ class Category(models.Model):
 
 class Task(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, on_delete=models.SET_DEFAULT, default=None, blank=True)
+    project = models.ForeignKey(Project, on_delete=models.SET_DEFAULT, default=None, blank=True, null=True)
     categories = models.ManyToManyField(Category, blank=True)
 
     title = models.CharField(max_length=200)
