@@ -75,6 +75,9 @@ endDate.forEach((item) => {
     item.textContent = 'Do it today'
   } else if (daysBetween(startDate, new Date('20'+item.textContent)) > 0) {
       item.textContent = daysBetween(startDate, new Date('20'+item.textContent)) + ' days left';
+  } else if (daysBetween(startDate, new Date('20'+item.textContent)) <= 0 && daysBetween(startDate, new Date('20'+item.textContent)) >= -1){
+    item.textContent = 'overdue yesterday';
+    item.style.textDecorationLine = 'line-through';
   } else {
     item.textContent = 'overdue '+ -daysBetween(startDate, new Date('20'+item.textContent)) + ' days';
     item.style.textDecorationLine = 'line-through';
