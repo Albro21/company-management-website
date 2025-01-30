@@ -27,7 +27,7 @@ def index(request):
     elif filter_type == 'this_week':
         today = date.today()
         start_of_week = today - timedelta(days=today.weekday())
-        end_of_week = start_of_week + timedelta(days=4)
+        end_of_week = start_of_week + timedelta(days=7)
         tasks = tasks.filter(
             due_date__gte=start_of_week,
             due_date__lt=end_of_week
@@ -35,7 +35,7 @@ def index(request):
     elif filter_type == 'next_week':
         today = date.today()
         start_of_next_week = today + timedelta(days=7 - today.weekday())
-        end_of_next_week = start_of_next_week + timedelta(days=4)
+        end_of_next_week = start_of_next_week + timedelta(days=7)
         tasks = tasks.filter(
             due_date__gte=start_of_next_week,
             due_date__lt=end_of_next_week
@@ -48,7 +48,6 @@ def index(request):
             task.user = user
             task.save()
             form.save_m2m()
-            return redirect('index')
     else:
         form = TaskCreationForm()
 
