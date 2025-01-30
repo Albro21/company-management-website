@@ -128,11 +128,11 @@
 												</div>
 											</div>
 
-											<!-- Due date -->
-											<div class="task_date">
-												<div class="note_path">{% if task.project %} {{ task.project }} {% endif %}</div>
-												{{ task.due_date|date:"d.m" }}
-											</div>
+									<!-- Due date -->
+									<div class="task_date">
+										<div class="note_path">{% if task.project %} {{ task.project }} {% endif %}</div>
+										<div class="endDateLabel">{{ task.due_date|date:"y.m.d" }}</div>
+									</div>
 
 										</div>
 									</div>

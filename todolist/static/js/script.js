@@ -53,74 +53,35 @@ const textarea = document.querySelectorAll(".edit-ico-textarea textarea");
   });
 });
 
+// Date calculator (days left/overdue) //
 
-
-
-
-/*
-function showCategoryForm(){
-  let el = document.getElementById("content_window_category");
-    el.style.display = 'block';
-
-}
-function closeWindowCategory(){
-  let el = document.getElementById("content_window_category");
-  el.style.display = 'none';
-}
-
-function showProjectForm(){
-  let el = document.getElementById("content-project");
-    el.style.display = 'block';
-}
-
-function closeWindowProject(){
-  let el = document.getElementById("content-project");
-  el.style.display = 'none';
-}
-
-*/
-
-
-
-/* визуальное изменение цвета в settings
-let colorPicker;
-const defaultColor = "#ff9100";
+function daysBetween(startDate, endDate) {
+  if (!(startDate instanceof Date) || !(endDate instanceof Date)) {
+    throw new Error('Применяйте корректные объекты Date.');
+  }
   
-window.addEventListener("load", startup, false);
-
-function startup() {
-    colorPicker = document.getElementById("#color-picker");
-    colorPicker.value = defaultColor;
-    colorPicker.addEventListener("input", updateFirst, false);
-    colorPicker.addEventListener("change", updateAll, false);
-    colorPicker.select();
-    console.log(colorPicker)
-  }
-
-function updateFirst(event) {
-    const p = document.querySelector("category_case");
-    const bg = "background-color"
-    if (p) {
-      p.style.bg = event.target.value;
-    }
-  }
-
-*/
-
-
-
-
-
-
-
-
-
-
-/* проверка на возвращаемую дату
-function WriteDate() {
-  let dateControl = document.querySelector('input[type="date"]');
-  dateControl;
-  console.log(dateControl.value);
-  console.log(dateControl.valueAsNumber);
+  const diffTime = (Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) -Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()));
+  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+  
+  console.log(diffDays)
+  return diffDays;
 }
-*/
+
+const startDate = new Date();
+const endDate = document.querySelectorAll('div.endDateLabel');
+
+endDate.forEach((item) => {
+  if (daysBetween(startDate, new Date('20'+item.textContent)) == 1) {
+    item.textContent = 'Do it today'
+  } else if (daysBetween(startDate, new Date('20'+item.textContent)) > 0) {
+      item.textContent = daysBetween(startDate, new Date('20'+item.textContent)) + ' days left';
+  } else {
+    item.textContent = 'overdue '+ -daysBetween(startDate, new Date('20'+item.textContent)) + ' days';
+    item.style.textDecorationLine = 'line-through';
+  }
+  
+})
+
+//console.log(daysBetween(startDate, endDate));
+
+//endDate.forEach.call(daysBetween())
