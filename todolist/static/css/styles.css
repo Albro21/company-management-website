@@ -599,11 +599,11 @@ button{
     margin-right: 20px;
     vertical-align: auto;
 
-    background: none ;
+    /* background: none ;
     border: none;
     outline: none;
     border-bottom: 2px solid #ccc;
-    border-left: 2px solid #ccc;
+    border-left: 2px solid #ccc; */
 }
 
 .note-text {
@@ -874,10 +874,10 @@ button{
 
 .area-text {
     background: none ;
-    border: none;
+    /* border: none;
     outline: none;
     border-bottom: 2px solid #ccc;
-    border-left: 2px solid #ccc;
+    border-left: 2px solid #ccc; */
 }
 
 .description::placeholder {
