@@ -16,8 +16,8 @@
 					<div class="list-group pb-15 w-100">
 
 						<!-- Filter Buttons -->
-						<div class="container d-flex mb-3 justify-content-center">
-							<div class="btn-group" role="group">
+						<div class="container d-flex flex-column flex-xl-row mb-3 justify-content-center">
+							<div class="btn-group mb-3 mb-xl-0" role="group">
 								<a href="?filter=today&completed={{ request.GET.completed|default:'false' }}" class="btn btn-outline-dark {% if request.GET.filter == 'today' %}active{% endif %}">Today</a>
 								<a href="?filter=tomorrow&completed={{ request.GET.completed|default:'false' }}" class="btn btn-outline-dark {% if request.GET.filter == 'tomorrow' %}active{% endif %}">Tomorrow</a>
 								<a href="?filter=this_week&completed={{ request.GET.completed|default:'false' }}" class="btn btn-outline-dark {% if request.GET.filter == 'this_week' %}active{% endif %}">This week</a>
