@@ -43,6 +43,22 @@ async function completeNote(button) {
 
 
 
+// calculate start width of note title after page render
+const inputTitles = document.querySelectorAll("textarea.input-title")
+inputTitles.forEach((title) => {
+
+  let span = document.createElement('span');
+  span.style.cssText = `font: Montserrat; visibility: hidden; whit-space: nowrap; font-size: 18px`;
+  span.textContent = title.textContent;
+  document.body.appendChild(span);
+  let width = span.offsetWidth + title.textContent.length;
+  document.body.removeChild(span)
+  
+  title.style.width = width + 'px';
+
+})
+
+// textarea auto height (when user write smth)
 const textarea = document.querySelectorAll(".edit-ico-textarea textarea");
 
 [].forEach.call(textarea, function(el){
@@ -53,7 +69,7 @@ const textarea = document.querySelectorAll(".edit-ico-textarea textarea");
   });
 });
 
-// Date calculator (days left/overdue) //
+// Date calculator (days left/overdue)
 
 function daysBetween(startDate, endDate) {
   if (!(startDate instanceof Date) || !(endDate instanceof Date)) {
@@ -63,11 +79,11 @@ function daysBetween(startDate, endDate) {
   const diffTime = (Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) -Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()));
   const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
   
-  console.log(diffDays)
+
   return diffDays;
 }
 
-const startDate = new Date();
+const startDate = new Date(); // today user's date
 const endDate = document.querySelectorAll('div.endDateLabel');
 
 endDate.forEach((item) => {
@@ -85,6 +101,35 @@ endDate.forEach((item) => {
   
 })
 
-//console.log(daysBetween(startDate, endDate));
+//add category form
 
-//endDate.forEach.call(daysBetween())
+let plusCategory = document.querySelectorAll('.plus-inner')
+
+plusCategory.forEach((item) => {
+  item.addEventListener('click', (e) => {
+    let form = item.querySelector('form')
+    
+    console.log(form)
+    
+    if (form.style.display == 'block') {
+      form.style.display = 'none';
+    } else {
+      form.style.display = 'block';
+    }
+    
+  });
+});
+
+//switch flag
+
+let flags = document.querySelectorAll('.bi')
+
+flags.forEach((item) => {
+  item.addEventListener('click', (e) => {
+    if (item.getAttribute('class') == 'bi bi-flag-fill') {
+      item.setAttribute('class', 'bi bi-flag')
+    } else {
+      item.setAttribute('class', 'bi bi-flag-fill')
+    }
+  });
+});

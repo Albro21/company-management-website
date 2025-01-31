@@ -510,13 +510,15 @@ button{
 }
 
 .task_flag {
-    padding-left: 10px;
+    padding-left: 35px;
 }
 
 
 .bi-flag-fill {
     color: #eb8909;
 }
+
+
 
 .task_text {
     margin-right: 60px;
@@ -945,6 +947,7 @@ button{
 }
 
 .input-title {
+    font-size: 18px;
 
     width: 100%;
 
@@ -989,11 +992,77 @@ button{
     
 }
 
+.plus {
+    margin: 0 20px;
+
+    display:inline-block;
+    width:20px;
+    height:20px;
+    
+    background: linear-gradient(#fff,#fff),linear-gradient(#fff,#fff),#000;
+    background-position:center;
+    background-size: 55% 1px,1px 55%; /*thickness = 2px, length = 50% (25px)*/
+    background-repeat: no-repeat;
+    background-color: rgb(255, 89, 94);
+    border: none;
+    border-radius: 50%;
+
+    opacity: 0.89;
+}
+
+.plus-inner {
+    display: flex;
+}
+
+
+.categories-inner{
+    position: relative;
+    vertical-align: middle;
+    top: 0; 
+
+    display: flex;
+
+}
+
+
+
+.add-category-form {
+
+
+    display: none;
+
+    transition-timing-function: display (0.8, 0, 1, 1);
+
+}
+
+.form-add-category-form {
+    background-color: #cccccc75;
+    border-radius: 20px;
+}
+
+.form-add-category-item {
+    text-align: center;
+    border-bottom: #aaaaaa solid  1px;
+}
+
+.form-add-category-item:hover {
+    text-align: center;
+    background-color: #ccc;
+    cursor: pointer;
+    border-radius: 10px;
+
+    transition: background-color .1s linear;
+}
+
+.bi {
+    cursor: pointer;
+
+}
 
 
 
 
-/* ---------------------- adaptating --------------*/
+/* ---------------------- adaptating ------------ --*/
 @media (min-width: 720px) {
     .datalists-item {
         right: 0;

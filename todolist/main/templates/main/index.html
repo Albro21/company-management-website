@@ -87,10 +87,11 @@
 													</h6>
 
 													<!-- Categories -->
-													<h6 style="position: relative; top: -2px;">
+													<h6  class="categories-inner px-1">
+														<article class="categories-list">
 														{% if task.categories.all %} 
 															{% for category in task.categories.all %} 
-																<span class="badge change-text-color" style="font-size: 11px; background-color: {{ category.color }};"> 
+																<span class="badge change-text-color shadow-sm" style="font-size: 11px;border: 1px solid #ccc; background-color: {{ category.color }};"> 
 																	{{category.title }} 
 																</span>
 																<input 
@@ -102,6 +103,22 @@
 																	onclick="this.contentEditable="true";"> 
 															{% endfor %}
 														{% endif %} 
+														</article>
+														<div class="plus-inner">
+															<button class="plus"></button>
+									
+															<form class="add-category-form">
+																<article class="form-add-category-form p-3">
+																	
+																	{% for category in categories.all %}
+																	<div class="form-add-category-item px-2 py-1">{{category.title }} </div>
+																	{% endfor %}
+
+
+																</article>
+
+															</form>
+														</div>
 													</h6>
 
 													<!-- High priority flag -->
