@@ -5,20 +5,12 @@ from django.contrib.auth.decorators import login_required
 from .models import Project, Category, Task
 from .forms import TaskCreationForm, ProjectCreationForm, CategoryCreationForm
 
-
-@login_required
-def index(request):
-    user = request.user
-    
-    projects = Project.objects.filter(user=user)
-    categories = Category.objects.filter(user=user)
-    tasks = Task.objects.filter(user=user)
-    
+def filter_tasks(tasks, request):
     filter_type = request.GET.get('filter', 'all_time')
     show_completed = request.GET.get('completed', 'false') == 'true'
     
     if not show_completed:
-        tasks = tasks.filter(user=user, is_completed=False)
+        tasks = tasks.filter(is_completed=False)
     
     if filter_type == 'today':
         tasks = tasks.filter(due_date=date.today())
@@ -40,6 +32,18 @@ def index(request):
             due_date__gte=start_of_next_week,
             due_date__lt=end_of_next_week
         )
+        
+    return tasks
+
+@login_required
+def index(request):
+    user = request.user
+    
+    projects = Project.objects.filter(user=user)
+    categories = Category.objects.filter(user=user)
+    tasks = Task.objects.filter(user=user)
+    
+    tasks = filter_tasks(tasks, request)
     
     if request.method == 'POST':
         form = TaskCreationForm(request.POST)
@@ -125,36 +129,11 @@ def delete_category(request, category_id):
 @login_required
 def project_detail(request, project_id):
     user = request.user
-    
-    filter_type = request.GET.get('filter', 'all_time')
-    show_completed = request.GET.get('completed', 'false') == 'true'
-    
+
     project = get_object_or_404(Project, pk=project_id, user=user)
-    tasks = Task.objects.filter(user=request.user, project=project)
+    tasks = project.task_set.all()
     
-    if not show_completed:
-        tasks = tasks.filter(is_completed=False)
-    
-    if filter_type == 'today':
-        tasks = tasks.filter(due_date=date.today())
-    elif filter_type == 'tomorrow':
-        tasks = tasks.filter(due_date=date.today() + timedelta(days=1))
-    elif filter_type == 'this_week':
-        today = date.today()
-        start_of_week = today - timedelta(days=today.weekday())
-        end_of_week = start_of_week + timedelta(days=7)
-        tasks = tasks.filter(
-            due_date__gte=start_of_week,
-            due_date__lt=end_of_week
-        )
-    elif filter_type == 'next_week':
-        today = date.today()
-        start_of_next_week = today + timedelta(days=7 - today.weekday())
-        end_of_next_week = start_of_next_week + timedelta(days=7)
-        tasks = tasks.filter(
-            due_date__gte=start_of_next_week,
-            due_date__lt=end_of_next_week
-        )
+    tasks = filter_tasks(tasks, request)
     
     total_tasks = tasks.count()
     
