@@ -108,14 +108,14 @@
 															<button class="plus"></button>
 									
 															<form class="add-category-form">
-																<article class="form-add-category-form p-3">
-																	
+																<select class="form-select form-add-category-form " multiple  style="outline: none; height: 100%;">
+				
 																	{% for category in categories.all %}
-																	<div class="form-add-category-item px-2 py-1">{{category.title }} </div>
+																	<option class="form-add-category-item px-2 py-1">{{category.title }} </option>
 																	{% endfor %}
 
 
-																</article>
+																</select>
 
 															</form>
 														</div>
