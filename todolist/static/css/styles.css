@@ -108,6 +108,10 @@ button{
     top: 10px;
 }
 
+::-webkit-scrollbar {
+    width: 0;
+}
+
 .header__nav {
     display: flex;
     justify-content: space-between;
@@ -1012,6 +1016,8 @@ button{
 
 .plus-inner {
     display: flex;
+
+    
 }
 
 
@@ -1027,17 +1033,22 @@ button{
 
 
 .add-category-form {
+    height: 0;
+    width: 0;
+    visibility: hidden;
+    opacity: 1;
+    transition: height 0.5s linear;
 
-
-    display: none;
-
-    transition-timing-function: display (0.8, 0, 1, 1);
 
 }
+
+
 
 .form-add-category-form {
     background-color: #cccccc75;
     border-radius: 20px;
+
+
 }
 
 .form-add-category-item {

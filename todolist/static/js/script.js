@@ -109,14 +109,21 @@ plusCategory.forEach((item) => {
   item.addEventListener('click', (e) => {
     let form = item.querySelector('form')
     
-    console.log(form)
+    console.log(form.style.visibility)
+
     
-    if (form.style.display == 'block') {
-      form.style.display = 'none';
+
+    if (form.style.visibility == 'visible') {
+      form.style.height = '0';
+      setTimeout(function(){
+        form.style.visibility = 'hidden';
+        form.style.width = '0';
+      }, 400); 
     } else {
-      form.style.display = 'block';
+      form.style.visibility = 'visible';
+      form.style.height = '100%';
+      form.style.width = '100%';
     }
-    
   });
 });
 
