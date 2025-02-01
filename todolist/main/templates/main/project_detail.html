@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ project.title }}{% endblock title %}
+
+{% block styles %}
+	<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+{% endblock styles %}
+
+{% block content %}
+	<div class="main__todolist">
+        <div class="container row justify-content-center">
+            <div class="justify-content-center">
+
+                <!-- Project Title and Description -->
+                <h1 class="mt-5">{{ project.title }}</h1>
+                <p>{{ project.description }}</p>
+
+                <!-- Statistics -->
+                <div id="statistics">
+                    <div class="card p-3 d-inline-block" id="completed-tasks">
+                        <h5>{{ completed_tasks_statistics }}</h5>
+                    </div>
+                    <div class="card p-3 d-inline-block" id="completed-tasks">
+                        <h5>{{ overdue_tasks_statistics }}</h5>
+                    </div>
+                </div>
+
+                <!-- Filter Buttons -->
+                <div class="container d-flex flex-column flex-xl-row mt-4 justify-content-center">
+                    <div class="btn-group mb-3 mb-xl-0" role="group">
+                        <a href="?filter=today&completed={{ request.GET.completed|default:'false' }}" class="btn btn-outline-dark {% if request.GET.filter == 'today' %}active{% endif %}">Today</a>
+                        <a href="?filter=tomorrow&completed={{ request.GET.completed|default:'false' }}" class="btn btn-outline-dark {% if request.GET.filter == 'tomorrow' %}active{% endif %}">Tomorrow</a>
+                        <a href="?filter=this_week&completed={{ request.GET.completed|default:'false' }}" class="btn btn-outline-dark {% if request.GET.filter == 'this_week' %}active{% endif %}">This week</a>
+                        <a href="?filter=next_week&completed={{ request.GET.completed|default:'false' }}" class="btn btn-outline-dark {% if request.GET.filter == 'next_week' %}active{% endif %}">Next week</a>
+                        <a href="?filter=all_time&completed={{ request.GET.completed|default:'false' }}" class="btn btn-outline-dark {% if request.GET.filter == 'all_time' or not request.GET.filter %}active{% endif %}">All time</a>
+                    </div>
+
+                    <!-- Show completed switch -->
+                    <div class="form-check form-switch align-self-center ms-3 fs-6">
+                        <input 
+                            class="form-check-input" 
+                            type="checkbox" 
+                            role="switch" 
+                            id="completed-switch"
+                            onchange="
+                                const params = new URLSearchParams(window.location.search);
+                                params.set('completed', this.checked ? 'true' : 'false');
+                                window.location.search = params.toString();
+                            "
+                            {% if request.GET.completed == 'true' %} checked {% endif %}>
+                        <label class="form-check-label" for="completed-switch">Include Completed Tasks</label>
+                    </div>
+                </div>
+
+                <!-- Tasks -->
+                <div class="my-4" id="tasks">
+                    {% for task in tasks %}
+                        <a class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+                            <button class="btn__orange rounded-circle" id="btn-delete-note" data-task-id="{{ task.id }}" onclick="completeNote(this)">
+                                <div class="orange__circle"></div>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="checkmate">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M16.5056 9.00958C16.2128 8.71668 15.7379 8.71668 15.445 9.00958L10.6715 13.7831L8.72649 11.8381C8.43359 11.5452 7.95872 11.5452 7.66583 11.8381C7.37294 12.1309 7.37293 12.6058 7.66583 12.8987L10.1407 15.3736C10.297 15.5299 10.5051 15.6028 10.7097 15.5923C10.8889 15.5833 11.0655 15.5104 11.2023 15.3735L16.5056 10.0702C16.7985 9.77735 16.7985 9.30247 16.5056 9.00958Z" fill="currentColor"></path>
+                                </svg>
+                            </button>
+                            <div class="d-flex gap-2 w-100 justify-content-between">
+                                <div class="task_inner">
+                                    <div class="task_header">
+                                        <div class="note-header-title edit-ico">
+    
+                                            <!-- Title -->
+                                            <h6 class="mb-0 me-1">
+                                                <div class="edit-ico">
+                                                    <textarea 
+                                                        class="input-title {% if task.is_completed %}text-decoration-line-through{% endif %}" 
+                                                        type="text" 
+                                                        tabindex="-1"
+                                                        maxlength="100"
+                                                        onclick="this.contentEditable='true';" 
+                                                        onkeydown="this.style.width = ((this.value.length + 1) * 8) + 'px';">{{ task.title }}</textarea>
+                                                </div>
+                                            </h6>
+    
+                                            <!-- Categories -->
+                                            <h6  class="categories-inner px-1">
+                                                <article class="categories-list">
+                                                {% if task.categories.all %} 
+                                                    {% for category in task.categories.all %} 
+                                                        <span class="badge change-text-color shadow-sm" style="font-size: 11px;border: 1px solid #ccc; background-color: {{ category.color }};"> 
+                                                            {{category.title }} 
+                                                        </span>
+                                                        <input 
+                                                            class="input-title badge change-text-color" 
+                                                            style="font-size: 11px; background-color: {{ category.color }};" 
+                                                            type="text" 
+                                                            tabindex="-1" 
+                                                            placeholder="{{ category.title }}" 
+                                                            onclick="this.contentEditable="true";"> 
+                                                    {% endfor %}
+                                                {% endif %} 
+                                                </article>
+                                                <div class="plus-inner">
+                                                    <button class="plus"></button>
+                            
+                                                    <form class="add-category-form">
+                                                        <article class="form-add-category-form p-3">
+                                                            
+                                                            {% for category in categories.all %}
+                                                            <div class="form-add-category-item px-2 py-1">{{category.title }} </div>
+                                                            {% endfor %}
+    
+    
+                                                        </article>
+    
+                                                    </form>
+                                                </div>
+                                            </h6>
+    
+                                            <!-- High priority flag -->
+                                            <div class="task_flag mt-0" style="position: relative; top: -4px;">
+                                                {% if task.is_high_priority %}
+                                                    <i class="bi bi-flag-fill"></i>
+                                                {% else %}
+                                                    <i class="bi bi-flag"></i>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+    
+                                    <!-- Description -->
+                                    <div class="task_text p-2">
+                                        <div class="edit-ico-textarea" contenteditable = 'true'>
+                                            <textarea 
+                                                class="input-text task-text-box mb-0 opacity-100 {% if task.is_completed %}text-decoration-line-through{% endif %}" 
+                                                id="elastic"
+                                                type="text" 
+                                                contenteditable = 'true'
+                                                tabindex="-1" 
+                                                onclick="this.contentEditable='true';">{{task.text}}</textarea>
+                                        </div>
+                                    </div>
+    
+                            <!-- Due date -->
+                            <div class="task_date">
+                                <div class="note_path">{% if task.project %} {{ task.project }} {% endif %}</div>
+                                <div class="endDateLabel">{{ task.due_date|date:"y.m.d" }}</div>
+                            </div>
+    
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+	</div>
+{% endblock content %}
+
+{% block scripts %}
+    <script src="{% static 'js/script.js' %}"></script>
+{% endblock scripts %}

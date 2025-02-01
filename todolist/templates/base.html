@@ -73,7 +73,7 @@
 											{% for project in projects %}
 											<li class="project-item rounded-3 border">
 												<div class="shadow-sm p-3">
-													<a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">{{ project.title }}</a>
+													<a href="{% url 'project_detail' project.id %}" class="link-body-emphasis d-inline-flex text-decoration-none rounded">{{ project.title }}</a>
 												</div>
 											</li>
 											{% endfor %}

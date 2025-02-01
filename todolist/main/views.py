@@ -120,3 +120,56 @@ def delete_category(request, category_id):
         category.delete()
         return JsonResponse({'success': True, 'task_id': category_id})
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=400)
+
+
+@login_required
+def project_detail(request, project_id):
+    user = request.user
+    
+    filter_type = request.GET.get('filter', 'all_time')
+    show_completed = request.GET.get('completed', 'false') == 'true'
+    
+    project = get_object_or_404(Project, pk=project_id, user=user)
+    tasks = Task.objects.filter(user=request.user, project=project)
+    
+    if not show_completed:
+        tasks = tasks.filter(is_completed=False)
+    
+    if filter_type == 'today':
+        tasks = tasks.filter(due_date=date.today())
+    elif filter_type == 'tomorrow':
+        tasks = tasks.filter(due_date=date.today() + timedelta(days=1))
+    elif filter_type == 'this_week':
+        today = date.today()
+        start_of_week = today - timedelta(days=today.weekday())
+        end_of_week = start_of_week + timedelta(days=7)
+        tasks = tasks.filter(
+            due_date__gte=start_of_week,
+            due_date__lt=end_of_week
+        )
+    elif filter_type == 'next_week':
+        today = date.today()
+        start_of_next_week = today + timedelta(days=7 - today.weekday())
+        end_of_next_week = start_of_next_week + timedelta(days=7)
+        tasks = tasks.filter(
+            due_date__gte=start_of_next_week,
+            due_date__lt=end_of_next_week
+        )
+    
+    total_tasks = tasks.count()
+    
+    completed_tasks = tasks.filter(is_completed=True).count()
+    completed_tasks_statistics = f"Completed: {completed_tasks} / {total_tasks}"
+    
+    overdue_tasks = tasks.filter(is_completed=False, due_date__lt=date.today()).count()
+    overdue_tasks_statistics = f"Overdue: {overdue_tasks} / {total_tasks}"
+    
+    context = {
+        'projects': Project.objects.filter(user=user),
+        'project': project,
+        'tasks': tasks,
+        'completed_tasks_statistics': completed_tasks_statistics,
+        'overdue_tasks_statistics': overdue_tasks_statistics
+    }
+    
+    return render(request, 'main/project_detail.html', context)
