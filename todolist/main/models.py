@@ -1,6 +1,8 @@
 from colorfield.fields import ColorField
 from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
+from django.utils.timezone import now
 
 
 class Project(models.Model):
@@ -46,6 +48,7 @@ class Task(models.Model):
     is_high_priority = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateField(null=True, blank=True)
 
     class Meta:
         ordering = ['due_date']
@@ -55,6 +58,7 @@ class Task(models.Model):
 
     def complete(self):
         self.is_completed = True
+        self.completed_at = now().date()
         self.save()
 
     def toggle_priority(self):

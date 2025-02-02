@@ -68,8 +68,7 @@ def index(request):
 def complete_task(request, task_id):
     if request.method == 'POST':
         task = get_object_or_404(Task, id=task_id)
-        task.is_completed = True
-        task.save()
+        task.complete()
         return JsonResponse({'success': True, 'task_id': task_id})
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=400)
 
