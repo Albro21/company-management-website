@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Profile | {{ user.username }} {% endblock title %}
+
+{% block styles %}
+	<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+{% endblock styles %}
+
+{% block content %}
+	<div class="main__todolist">
+        <div class="container row justify-content-center">
+            <div class="card my-3">
+                <div class="d-flex">
+                    <img src="{% static 'assets/profile_picture.jpg' %}" class="img-fluid rounded-start" style="max-height: 200px; max-width: 200px">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ user.first_name }} {{ user.last_name  }}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+	</div>
+{% endblock content %}
+
+{% block scripts %}
+    <script src="{% static 'js/script.js' %}"></script>
+{% endblock scripts %}
