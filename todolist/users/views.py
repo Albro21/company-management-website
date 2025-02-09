@@ -23,3 +23,13 @@ def settings(request):
         return redirect("settings")
 
     return render(request, "users/settings.html")
+
+
+@login_required
+def profile(request):
+    
+    context = {
+        "user": request.user,
+    }
+    
+    return render(request, 'users/profile.html', context)

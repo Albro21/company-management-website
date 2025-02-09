@@ -151,13 +151,3 @@ def project_detail(request, project_id):
     }
     
     return render(request, 'main/project_detail.html', context)
-
-
-@login_required
-def profile(request):
-    
-    context = {
-        "user": request.user,
-    }
-    
-    return render(request, 'main/profile.html', context)
