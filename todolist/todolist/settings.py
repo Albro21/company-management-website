@@ -44,8 +44,9 @@ INSTALLED_APPS = [
     'colorfield',
     
     # Local apps
-    'main',
     'authentication',
+    'main',
+    'users',
 ]
 
 MIDDLEWARE = [
