@@ -143,7 +143,6 @@ def project_detail(request, project_id):
     overdue_tasks_statistics = f"Overdue: {overdue_tasks} / {total_tasks}"
     
     context = {
-        'projects': Project.objects.filter(user=user),
         'project': project,
         'tasks': tasks,
         'completed_tasks_statistics': completed_tasks_statistics,
