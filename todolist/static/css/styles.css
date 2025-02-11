@@ -73,7 +73,10 @@ button{
     z-index: 10;
 }
 
+.toggle-arrow .collapsed {
+    transform: rotate(90deg);
 
+}
 /* ---------------------- header --------------*/
 
 
@@ -386,8 +389,11 @@ button{
     opacity: 1;
 }
 
+.btn-toggle {
+    position: relative;
+}
 .btn-toggle::before {
-    width: 1.25em;
+    width: 0.1em;
     line-height: 0;
     content: url(static/assets/download.svg);
 
@@ -498,7 +504,7 @@ button{
 .task_date {
     display: flex;
     position: absolute;
-    right: 0;
+    right: 15px;
     bottom: -12px;
 }
 
@@ -603,7 +609,7 @@ button{
     width: 90%;
     padding-right: 20px;
     margin-right: 20px;
-    vertical-align: auto;
+
 
     /* background: none ;
     border: none;
@@ -1069,6 +1075,103 @@ button{
     cursor: pointer;
 
 }
+
+
+.toggle-arrow {
+    position: absolute;
+    left: -10px;
+    top: 24px;
+
+    display: block;
+
+
+}
+
+
+.arrow-item{
+
+    display: block;
+    width: 12px;
+    border: 2px solid #000;
+
+
+
+    transition: transform 0.05s linear;
+    
+}
+
+.arrow-item:first-child{
+
+    display: block;
+    width: 12px;
+    border: 2px solid #000;
+
+    transform: rotate(135deg) translate(0px, -8px);
+}
+.arrow-item:last-child{
+
+    display: block;
+    width: 12px;
+    border: 2px solid #000;
+
+    transform: rotate(-135deg) translate(0px, 8px);
+}
+
+
+.filters-inner {
+    position: absolute;
+    right: 30px;
+    top: 50px;
+}
+
+.list-group-item:first-child {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+.list-group-item:last-child {
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+.collapsed-btn{
+    transform: rotate(90deg);
+    transition: transform 0.05s linear;
+}
+
+.menu-lst{
+    position: relative;
+}
+
+.menu-lst:hover{
+    scale: 1.005;
+    font-weight: 600;
+    position: relative;
+
+    transition: scase 0.2s ease;
+}
+
+.left-ico {
+    position: absolute;
+    top: 6px;
+    left: 0;
+    width: 20px;
+    height: 20px;
+}
+
+.menu-lst a{
+    font-size: 22px;
+    margin-left: 30px;
+}
+/*--------------profile ------------------- */
+
+
+
+
+
+
+
+
 
 
 

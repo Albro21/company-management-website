@@ -42,18 +42,39 @@
 
 							<ul class="list-unstyled ps-0">
 								<li class="mb-1">
-									<button class="btn oiloil btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
+									<div class="btn oiloil btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false" id="btn-toggle-switch">
+										<div class="toggle-arrow">
+											<span class="arrow-item"></span>
+											<span class="arrow-item"></span>
+										</div>
 										Menu:
-										
-									</button>
+									</div>
 									
 									<div class="collapse" id="home-collapse" style="">
 										<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-											<li><a href="http://127.0.0.1:8000/#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Home</a></li>
-											<li><a href="http://127.0.0.1:8000/archive/#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Archive</a></li>
-											<li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Account</a></li>
-											<li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Settings</a></li>
-											<li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Documentary</a></li>
+
+											
+
+											<li class="menu-lst">
+												<img class="left-ico" src="../static/assets/home.png" alt="">
+												<a href="http://127.0.0.1:8000/#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Home</a>
+											</li>
+											<li class="menu-lst">
+												<img class="left-ico" src="../static/assets/user.png" alt="">
+												<a href="http://127.0.0.1:8000/profile" class="link-body-emphasis d-inline-flex text-decoration-none rounded">My profile</a>
+											</li>
+											<li class="menu-lst">
+												<img class="left-ico" src="../static/assets/archieve.png" alt="">
+												<a href="http://127.0.0.1:8000/archive/#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Archive</a>
+											</li>
+											<li class="menu-lst">
+												<img class="left-ico" src="../static/assets/settings.png" alt="">
+												<a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Settings</a>
+											</li>
+											<li class="menu-lst">
+												<img class="left-ico" src="../static/assets/documents.png" alt="">
+												<a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Documentary</a>
+											</li>
 										</ul>
 									</div>
 								</li>
@@ -62,9 +83,13 @@
 								<li class="mb-1">
 
 									<!-- My projects button -->
-									<button class="btn btn-toggle d-inline-flex rounded border-0 collapsed mb-3" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
+									<div class="btn btn-toggle d-inline-flex rounded border-0 collapsed mb-3" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false" id="btn-toggle-switch">
+										<div class="toggle-arrow">
+											<span class="arrow-item"></span>
+											<span class="arrow-item"></span>
+										</div>
 										<p class="oiloil">My Projects</p>
-									</button>
+									</div>
 
 									<div class="collapse" id="account-collapse">
 										<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
@@ -89,7 +114,7 @@
 
 											<!-- Create new project button -->
 											<li class="btn-create-project mt-4 rounded-5">
-												<a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded px-5" onclick="show()"> Create new project </a>
+												<a href="http://127.0.0.1:8000/archive/#" class="link-body-emphasis d-inline-flex text-decoration-none rounded px-5" onclick="show()"> Create new project </a>
 											</li>
 										</ul>
 									</div>

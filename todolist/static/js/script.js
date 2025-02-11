@@ -140,3 +140,18 @@ flags.forEach((item) => {
     }
   });
 });
+
+//toggle-arrow switch
+
+let toggleButtons = document.querySelectorAll("#btn-toggle-switch")
+
+
+toggleButtons.forEach((item) => {
+  item.addEventListener("click", () => {
+    let arrow = item.querySelector(".toggle-arrow")
+    arrow.classList.toggle("collapsed-btn")
+    
+  })
+})
+
+
