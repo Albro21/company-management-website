@@ -33,5 +33,9 @@
     <canvas id="tasksChart" height="300" class="my-3"></canvas>
 </div>
 
+<script>
+    const projectTitle = "{{ project.title|escapejs }}";
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{% static 'js/chart.js' %}"></script>

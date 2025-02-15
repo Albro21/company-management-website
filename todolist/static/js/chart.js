@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
     async function fetchChartData(filter) {
         const url = "/chart/filter/";
         const method = "POST";
-        const requestBody = JSON.stringify({ filter: filter });
+        const requestBody = JSON.stringify({ filter: filter, project_title: projectTitle });
     
         const data = await sendRequest(url, method, requestBody);
     

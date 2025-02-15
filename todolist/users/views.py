@@ -5,7 +5,11 @@ from django.contrib import messages
 from django.db.models import Count
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
+import json
+
+from main.models import Project
 from .forms import ProfileForm
+
 
 @login_required
 def settings(request):
@@ -54,11 +58,21 @@ def profile(request):
 @login_required
 def filter_chart(request):
     if request.method == "POST":
-        import json
-        data = json.loads(request.body)
-        filter_option = data.get("filter")
+        try:
+            data = json.loads(request.body)
+            filter_option = data.get('filter')
+            project_title = data.get('project_title')
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "error": "Invalid JSON"})
 
         tasks = request.user.task_set.filter(is_completed=True)
+        
+        if project_title:
+            project = Project.objects.filter(title=project_title).first()
+            if project:
+                tasks = tasks.filter(project=project)
+            else:
+                return JsonResponse({"success": False, "error": "Project not found"})
 
         if filter_option == "week":
             start_date = date.today() - timedelta(days=date.today().weekday())
