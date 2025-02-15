@@ -1235,12 +1235,10 @@ button{
 }
 
 .profile-item{
-    padding: 10px 50px;
+    padding: 5px 50px;
     border: 1px solid #000;
     border-bottom-left-radius: 20px;
     border-top-right-radius: 20px;
-
-    width: 15em;
 }
 
 .profile-item label{
