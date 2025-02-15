@@ -52,27 +52,24 @@
 									
 									<div class="collapse" id="home-collapse" style="">
 										<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-
-											
-
 											<li class="menu-lst">
-												<img class="left-ico" src="../static/assets/home.png" alt="">
-												<a href="http://127.0.0.1:8000/#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Home</a>
+												<img class="left-ico" src="{% static 'assets/home.png' %}" alt="">
+												<a href="{% url 'index' %}" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Home</a>
 											</li>
 											<li class="menu-lst">
-												<img class="left-ico" src="../static/assets/user.png" alt="">
-												<a href="http://127.0.0.1:8000/profile" class="link-body-emphasis d-inline-flex text-decoration-none rounded">My profile</a>
+												<img class="left-ico" src="{% static 'assets/user.png' %}" alt="">
+												<a href="{% url 'profile' %}" class="link-body-emphasis d-inline-flex text-decoration-none rounded">My profile</a>
 											</li>
 											<li class="menu-lst">
-												<img class="left-ico" src="../static/assets/archieve.png" alt="">
-												<a href="http://127.0.0.1:8000/archive/#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Archive</a>
+												<img class="left-ico" src="{% static 'assets/archive.png' %}" alt="">
+												<a href="{% url 'archive' %}" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Archive</a>
 											</li>
 											<li class="menu-lst">
-												<img class="left-ico" src="../static/assets/settings.png" alt="">
-												<a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Settings</a>
+												<img class="left-ico" src="{% static 'assets/settings.png' %}" alt="">
+												<a href="{% url 'settings' %}" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Settings</a>
 											</li>
 											<li class="menu-lst">
-												<img class="left-ico" src="../static/assets/documents.png" alt="">
+												<img class="left-ico" src="{% static 'assets/documents.png' %}" alt="">
 												<a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Documentary</a>
 											</li>
 										</ul>
@@ -114,7 +111,7 @@
 
 											<!-- Create new project button -->
 											<li class="btn-create-project mt-4 rounded-5">
-												<a href="http://127.0.0.1:8000/archive/#" class="link-body-emphasis d-inline-flex text-decoration-none rounded px-5" onclick="show()"> Create new project </a>
+												<a href="{% url 'archive' %}" class="link-body-emphasis d-inline-flex text-decoration-none rounded px-5" onclick="show()"> Create new project </a>
 											</li>
 										</ul>
 									</div>
