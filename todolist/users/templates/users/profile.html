@@ -18,6 +18,17 @@
                     </div>
                 </div>
             </div>
+            <div id="statistics" class="p-0">
+                <div class="card p-3 d-inline-block" id="completed-tasks">
+                    <h5>{{ completed_tasks_statistics }}</h5>
+                </div>
+                <div class="card p-3 d-inline-block" id="overdue-tasks">
+                    <h5>Overdue: {{ overdue_tasks }}</h5>
+                </div>
+                <div class="card p-3 d-inline-block" id="remaining-tasks">
+                    <h5>Remaining: {{ remaining_tasks }}</h5>
+                </div>
+            </div>
         </div>
 	</div>
 {% endblock content %}

@@ -137,16 +137,17 @@ def project_detail(request, project_id):
     total_tasks = tasks.count()
     
     completed_tasks = tasks.filter(is_completed=True).count()
-    completed_tasks_statistics = f"Completed: {completed_tasks} / {total_tasks}"
+    completed_tasks_statistics = f'Completed: {completed_tasks} / {total_tasks}'
     
     overdue_tasks = tasks.filter(is_completed=False, due_date__lt=date.today()).count()
-    overdue_tasks_statistics = f"Overdue: {overdue_tasks} / {total_tasks}"
+    remaining_tasks = tasks.filter(is_completed=False).count()
     
     context = {
         'project': project,
         'tasks': tasks,
         'completed_tasks_statistics': completed_tasks_statistics,
-        'overdue_tasks_statistics': overdue_tasks_statistics
+        'overdue_tasks': overdue_tasks,
+        'remaining_tasks': remaining_tasks,
     }
     
     return render(request, 'main/project_detail.html', context)
