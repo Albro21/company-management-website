@@ -1,22 +1,28 @@
 window.csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-window.sendRequest = async function(url, method) {
+window.sendRequest = async function(url, method, body = null) {
     try {
-        const response = await fetch(url, {
+        const options = {
             method: method,
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': window.csrfToken,
             },
-        });
+        };
 
-        const data = await response.json();
-        if (data.success) {
-            return true;
-        } else {
-            console.error('Error:', data.error);
+        if (body) {
+            options.body = body;
+        }
+
+        const response = await fetch(url, options);
+
+        if (!response.ok) {
+            console.error('Server returned error', response.status);
             return false;
         }
+
+        const data = await response.json();
+        return data
     } catch (error) {
         console.error('Request failed:', error);
         return false;
