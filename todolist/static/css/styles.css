@@ -1224,9 +1224,8 @@ button{
 }
 
 .profile-img{
-
     width: 55em;
-    height: 55em;
+    height:55em;
 }
 .card-title {
     text-align: center;
@@ -1234,12 +1233,20 @@ button{
     padding: 10px 30px;
 }
 
+
 .profile-item{
+    margin: 1em 3em;
     padding: 5px 50px;
     border: 1px solid #000;
     border-bottom-left-radius: 20px;
     border-top-right-radius: 20px;
+
+    width: 25em;
+    height: 5em;
+
 }
+
+
 
 .profile-item label{
     font-weight: 700;
@@ -1315,6 +1322,19 @@ button{
 
 }
 
+.profile-site {
+    margin: 15px 0 5em 15em;
+    border: 1px solid #ccc;
+}
+
+.profile-part{
+    border-bottom: 1px solid #ccc;
+}
+
+.profile-hr{
+    margin: 15px;
+    opacity: 1;
+}
 
 
 

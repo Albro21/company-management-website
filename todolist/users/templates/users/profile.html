@@ -9,14 +9,19 @@
 
 {% block content %}
 	<div class="main__todolist">
-        <div class="container row justify-content-center">
+        <div class="container row justify-content-center profile-site">
 
             <!-- Profile info -->
             <div class="card my-3 p-0" style="width: auto;">
                 <div class="d-flex">
-                    <img src="{{ user.profile.profile_picture.url }}" class="img-fluid rounded-start profile-img" style="max-height: 220px; max-width: 220px">
+                    <div class="left-prof-site">
+                        <img src="{{ user.profile.profile_picture.url }}" class="img-fluid rounded-start profile-img" style="max-height: 220px; max-width: 220px">
+                        <div class="edit-profile-btn">
+                            <a class="edit-btn-title" href="http://127.0.0.1:8000/settings">Edit Profile</a>
+                        </div>
+                    </div>
                     <div class="card-body d-flex align-items-center">
-                        <div class="d-flex flex-column me-3">
+                        <div class="d-flex flex-column me-3 col-items">
                             <!-- First Name -->
                             <div class="profile-item mb-3">
                                 <label for="first_name" class="form-label">First Name:</label>
@@ -28,9 +33,9 @@
                                 <label for="last_name" class="form-label">Last Name:</label>
                                 <div class="profile-text">{{ user.last_name }}</div>
                             </div>
-                        </div>
                         
-                        <div class="d-flex flex-column">
+                        
+                        
                             <!-- Username -->
                             <div class="profile-item mb-3">
                                 <label for="username" class="form-label">Username:</label>
@@ -46,16 +51,18 @@
                     </div>
                 </div>
             </div>
+            <hr class="profile-hr">
 
             <!-- Statistics -->
+            <h2 class="d-flex justify-content-center my-2">Statistics</h2>
             <div id="statistics" class="p-0 d-flex justify-content-center">
-                <div class="card p-3 d-inline-block" id="completed-tasks">
+                <div class="card p-3 me-2 my-2 d-inline-block" id="completed-tasks">
                     <h5>{{ completed_tasks_statistics }}</h5>
                 </div>
-                <div class="card p-3 d-inline-block" id="overdue-tasks">
+                <div class="card p-3 me-2 my-2 d-inline-block" id="overdue-tasks">
                     <h5>Overdue: {{ overdue_tasks }}</h5>
                 </div>
-                <div class="card p-3 d-inline-block" id="remaining-tasks">
+                <div class="card p-3 me-2 my-2 d-inline-block" id="remaining-tasks">
                     <h5>Remaining: {{ remaining_tasks }}</h5>
                 </div>
             </div>
