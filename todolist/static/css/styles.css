@@ -1163,10 +1163,159 @@ button{
     font-size: 22px;
     margin-left: 30px;
 }
-/*--------------profile ------------------- */
+/*--------------profile // settings ------------------- */
+
+.left-profile{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    border-right: 1px solid #ccc;
+    width: 20%;
+    
+    
+}
+.right-profile{
+    width: 30%;
+    text-align: center;
+    align-items: end;
+
+    border-left: 1px solid #ccc;
+
+
+}
+
+.center-profile {
+    width: 50%;
+    margin: 25px;
+}
+
+.stat-prof{
+    margin: 5px 20px 5px 20px;
+    width: 220px;
+}
+
+.stat-prof {
+
+    width: 20em;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+    margin: 1.5em 2.8em;
+
+
+}
+
+.stat-prof-item{
+    display: flex;
+    margin: 2em 5em;
+    width: 20em;
+    align-items: center;
+}
 
 
 
+
+.card-profile{
+    display: flex;
+    width: 85%;
+    flex-direction: row;
+
+}
+
+.profile-img{
+
+    width: 55em;
+    height: 55em;
+}
+.card-title {
+    text-align: center;
+
+    padding: 10px 30px;
+}
+
+.profile-item{
+    padding: 10px 50px;
+    border: 1px solid #000;
+    border-bottom-left-radius: 20px;
+    border-top-right-radius: 20px;
+
+    width: 15em;
+}
+
+.profile-item label{
+    font-weight: 700;
+    font-size: 22px;
+
+}
+
+.stat-subtitle {
+    text-align: center;
+    margin-bottom: 1em;
+}
+
+.stat-title {
+    text-align: center;
+}
+
+.edit-profile-btn{
+    margin: 0 auto;
+    text-decoration: none;
+    padding: 1em 2.5em;
+    margin: 2em 1.5em 4em 1.5em;
+
+    border: 1px solid #000000;
+    border-radius: 30px;
+
+}
+
+.edit-btn-title {
+    text-decoration: none;
+    color: #000;
+    
+}
+
+.edit-profile-btn:hover {
+    text-decoration: none;
+    color: #000000;
+    background-color: #e0e0e0;
+    opacity: 0.8;
+    transition: background-color .1s linear;
+    
+}
+
+/*------------- settings ------------------- */
+
+
+
+.sett-form {
+    width: 35em;
+    padding: 3em;
+}
+.img-sett {
+    width: 20em;
+    height: 20em;
+
+    margin: 1em 8em;
+}
+
+.sub-btn button {
+    width: 15em;
+    margin-top: 2em;
+    align-items: center;
+    text-align: center;
+}
+
+.sub-btn {
+    width: 100%;
+    text-align: center;
+    align-items: center;
+}
+
+.img-sett:hover {
+    border: 1px solid #9c9c9c65;
+
+}
 
 
 

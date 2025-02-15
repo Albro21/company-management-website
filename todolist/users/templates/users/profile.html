@@ -10,12 +10,69 @@
 {% block content %}
 	<div class="main__todolist">
         <div class="container row justify-content-center">
-            <div class="card my-3 p-0">
-                <div class="d-flex">
-                    <img src="{{ user.profile.profile_picture.url }}" class="img-fluid rounded-start" style="max-height: 200px; max-width: 200px">
+            <div class="card card-profile my-3 p-0">
+                <div class="d-flex left-profile">
+                    <img src="{{ user.profile.profile_picture.url }}" class="img-fluid rounded-start profile-img" style="max-height: 200px; max-width: 200px">
                     <div class="card-body">
                         <h5 class="card-title">{{ user.first_name }} {{ user.last_name  }}</h5>
                     </div>
+
+                    <div class="edit-profile-btn">
+                        <a class="edit-btn-title" href="http://127.0.0.1:8000/settings">Edit Profile</a>
+                    </div>
+
+
+                </div>
+
+                <!--  statistic column-->
+                <div class="center-profile">
+                    <h3 class="stat-subtitle">My Statistics</h2>
+                    <div id="statistics">
+                        <h4 class="stat-title">Total tasks completed</h3>
+                        <div class="card stat-prof-item p-3 d-inline-block" id="completed-tasks">
+                            <h5>Completed: 0 / 2</h5>
+                        </div>
+
+                        <h4 class="stat-title">Total task created</h3>
+                        <div class="card stat-prof-item p-3 d-inline-block" id="completed-tasks">
+                            <h5>Overdue: 1 / 2</h5>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="d-flex right-profile">
+                    <div class="d-flex stat-prof">
+                        <!-- Username -->
+                        <div class="mb-2 profile-item">
+                            <label for="username" class="form-label">Username:</label>
+                            <div class="profile-text">admin</div>
+                            
+                        </div>
+            
+                        <!-- First Name -->
+                        <div class="mb-3 profile-item">
+                            <label for="first_name" class="form-label">First Name:</label>
+                            <div class="profile-text">Adolf</div>
+                            
+                        </div>
+            
+                        <!-- Last Name -->
+                        <div class="mb-3 profile-item">
+                            <label for="last_name" class="form-label">Last Name:</label>
+                            <div class="profile-text">Hitler</div>
+                            
+                        </div>
+
+                        <div class="mb-2 profile-item">
+                            <label for="email" class="form-label">Email:</label>
+                            <div class="profile-text">email</div>
+                            
+                        </div>
+
+                    </div>
+
+
                 </div>
             </div>
         </div>
