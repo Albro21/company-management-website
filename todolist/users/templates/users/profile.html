@@ -12,11 +12,11 @@
         <div class="container row justify-content-center">
 
             <!-- Profile info -->
-            <div class="card my-3 p-0">
-                <div class="d-flex">
-                    <img src="{{ user.profile.profile_picture.url }}" class="img-fluid rounded-start" style="max-height: 200px; max-width: 200px">
+            <div class="card card-profile my-3 p-0">
+                <div class="d-flex left-profile">
+                    <img src="{{ user.profile.profile_picture.url }}" class="img-fluid rounded-start profile-img" style="max-height: 200px; max-width: 200px">
                     <div class="card-body">
-                        <h5 class="card-title">{{ user.first_name }} {{ user.last_name  }}</h5>
+                        <h5 class="card-title">{{ user.first_name }} {{ user.last_name }}</h5>
                     </div>
                 </div>
             </div>
