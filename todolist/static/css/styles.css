@@ -780,12 +780,6 @@ button{
     border: 1px solid #bdbdbd;
 }
 
-.category_inner {
-    
-    margin-bottom: 5px;
-    padding: 5px;
-}
-
 .list-group-item-settings {
     position: relative;
     border: 1px solid #ccc;

@@ -6,7 +6,10 @@ async function deleteProject(button) {
     const success = await sendRequest(url, method);
 
     if (success) {
-        button.closest('a').remove();
+        const projectElement = document.getElementById(`project-${projectId}`);
+        if (projectElement) {
+            projectElement.remove();
+        }
     } else {
         console.error('Failed to delete project');
     }

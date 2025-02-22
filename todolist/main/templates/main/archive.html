@@ -5,6 +5,7 @@
 
 {% block styles %}
 	<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+	<link rel="stylesheet" href="{% static 'css/archive.css' %}">
 {% endblock styles %}
 
 {% block content %}
@@ -22,43 +23,33 @@
 
 							<!-- Projects -->
 							{% for project in projects.all %}
-								<a href="#" class="list-group-item-settings list-group-item-action d-flex gap-3 py-3" aria-current="true">
-									<div class="d-flex gap-2 w-100 justify-content-between">
-										<div class="category-item w-100">
-											<div class="category_inner">
+								<!-- Project item -->
+								<div class="list-group-item-settings p-0 w-100" id="project-{{ project.id }}">
+									<!-- Project Color -->
+									<div class="archive-color" style="background-color: {{ project.color }}"></div>
 
-												<!-- Project -->		
-												<span class="category_case rounded-3" id="categoryID"> 
-													<h6 class="category_title">
+									<div class="d-flex flex-column w-100 p-3 justify-content-between">
+										<div class="d-flex justify-content-between align-items-center">
+											<!-- Project Title -->
+											<h5>{{ project.title }}</h5>
 
-														<span class="project_case rounded-3 p-2 edit-ico" id="categoryID"  > 
-															<input class="input-category" type="text" tabindex="-1" placeholder="{{ project }}" onclick="this.contentEditable="true";" style="color: black;">
-															
-														</span>	
+											<!-- Edit and Delete buttons -->
+											<div class="d-flex gap-2">
+												<button type="button" class="btn btn-edit btn-secondary" onclick="showInput()" aria-label="Edit project">
+													Edit 							
+												</button>
+												<button type="button" class="btn btn-danger" data-project-id="{{ project.id }}" onclick="deleteProject(this)" aria-label="Delete project">
+													Delete 	
+												</button>
+											</div>
+										</div>
 
-														<div class="category-description p-2 edit-ico">
-				
-															<input class="input-category description" type="text" tabindex="-1" placeholder="{{project.description }}" onclick="this.contentEditable="true";"> 
-														</div>
-
-														
-
-													</h6>	
-													
-												
-												<div class="tool-bar">
-													<button type="button" class="btn btn-edit btn-secondary" id="edit" onclick="showInput()">
-														Edit 							
-													</button>
-			
-													<button type="button" class="btn btn-danger" data-project-id="{{ project.id }}" onclick="deleteProject(this)">
-														Delete 	
-													</button>
-													</div>
-												</div>
+										<!-- Project Description -->
+										<div class="pt-2">
+											<p class="mb-0">{{ project.description }}</p>
 										</div>
 									</div>
-								</a>
+								</div>
 							{% endfor %}
 
 							<!-- Add project Form -->
