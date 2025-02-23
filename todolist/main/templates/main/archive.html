@@ -5,417 +5,408 @@
 
 {% block styles %}
 	<link rel="stylesheet" href="{% static 'css/styles.css' %}">
-	<link rel="stylesheet" href="{% static 'css/archive.css' %}">
 {% endblock styles %}
 
 {% block content %}
-	<div class="main__todolist">
-		<header class="header">
-			<div class="container">
-				<div class="d-flex flex-column flex-md-row  gap-4 py-md-5 align-items-center justify-content-center">
-					<div class="list-group-settings pb-15 w-100 d-flex">
+	<div class="main__todolist px-4">
+		<div class="container row mt-4" style="max-width: 1400px;">
 
-						<!-- Left half -->
-						<div class="half-page w-50 px-5">
+			<!-- Left half -->
+			<div class="col-12 col-xl-6 mb-5 mb-xl-0 pe-xl-4">
+				<!-- Page Title -->
+				<h1 class="header-title p-0 mb-4">My projects:</h1>
 
-							<!-- Page Title -->
-							<h1 class="header-title">My projects:</h1>
+				<!-- Projects -->
+				{% for project in projects.all %}
+					<!-- Project item -->
+					<div class="list-group-item-settings d-flex p-0 w-100" id="project-{{ project.id }}">
+						<!-- Project Color -->
+						<div style="width: 10px; background-color: {{ project.color }}"></div>
 
-							<!-- Projects -->
-							{% for project in projects.all %}
-								<!-- Project item -->
-								<div class="list-group-item-settings p-0 w-100" id="project-{{ project.id }}">
-									<!-- Project Color -->
-									<div class="archive-color" style="background-color: {{ project.color }}"></div>
+						<div class="d-flex flex-column w-100 p-3 justify-content-between">
+							<div class="d-flex justify-content-between align-items-center">
+								<!-- Project Title -->
+								<h5>{{ project.title }}</h5>
 
-									<div class="d-flex flex-column w-100 p-3 justify-content-between">
-										<div class="d-flex justify-content-between align-items-center">
-											<!-- Project Title -->
-											<h5>{{ project.title }}</h5>
+								<!-- Edit and Delete buttons -->
+								<div class="d-flex gap-2">
+									<!-- Edit button -->
+									<button
+										type="button"
+										class="btn btn-edit btn-secondary"
+										data-close-id="project-{{ project.id }}" 
+										data-open-id="edit-project-{{ project.id }}"
+										onclick="openCloseForm(this)"
+										aria-label="Edit project">
+										Edit
+									</button>
 
-											<!-- Edit and Delete buttons -->
-											<div class="d-flex gap-2">
-												<!-- Edit button -->
-												<button
-													type="button"
-													class="btn btn-edit btn-secondary"
-													data-close-id="project-{{ project.id }}" 
-													data-open-id="edit-project-{{ project.id }}"
-													onclick="openCloseForm(this)"
-													aria-label="Edit project">
-													Edit
-												</button>
-
-												<!-- Delete button -->
-												<button 
-													type="button" 
-													class="btn btn-danger" 
-													data-project-id="{{ project.id }}" 
-													onclick="deleteProject(this)" 
-													aria-label="Delete project">
-													Delete 	
-												</button>
-											</div>
-										</div>
-
-										<!-- Project Description -->
-										<div class="pt-2">
-											<p class="mb-0">{{ project.description }}</p>
-										</div>
-									</div>
-								</div>
-
-								<!-- Project editing form -->
-								<div class="list-group-item-settings p-3 w-100" id="edit-project-{{ project.id }}" style="display: none;">
-									<form class="note-form">
-										{% csrf_token %}
-										
-										<div class="d-flex align-items-center mb-2">
-											<!-- Project Title -->
-											<input 
-												class="form-control form-control-sm note-title" 
-												type="text" 
-												name="{{ project_form.title.name }}"
-												autocomplete="off" 
-												maxlength="200"
-												value="{{ project.title }}" 
-												placeholder="Project Title" 
-												aria-label=".form-control-sm">
-
-												<!-- Close button -->
-												<i 
-													class="bi bi-x-lg" 
-													data-close-id="edit-project-{{ project.id }}" 
-													data-open-id="project-{{ project.id }}" 
-													onclick="openCloseForm(this)">
-												</i>
-											</div>
-
-
-										<!-- Project Description -->
-										<textarea 
-											class="form-control area-text mb-2" 
-											name="{{ project_form.description.name }}" 
-											placeholder="Project Description" 
-											autocomplete="off" 
-											rows="3">{{ project.description }}</textarea>
-
-										<!-- Project Color and Status -->
-										<div class="d-flex mb-2 gap-2">
-
-											<!-- Project Color -->
-											<div class="w-50">
-												<label for="{{ project_form.color.id_for_label}}" class="form-label">Color:</label>
-												<input
-													class="form-control"
-													style="height: 38px;"
-													id="{{ project_form.color.id_for_label }}" 
-													type="color" 
-													name="{{ project_form.color.name }}"
-													value="{{ project.color }}">
-											</div>
-
-											<!-- Project Status -->
-											<div class="w-50">
-												<label for="{{ project_form.status.id_for_label}}" class="form-label">Status:</label>
-												<select 
-													class="form-select" 
-													name="{{ project_form.status.name }}" 
-													id="{{ project_form.status.id_for_label }}">
-													<option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
-													<option value="archived" {% if project.status == 'archived' %}selected{% endif %}>Archived</option>
-													<option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
-												</select>
-											</div>
-										</div>
-
-										<!-- Submit button -->
-										<button 
-											class="btn btn-warning w-100 m-0 py-2 btn-add-final opacity-75" 
-											type="submit" 
-											name="submit_project"
-											data-project-id="{{ project.id }}"
-											onclick="updateProject(this)">
-											Update project
-										</button>
-									</form>
-								</div>
-							{% endfor %}
-
-							<!-- Add project Form -->
-							<div class="list-group-item-settings p-3 w-100" id="create-project" style="display: none;">
-								<form class="note-form" method="POST">
-									{% csrf_token %}
-									
-									<div class="d-flex align-items-center mb-2">
-										<!-- Project Title -->
-										<input 
-											class="form-control form-control-sm my-2 note-title {% if project_form.title.errors %}is-invalid{% endif %}" 
-											type="text" 
-											name="project-{{ project_form.title.name }}" 
-											value="{{ project_form.title.value|default:'' }}" 
-											autocomplete="off"
-											placeholder="Project Title" 
-											aria-label=".form-control-sm">
-										<div class="invalid-feedback">{{ project_form.title.errors }}</div>
-
-											<!-- Close button -->
-											<i 
-												class="bi bi-x-lg" 
-												data-close-id="create-project" 
-												onclick="closeCreationForm(this)">
-											</i>
-										</div>
-
-
-									<!-- Project Description -->
-									<textarea 
-										class="form-control {% if project_form.description.errors %}is-invalid{% endif %} area-text mb-2" 
-										name="project-{{ project_form.description.name }}" 
-										placeholder="Project Description" 
-										rows="3">{{ project_form.description.value|default:'' }}</textarea>
-
-									<!-- Project Color and Status -->
-									<div class="d-flex mb-2 gap-2">
-
-										<!-- Project Color -->
-										<div class="w-50">
-											<label for="{{ project_form.color.id_for_label}}" class="form-label">Color:</label>
-											<input
-												class="form-control {% if project_form.color.errors %}is-invalid{% endif %}"
-												style="height: 38px;"
-												id="{{ project_form.color.id_for_label }}" 
-												type="color" 
-												name="project-{{ project_form.color.name }}"
-												value="{{ project_form.color.value|default:'#FFFF00' }}">
-										</div>
-
-										<!-- Project Status -->
-										<div class="w-50">
-											<label for="{{ project_form.status.id_for_label}}" class="form-label">Status:</label>
-											<select 
-												class="form-select {% if project_form.status.errors %}is-invalid{% endif %}" 
-												name="project-{{ project_form.status.name }}" 
-												id="{{ project_form.status.id_for_label }}">
-												<option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
-												<option value="archived" {% if project.status == 'archived' %}selected{% endif %}>Archived</option>
-												<option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
-											</select>
-										</div>
-									</div>
-
-									<!-- Submit button -->
+									<!-- Delete button -->
 									<button 
-										class="btn btn-warning w-100 m-0 py-2 btn-add-final opacity-75" 
-										type="submit" 
-										name="submit_project">
-										Create project
-									</button>
-								</form>
-							</div>
-
-							<!-- Add project button -->
-							<div class="plus_add_button_inner">
-								<div id="btn_add" data-form-id="create-project" onclick="showCreationForm(this)">
-									<button type="button" aria-hidden="false" data-supports-active-task="true" class="plus_add_button">
-										<span class="icon_add" aria-hidden="true">
-											<svg width="13" height="13">
-												<path fill="currentColor" fill-rule="evenodd" d="M6 6V.5a.5.5 0 0 1 1 0V6h5.5a.5.5 0 1 1 0 1H7v5.5a.5.5 0 1 1-1 0V7H.5a.5.5 0 0 1 0-1H6z"></path>
-											</svg>
-										</span>
-										<div class="penis">Add project</div>
+										type="button" 
+										class="btn btn-danger" 
+										data-project-id="{{ project.id }}" 
+										onclick="deleteProject(this)" 
+										aria-label="Delete project">
+										Delete 	
 									</button>
 								</div>
 							</div>
-						</div>
 
-						<!-- Right half -->
-						<div class="half-page w-50 px-5 p-relative just">
-
-							<!-- Page Title -->
-							<h1 class="header-title">My categories:</h1>
-
-							<!-- Categories -->
-							{% for category in categories.all %}
-								<!-- Category item -->
-								<div class="list-group-item-settings p-0 w-100" id="category-{{ category.id }}">
-									<!-- Category Color -->
-									<div class="archive-color" style="background-color: {{ category.color }}"></div>
-
-									<div class="d-flex flex-column w-100 p-3 justify-content-between">
-										<div class="d-flex justify-content-between align-items-center">
-											<!-- Category Title -->
-											<h5>{{ category.title }}</h5>
-
-											<!-- Edit and Delete buttons -->
-											<div class="d-flex gap-2">
-												<!-- Edit button -->
-												<button
-													type="button"
-													class="btn btn-edit btn-secondary"
-													data-close-id="category-{{ category.id }}" 
-													data-open-id="edit-category-{{ category.id }}"
-													onclick="openCloseForm(this)"
-													aria-label="Edit category">
-													Edit
-												</button>
-
-												<!-- Delete button -->
-												<button 
-													type="button" 
-													class="btn btn-danger" 
-													data-category-id="{{ category.id }}" 
-													onclick="deleteCategory(this)" 
-													aria-label="Delete category">
-													Delete
-												</button>
-											</div>
-										</div>
-
-										<!-- Category Description -->
-										<div class="pt-2">
-											<p class="mb-0">{{ category.description }}</p>
-										</div>
-									</div>
-								</div>
-
-								<!-- Category editing form -->
-								<div class="list-group-item-settings p-3 w-100" id="edit-category-{{ category.id }}" style="display: none;">
-									<form class="note-form">
-										{% csrf_token %}
-										
-										<div class="d-flex align-items-center mb-2">
-											<!-- Category Title -->
-											<input 
-												class="form-control form-control-sm note-title" 
-												type="text" 
-												name="{{ category_form.title.name }}"
-												autocomplete="off" 
-												maxlength="200"
-												value="{{ category.title }}" 
-												placeholder="Category Title" 
-												aria-label=".form-control-sm">
-
-											<!-- Close button -->
-											<i 
-												class="bi bi-x-lg" 
-												data-close-id="edit-category-{{ category.id }}" 
-												data-open-id="category-{{ category.id }}" 
-												onclick="openCloseForm(this)">
-											</i>
-										</div>
-
-										<!-- Category Description -->
-										<textarea 
-											class="form-control area-text mb-2" 
-											name="{{ category_form.description.name }}" 
-											placeholder="Category Description" 
-											autocomplete="off" 
-											rows="3">{{ category.description }}</textarea>
-
-										<!-- Category Color -->
-										<div class="d-flex mb-2">
-											<label for="{{ category_form.color.id_for_label }}" class="form-label me-2" style="margin-top: auto;">Color:</label>
-											<div class="w-100">
-												<input 
-													class="form-control"
-													style="height: 38px;"
-													id="{{ category_form.color.id_for_label }}" 
-													type="color" 
-													name="{{ category_form.color.name }}"
-													value="{{ category.color }}">
-											</div>
-										</div>
-
-										<!-- Submit button -->
-										<button 
-											class="btn btn-warning w-100 m-0 py-2 btn-add-final opacity-75" 
-											type="submit" 
-											name="submit_category"
-											data-category-id="{{ category.id }}"
-											onclick="updateCategory(this)">
-											Update category
-										</button>
-									</form>
-								</div>
-							{% endfor %}
-
-							<!-- Add category Form -->
-							<div class="list-group-item-settings p-3 w-100" id="create-category" style="display: none;">
-								<form class="note-form" method="POST">
-									{% csrf_token %}
-
-									<!-- Category Title -->
-									<div class="d-flex align-items-center mb-2">
-										<input 
-											class="form-control form-control-sm my-2 note-title {% if category_form.title.errors %}is-invalid{% endif %}" 
-											type="text" 
-											name="category-{{ category_form.title.name }}" 
-											value="{{ category_form.title.value|default:'' }}" 
-											autocomplete="off"
-											placeholder="Category Title" 
-											aria-label=".form-control-sm">
-										<div class="invalid-feedback">{{ category_form.title.errors }}</div>
-
-										<!-- Close button -->
-										<i 
-											class="bi bi-x-lg" 
-											data-close-id="create-category" 
-											onclick="closeCreationForm(this)">
-										</i>
-									</div>
-
-									<!-- Category Description -->
-									<textarea 
-										class="form-control {% if category_form.description.errors %}is-invalid{% endif %} area-text mb-2" 
-										name="category-{{ category_form.description.name }}" 
-										placeholder="Category Description" 
-										rows="3">{{ category_form.description.value|default:'' }}</textarea>
-
-									<!-- Category Color -->
-									<div class="d-flex mb-2">
-										<label for="{{ category_form.color.id_for_label }}" class="form-label me-2" style="margin-top: auto;">Color:</label>
-										<div class="w-100">
-											<input 
-												class="form-control {% if category_form.color.errors %}is-invalid{% endif %}"
-												style="height: 38px;"
-												id="{{ category_form.color.id_for_label }}" 
-												type="color" 
-												name="category-{{ category_form.color.name }}"
-												value="{{ category_form.color.value|default:'#FFFF00' }}">
-										</div>
-									</div>
-
-									<!-- Submit button -->
-									<button 
-										class="btn btn-warning w-100 m-0 py-2 btn-add-final opacity-75" 
-										type="submit" 
-										name="submit_category">
-										Add new category
-									</button>
-								</form>
-							</div>
-
-
-							<!-- Add category button -->
-							<div class="plus_add_button_inner">
-								<div id="btn_add" data-form-id="create-category" onclick="showCreationForm(this)">
-									<button type="button" aria-hidden="false" data-supports-active-task="true" class="plus_add_button">
-										<span class="icon_add" aria-hidden="true">
-											<svg width="13" height="13">
-												<path fill="currentColor" fill-rule="evenodd" d="M6 6V.5a.5.5 0 0 1 1 0V6h5.5a.5.5 0 1 1 0 1H7v5.5a.5.5 0 1 1-1 0V7H.5a.5.5 0 0 1 0-1H6z"></path>
-											</svg>
-										</span>
-										<div class="btn_center px-5"></div>
-										<div class="penis">Add category</div>
-									</button>
-								</div>
+							<!-- Project Description -->
+							<div class="pt-2">
+								<p class="mb-0">{{ project.description }}</p>
 							</div>
 						</div>
 					</div>
+
+					<!-- Project editing form -->
+					<div class="list-group-item-settings p-3 w-100" id="edit-project-{{ project.id }}" style="display: none;">
+						<form class="note-form">
+							{% csrf_token %}
+							
+							<div class="d-flex align-items-center mb-2">
+								<!-- Project Title -->
+								<input 
+									class="form-control form-control-sm note-title" 
+									type="text" 
+									name="{{ project_form.title.name }}"
+									autocomplete="off" 
+									maxlength="200"
+									value="{{ project.title }}" 
+									placeholder="Project Title" 
+									aria-label=".form-control-sm">
+
+									<!-- Close button -->
+									<i 
+										class="bi bi-x-lg" 
+										data-close-id="edit-project-{{ project.id }}" 
+										data-open-id="project-{{ project.id }}" 
+										onclick="openCloseForm(this)">
+									</i>
+								</div>
+
+
+							<!-- Project Description -->
+							<textarea 
+								class="form-control area-text mb-2" 
+								name="{{ project_form.description.name }}" 
+								placeholder="Project Description" 
+								autocomplete="off" 
+								rows="3">{{ project.description }}</textarea>
+
+							<!-- Project Color and Status -->
+							<div class="d-flex mb-2 gap-2">
+
+								<!-- Project Color -->
+								<div class="w-50">
+									<label for="{{ project_form.color.id_for_label}}" class="form-label">Color:</label>
+									<input
+										class="form-control"
+										style="height: 38px;"
+										id="{{ project_form.color.id_for_label }}" 
+										type="color" 
+										name="{{ project_form.color.name }}"
+										value="{{ project.color }}">
+								</div>
+
+								<!-- Project Status -->
+								<div class="w-50">
+									<label for="{{ project_form.status.id_for_label}}" class="form-label">Status:</label>
+									<select 
+										class="form-select" 
+										name="{{ project_form.status.name }}" 
+										id="{{ project_form.status.id_for_label }}">
+										<option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
+										<option value="archived" {% if project.status == 'archived' %}selected{% endif %}>Archived</option>
+										<option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
+									</select>
+								</div>
+							</div>
+
+							<!-- Submit button -->
+							<button 
+								class="btn btn-warning w-100 m-0 py-2 btn-add-final opacity-75" 
+								type="submit" 
+								name="submit_project"
+								data-project-id="{{ project.id }}"
+								onclick="updateProject(this)">
+								Update project
+							</button>
+						</form>
+					</div>
+				{% endfor %}
+
+				<!-- Add project Form -->
+				<div class="list-group-item-settings p-3 w-100" id="create-project" style="display: none;">
+					<form class="note-form" method="POST">
+						{% csrf_token %}
+						
+						<div class="d-flex align-items-center mb-2">
+							<!-- Project Title -->
+							<input 
+								class="form-control form-control-sm my-2 note-title {% if project_form.title.errors %}is-invalid{% endif %}" 
+								type="text" 
+								name="project-{{ project_form.title.name }}" 
+								value="{{ project_form.title.value|default:'' }}" 
+								autocomplete="off"
+								placeholder="Project Title" 
+								aria-label=".form-control-sm">
+							<div class="invalid-feedback">{{ project_form.title.errors }}</div>
+
+								<!-- Close button -->
+								<i 
+									class="bi bi-x-lg" 
+									data-close-id="create-project" 
+									onclick="closeCreationForm(this)">
+								</i>
+							</div>
+
+
+						<!-- Project Description -->
+						<textarea 
+							class="form-control {% if project_form.description.errors %}is-invalid{% endif %} area-text mb-2" 
+							name="project-{{ project_form.description.name }}" 
+							placeholder="Project Description" 
+							rows="3">{{ project_form.description.value|default:'' }}</textarea>
+
+						<!-- Project Color and Status -->
+						<div class="d-flex mb-2 gap-2">
+
+							<!-- Project Color -->
+							<div class="w-50">
+								<label for="{{ project_form.color.id_for_label}}" class="form-label">Color:</label>
+								<input
+									class="form-control {% if project_form.color.errors %}is-invalid{% endif %}"
+									style="height: 38px;"
+									id="{{ project_form.color.id_for_label }}" 
+									type="color" 
+									name="project-{{ project_form.color.name }}"
+									value="{{ project_form.color.value|default:'#FFFF00' }}">
+							</div>
+
+							<!-- Project Status -->
+							<div class="w-50">
+								<label for="{{ project_form.status.id_for_label}}" class="form-label">Status:</label>
+								<select 
+									class="form-select {% if project_form.status.errors %}is-invalid{% endif %}" 
+									name="project-{{ project_form.status.name }}" 
+									id="{{ project_form.status.id_for_label }}">
+									<option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
+									<option value="archived" {% if project.status == 'archived' %}selected{% endif %}>Archived</option>
+									<option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
+								</select>
+							</div>
+						</div>
+
+						<!-- Submit button -->
+						<button 
+							class="btn btn-warning w-100 m-0 py-2 btn-add-final opacity-75" 
+							type="submit" 
+							name="submit_project">
+							Create project
+						</button>
+					</form>
+				</div>
+
+				<!-- Add project button -->
+				<div class="plus_add_button_inner">
+					<div id="btn_add" data-form-id="create-project" onclick="showCreationForm(this)">
+						<button type="button" aria-hidden="false" data-supports-active-task="true" class="plus_add_button">
+							<span class="icon_add" aria-hidden="true">
+								<svg width="13" height="13">
+									<path fill="currentColor" fill-rule="evenodd" d="M6 6V.5a.5.5 0 0 1 1 0V6h5.5a.5.5 0 1 1 0 1H7v5.5a.5.5 0 1 1-1 0V7H.5a.5.5 0 0 1 0-1H6z"></path>
+								</svg>
+							</span>
+							<div class="penis">Add project</div>
+						</button>
+					</div>
 				</div>
 			</div>
-		</header>
+
+			<!-- Right half -->
+			<div class="col-12 col-xl-6 ps-xl-4 mb-5 mb-xl-0">
+				<!-- Page Title -->
+				<h1 class="header-title p-0 mb-4">My categories:</h1>
+
+				<!-- Categories -->
+				{% for category in categories.all %}
+					<!-- Category item -->
+					<div class="list-group-item-settings d-flex p-0 w-100" id="category-{{ category.id }}">
+						<!-- Category Color -->
+						<div style="width: 10px; background-color: {{ category.color }}"></div>
+
+						<div class="d-flex flex-column w-100 p-3 justify-content-between">
+							<div class="d-flex justify-content-between align-items-center">
+								<!-- Category Title -->
+								<h5>{{ category.title }}</h5>
+
+								<!-- Edit and Delete buttons -->
+								<div class="d-flex gap-2">
+									<!-- Edit button -->
+									<button
+										type="button"
+										class="btn btn-edit btn-secondary"
+										data-close-id="category-{{ category.id }}" 
+										data-open-id="edit-category-{{ category.id }}"
+										onclick="openCloseForm(this)"
+										aria-label="Edit category">
+										Edit
+									</button>
+
+									<!-- Delete button -->
+									<button 
+										type="button" 
+										class="btn btn-danger" 
+										data-category-id="{{ category.id }}" 
+										onclick="deleteCategory(this)" 
+										aria-label="Delete category">
+										Delete
+									</button>
+								</div>
+							</div>
+
+							<!-- Category Description -->
+							<div class="pt-2">
+								<p class="mb-0">{{ category.description }}</p>
+							</div>
+						</div>
+					</div>
+
+					<!-- Category editing form -->
+					<div class="list-group-item-settings p-3 w-100" id="edit-category-{{ category.id }}" style="display: none;">
+						<form class="note-form">
+							{% csrf_token %}
+							
+							<div class="d-flex align-items-center mb-2">
+								<!-- Category Title -->
+								<input 
+									class="form-control form-control-sm note-title" 
+									type="text" 
+									name="{{ category_form.title.name }}"
+									autocomplete="off" 
+									maxlength="200"
+									value="{{ category.title }}" 
+									placeholder="Category Title" 
+									aria-label=".form-control-sm">
+
+								<!-- Close button -->
+								<i 
+									class="bi bi-x-lg" 
+									data-close-id="edit-category-{{ category.id }}" 
+									data-open-id="category-{{ category.id }}" 
+									onclick="openCloseForm(this)">
+								</i>
+							</div>
+
+							<!-- Category Description -->
+							<textarea 
+								class="form-control area-text mb-2" 
+								name="{{ category_form.description.name }}" 
+								placeholder="Category Description" 
+								autocomplete="off" 
+								rows="3">{{ category.description }}</textarea>
+
+							<!-- Category Color -->
+							<div class="d-flex mb-2">
+								<label for="{{ category_form.color.id_for_label }}" class="form-label me-2" style="margin-top: auto;">Color:</label>
+								<div class="w-100">
+									<input 
+										class="form-control"
+										style="height: 38px;"
+										id="{{ category_form.color.id_for_label }}" 
+										type="color" 
+										name="{{ category_form.color.name }}"
+										value="{{ category.color }}">
+								</div>
+							</div>
+
+							<!-- Submit button -->
+							<button 
+								class="btn btn-warning w-100 m-0 py-2 btn-add-final opacity-75" 
+								type="submit" 
+								name="submit_category"
+								data-category-id="{{ category.id }}"
+								onclick="updateCategory(this)">
+								Update category
+							</button>
+						</form>
+					</div>
+				{% endfor %}
+
+				<!-- Add category Form -->
+				<div class="list-group-item-settings p-3 w-100" id="create-category" style="display: none;">
+					<form class="note-form" method="POST">
+						{% csrf_token %}
+
+						<!-- Category Title -->
+						<div class="d-flex align-items-center mb-2">
+							<input 
+								class="form-control form-control-sm my-2 note-title {% if category_form.title.errors %}is-invalid{% endif %}" 
+								type="text" 
+								name="category-{{ category_form.title.name }}" 
+								value="{{ category_form.title.value|default:'' }}" 
+								autocomplete="off"
+								placeholder="Category Title" 
+								aria-label=".form-control-sm">
+							<div class="invalid-feedback">{{ category_form.title.errors }}</div>
+
+							<!-- Close button -->
+							<i 
+								class="bi bi-x-lg" 
+								data-close-id="create-category" 
+								onclick="closeCreationForm(this)">
+							</i>
+						</div>
+
+						<!-- Category Description -->
+						<textarea 
+							class="form-control {% if category_form.description.errors %}is-invalid{% endif %} area-text mb-2" 
+							name="category-{{ category_form.description.name }}" 
+							placeholder="Category Description" 
+							rows="3">{{ category_form.description.value|default:'' }}</textarea>
+
+						<!-- Category Color -->
+						<div class="d-flex mb-2">
+							<label for="{{ category_form.color.id_for_label }}" class="form-label me-2" style="margin-top: auto;">Color:</label>
+							<div class="w-100">
+								<input 
+									class="form-control {% if category_form.color.errors %}is-invalid{% endif %}"
+									style="height: 38px;"
+									id="{{ category_form.color.id_for_label }}" 
+									type="color" 
+									name="category-{{ category_form.color.name }}"
+									value="{{ category_form.color.value|default:'#FFFF00' }}">
+							</div>
+						</div>
+
+						<!-- Submit button -->
+						<button 
+							class="btn btn-warning w-100 m-0 py-2 btn-add-final opacity-75" 
+							type="submit" 
+							name="submit_category">
+							Add new category
+						</button>
+					</form>
+				</div>
+
+
+				<!-- Add category button -->
+				<div class="plus_add_button_inner">
+					<div id="btn_add" data-form-id="create-category" onclick="showCreationForm(this)">
+						<button type="button" aria-hidden="false" data-supports-active-task="true" class="plus_add_button">
+							<span class="icon_add" aria-hidden="true">
+								<svg width="13" height="13">
+									<path fill="currentColor" fill-rule="evenodd" d="M6 6V.5a.5.5 0 0 1 1 0V6h5.5a.5.5 0 1 1 0 1H7v5.5a.5.5 0 1 1-1 0V7H.5a.5.5 0 0 1 0-1H6z"></path>
+								</svg>
+							</span>
+							<div class="btn_center px-5"></div>
+							<div class="penis">Add category</div>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 {% endblock content %}
 
