@@ -525,9 +525,13 @@ button{
 
 
 .bi-flag-fill {
-    color: #eb8909;
+    color: orange;
 }
 
+.edit-icon {
+    color: orange; 
+    font-size: 24px;
+}
 
 
 .task_text {
@@ -1330,7 +1334,10 @@ button{
     opacity: 1;
 }
 
-
+.checkmark {
+    font-size: 24px;
+    color: orange;
+}
 
 
 

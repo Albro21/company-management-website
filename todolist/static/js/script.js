@@ -27,7 +27,7 @@ function closeWindowCategory(){
     el.style.display = 'none';
 }
 
-async function completeNote(button) {
+async function completeTask(button) {
     const taskId = button.getAttribute('data-task-id');
     const url = `/${taskId}/complete/`;
     const method = 'POST';
@@ -35,7 +35,7 @@ async function completeNote(button) {
     const success = await sendRequest(url, method);
 
     if (success) {
-        button.closest('a').remove();
+        document.getElementById(`task-${taskId}`).remove();
     } else {
         console.error('Failed to complete task');
     }
@@ -129,17 +129,17 @@ plusCategory.forEach((item) => {
 
 //switch flag
 
-let flags = document.querySelectorAll('[class*="bi-flag"]');
+// let flags = document.querySelectorAll('[class*="bi-flag"]');
 
-flags.forEach((item) => {
-  item.addEventListener('click', (e) => {
-    if (item.getAttribute('class') == 'bi bi-flag-fill') {
-      item.setAttribute('class', 'bi bi-flag')
-    } else {
-      item.setAttribute('class', 'bi bi-flag-fill')
-    }
-  });
-});
+// flags.forEach((item) => {
+//   item.addEventListener('click', (e) => {
+//     if (item.getAttribute('class') == 'bi bi-flag-fill') {
+//       item.setAttribute('class', 'bi bi-flag')
+//     } else {
+//       item.setAttribute('class', 'bi bi-flag-fill')
+//     }
+//   });
+// });
 
 //toggle-arrow switch
 
@@ -154,4 +154,18 @@ toggleButtons.forEach((item) => {
   })
 })
 
-
+// Change checkmark icon on hover
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".checkmark").forEach(icon => {
+      icon.addEventListener("mouseenter", function () {
+          if (this.classList.contains("bi-circle")) {
+              this.classList.replace("bi-circle", "bi-check-circle");
+          }
+      });
+      icon.addEventListener("mouseleave", function () {
+          if (this.classList.contains("bi-check-circle")) {
+              this.classList.replace("bi-check-circle", "bi-circle");
+          }
+      });
+  });
+});
