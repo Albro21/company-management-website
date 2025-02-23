@@ -83,3 +83,13 @@ function updateCategory(button) {
 
     event.preventDefault();
 }
+
+function showCreationForm(button) {
+    const formId = button.getAttribute('data-form-id');
+    document.getElementById(formId).style.display = 'flex'; 
+}
+
+function closeCreationForm(button) {
+    const formId = button.getAttribute('data-close-id');
+    document.getElementById(formId).style.display = 'none'; 
+}

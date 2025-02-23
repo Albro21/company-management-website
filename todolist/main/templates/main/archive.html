@@ -98,8 +98,7 @@
 											name="{{ project_form.description.name }}" 
 											placeholder="Project Description" 
 											autocomplete="off" 
-											rows="3">{{ project.description }}
-										</textarea>
+											rows="3">{{ project.description }}</textarea>
 
 										<!-- Project Color and Status -->
 										<div class="d-flex mb-2 gap-2">
@@ -144,72 +143,80 @@
 							{% endfor %}
 
 							<!-- Add project Form -->
-							<a href="#" class="list-group-item-settings list-group-item-action d-flex gap-3 w-100" aria-current="true">
-								<div class="mt-3 project-window" id="content_window project-window">
-									<div class="list-group">
-										<form class="note-form" method="POST">
-											{% csrf_token %}
+							<div class="list-group-item-settings p-3 w-100" id="create-project" style="display: none;">
+								<form class="note-form" method="POST">
+									{% csrf_token %}
+									
+									<div class="d-flex align-items-center mb-2">
+										<!-- Project Title -->
+										<input 
+											class="form-control form-control-sm my-2 note-title {% if project_form.title.errors %}is-invalid{% endif %}" 
+											type="text" 
+											name="project-{{ project_form.title.name }}" 
+											value="{{ project_form.title.value|default:'' }}" 
+											autocomplete="off"
+											placeholder="Project Title" 
+											aria-label=".form-control-sm">
+										<div class="invalid-feedback">{{ project_form.title.errors }}</div>
 
 											<!-- Close button -->
-											<div class="close_form_btn">
-												<div id="btn_add" onclick="closeWindowProject()">
-													<button type="button" aria-hidden="false" data-supports-active-task="true" class="close_add_button">
-														<span class="icon_close" aria-hidden="true">
-															<svg width="13" height="13">
-																<path fill="currentColor" fill-rule="evenodd" d="M6 6V.5a.5.5 0 0 1 1 0V6h5.5a.5.5 0 1 1 0 1H7v5.5a.5.5 0 1 1-1 0V7H.5a.5.5 0 0 1 0-1H6z"></path>
-															</svg>
-														</span>
-													</button>
-												</div>
-											</div>
-	
-											<!-- Project Title -->
-											<div class="note_title">
-												<input class="form-control form-control-sm my-2 note-title {% if project_form.title.errors %}is-invalid{% endif %}" type="text" name="project-{{ project_form.title.name }}" autocomplete="off" value="{{ project_form.title.value|default:'' }}" placeholder="Project Title" aria-label=".form-control-sm">
-												<div class="invalid-feedback">{{ project_form.title.errors }}</div>
-											</div>
-	
-											<!-- Project Description -->
-											<div class="mb-2">
-												<textarea class="form-control {% if project_form.description.errors %}is-invalid{% endif %} area-text" name="project-{{ project_form.description.name }}" placeholder="Project Description" autocomplete="off" rows="3">{{ project_form.description.value|default:'' }}</textarea>
-											</div>
+											<i 
+												class="bi bi-x-lg" 
+												data-close-id="create-project" 
+												onclick="closeCreationForm(this)">
+											</i>
+										</div>
 
-											<!-- Project Color and Status -->
-											<div class="d-flex mb-2">
 
-												<!-- Project Color -->
-												<div class="w-50 me-2">
-													<label for="{{ project_form.color.id_for_label}}" class="form-label">Color:</label>
-													<input
-														class="form-control {% if project_form.color.errors %}is-invalid{% endif %}"
-														style = "height: 38px;"
-														id="{{ project_form.color.id_for_label }}" 
-														type="color" 
-														name="project-{{ project_form.color.name }}"
-														value="{{ project_form.color.value|default:'#FFFF00' }}">
-												</div>
+									<!-- Project Description -->
+									<textarea 
+										class="form-control {% if project_form.description.errors %}is-invalid{% endif %} area-text mb-2" 
+										name="project-{{ project_form.description.name }}" 
+										placeholder="Project Description" 
+										rows="3">{{ project_form.description.value|default:'' }}</textarea>
 
-												<!-- Project Status -->
-												<div class="w-50">
-													<label for="{{ project_form.status.id_for_label}}" class="form-label">Status:</label>
-													<select class="form-select" name="project-{{ project_form.status.name }}" id="{{ project_form.status.id_for_label }}">
-														<option value="active" {% if project_form.status == 'active' %}selected{% endif %}>Active</option>
-														<option value="archived" {% if project_form.status == 'archived' %}selected{% endif %}>Archived</option>
-														<option value="completed" {% if project_form.status == 'completed' %}selected{% endif %}>Completed</option>
-													</select>
-												</div>
-											</div>
+									<!-- Project Color and Status -->
+									<div class="d-flex mb-2 gap-2">
 
-											<!-- Add project(submit) button -->
-											<button class="btn btn-warning w-100 py-2 btn-add-final opacity-75" type="submit" name="submit_project">Add new project</button>
-										</form>
+										<!-- Project Color -->
+										<div class="w-50">
+											<label for="{{ project_form.color.id_for_label}}" class="form-label">Color:</label>
+											<input
+												class="form-control {% if project_form.color.errors %}is-invalid{% endif %}"
+												style="height: 38px;"
+												id="{{ project_form.color.id_for_label }}" 
+												type="color" 
+												name="project-{{ project_form.color.name }}"
+												value="{{ project_form.color.value|default:'#FFFF00' }}">
+										</div>
+
+										<!-- Project Status -->
+										<div class="w-50">
+											<label for="{{ project_form.status.id_for_label}}" class="form-label">Status:</label>
+											<select 
+												class="form-select {% if project_form.status.errors %}is-invalid{% endif %}" 
+												name="project-{{ project_form.status.name }}" 
+												id="{{ project_form.status.id_for_label }}">
+												<option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
+												<option value="archived" {% if project.status == 'archived' %}selected{% endif %}>Archived</option>
+												<option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
+											</select>
+										</div>
 									</div>
-								</div>
-							</a>
+
+									<!-- Submit button -->
+									<button 
+										class="btn btn-warning w-100 m-0 py-2 btn-add-final opacity-75" 
+										type="submit" 
+										name="submit_project">
+										Create project
+									</button>
+								</form>
+							</div>
 
 							<!-- Add project button -->
 							<div class="plus_add_button_inner">
-								<div id="btn_add" onclick="showWindowProject()">
+								<div id="btn_add" data-form-id="create-project" onclick="showCreationForm(this)">
 									<button type="button" aria-hidden="false" data-supports-active-task="true" class="plus_add_button">
 										<span class="icon_add" aria-hidden="true">
 											<svg width="13" height="13">
@@ -333,72 +340,66 @@
 								</div>
 							{% endfor %}
 
-							<!-- Add category form -->
-							<a href="#" class="list-group-item-settings list-group-item-action d-flex gap-3 " aria-current="true">
-								<div class="mt-3 category-window" id="content_window category-window" >
-									<div class="list-group">
-										<form class="note-form" method="POST">
-											{% csrf_token %}
-											
-											<!-- Close button -->
-											<div class="close_form_btn">
-												<div id="btn_add" onclick="closeWindowCategory()">
-													<button type="button" aria-hidden="false" data-supports-active-task="true" class="close_add_button">
-														<span class="icon_close" aria-hidden="true">
-															<svg width="13" height="13">
-																<path fill="currentColor" fill-rule="evenodd" d="M6 6V.5a.5.5 0 0 1 1 0V6h5.5a.5.5 0 1 1 0 1H7v5.5a.5.5 0 1 1-1 0V7H.5a.5.5 0 0 1 0-1H6z"></path>
-															</svg>
-														</span>
-													</button>
-												</div>
-											</div>
+							<!-- Add category Form -->
+							<div class="list-group-item-settings p-3 w-100" id="create-category" style="display: none;">
+								<form class="note-form" method="POST">
+									{% csrf_token %}
 
-											<!-- Category Title -->
-											<div class="note_title">
-												<input 
-													class="form-control form-control-sm my-2 note-title {% if category_form.title.errors %}is-invalid{% endif %}" 
-													type="text" 
-													name="category-{{ category_form.title.name }}" 
-													value="{{ category_form.title.value|default:'' }}" 
-													autocomplete="off"
-													placeholder="Category Title" 
-													aria-label=".form-control-sm">
-												<div class="invalid-feedback">{{ category_form.title.errors }}</div>
-											</div>
+									<!-- Category Title -->
+									<div class="d-flex align-items-center mb-2">
+										<input 
+											class="form-control form-control-sm my-2 note-title {% if category_form.title.errors %}is-invalid{% endif %}" 
+											type="text" 
+											name="category-{{ category_form.title.name }}" 
+											value="{{ category_form.title.value|default:'' }}" 
+											autocomplete="off"
+											placeholder="Category Title" 
+											aria-label=".form-control-sm">
+										<div class="invalid-feedback">{{ category_form.title.errors }}</div>
 
-											<!-- Category Description -->
-											<div class="mb-2">
-												<textarea 
-													class="form-control {% if category_form.description.errors %}is-invalid{% endif %} area-text" 
-													name="category-{{ category_form.description.name }}" 
-													placeholder="Category Description" 
-													rows="3">{{ category_form.description.value|default:'' }}</textarea>
-											</div>
-
-											<!-- Category Color -->
-											<div class="d-flex mb-2">
-												<label for="{{ category_form.color.id_for_label}}" class="form-label me-2" style="margin-top: auto;">Color:</label>
-												<div class="w-100">
-													<input 
-														class="form-control {% if category_form.color.errors %}is-invalid{% endif %}"
-														style = "height: 38px;"
-														id="{{ category_form.color.id_for_label }}" 
-														type="color" 
-														name="category-{{ category_form.color.name }}"
-														value="{{ category_form.color.value|default:'#FFFF00' }}">
-												</div>
-											</div>
-											
-											<!-- Add category(submit) button -->
-											<button class="btn btn-warning w-100 py-2 btn-add-final opacity-75" type="submit" name="submit_category">Add new category</button>
-										</form>
+										<!-- Close button -->
+										<i 
+											class="bi bi-x-lg" 
+											data-close-id="create-category" 
+											onclick="closeCreationForm(this)">
+										</i>
 									</div>
-								</div>
-							</a>
+
+									<!-- Category Description -->
+									<textarea 
+										class="form-control {% if category_form.description.errors %}is-invalid{% endif %} area-text mb-2" 
+										name="category-{{ category_form.description.name }}" 
+										placeholder="Category Description" 
+										rows="3">{{ category_form.description.value|default:'' }}</textarea>
+
+									<!-- Category Color -->
+									<div class="d-flex mb-2">
+										<label for="{{ category_form.color.id_for_label }}" class="form-label me-2" style="margin-top: auto;">Color:</label>
+										<div class="w-100">
+											<input 
+												class="form-control {% if category_form.color.errors %}is-invalid{% endif %}"
+												style="height: 38px;"
+												id="{{ category_form.color.id_for_label }}" 
+												type="color" 
+												name="category-{{ category_form.color.name }}"
+												value="{{ category_form.color.value|default:'#FFFF00' }}">
+										</div>
+									</div>
+
+									<!-- Submit button -->
+									<button 
+										class="btn btn-warning w-100 m-0 py-2 btn-add-final opacity-75" 
+										type="submit" 
+										name="submit_category">
+										Add new category
+									</button>
+								</form>
+							</div>
+
 
 							<!-- Add category button -->
 							<div class="plus_add_button_inner">
-								<div id="btn_add" onclick="showWindowCategory()">
+								<div id="btn_add" data-form-id="create-category" onclick="showCreationForm(this)">
 									<button type="button" aria-hidden="false" data-supports-active-task="true" class="plus_add_button">
 										<span class="icon_add" aria-hidden="true">
 											<svg width="13" height="13">
