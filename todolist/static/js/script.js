@@ -129,7 +129,7 @@ plusCategory.forEach((item) => {
 
 //switch flag
 
-let flags = document.querySelectorAll('.bi')
+let flags = document.querySelectorAll('[class*="bi-flag"]');
 
 flags.forEach((item) => {
   item.addEventListener('click', (e) => {
