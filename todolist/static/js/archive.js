@@ -15,40 +15,6 @@ async function deleteProject(button) {
     }
 }
 
-function openCloseForm(element) {
-    const closeId = element.getAttribute('data-close-id'); 
-    const openId = element.getAttribute('data-open-id');
-
-    document.getElementById(closeId).style.display = 'none';
-    document.getElementById(openId).style.display = 'flex';
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".note-form").forEach(form => {
-        form.addEventListener("submit", async function (event) {
-            event.preventDefault();
-
-            const formData = new FormData(this);
-            const projectId = this.closest(".list-group-item-settings").id.replace("edit-project-", "");
-
-            const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
-
-            const url = `/project/${projectId}/edit/`;
-            const method = "POST";
-
-            const data = await sendRequest(url, method, requestBody);
-
-            console.log(data);
-
-            if (data && data.success) {
-                location.reload();
-            } else {
-                console.error("Server error:", data ? data.error : "No response");
-            }
-        });
-    });
-});
-
 async function deleteCategory(button) {
     const categoryId = button.getAttribute('data-category-id');
     const url = `/${categoryId}/delete-category/`;
@@ -57,8 +23,63 @@ async function deleteCategory(button) {
     const success = await sendRequest(url, method);
 
     if (success) {
-        button.closest('a').remove();
+        const categoryElement = document.getElementById(`category-${categoryId}`);
+        if (categoryElement) {
+            categoryElement.remove();
+        }
     } else {
         console.error('Failed to delete category');
     }
+}
+
+function openCloseForm(element) {
+    const closeId = element.getAttribute('data-close-id'); 
+    const openId = element.getAttribute('data-open-id');
+
+    document.getElementById(closeId).style.display = 'none';
+    document.getElementById(openId).style.display = 'flex';
+}
+
+function updateProject(button) {
+    const form = button.closest(".note-form");
+    const formData = new FormData(form);
+    const projectId = button.getAttribute('data-project-id');
+
+    const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
+
+    const url = `/project/${projectId}/edit/`;
+    const method = "POST";
+
+    sendRequest(url, method, requestBody).then(data => {
+        console.log(data);
+        if (data && data.success) {
+            location.reload();
+        } else {
+            console.error("Server error:", data ? data.error : "No response");
+        }
+    });
+
+    event.preventDefault();
+}
+
+function updateCategory(button) {
+    const form = button.closest(".note-form");
+    const formData = new FormData(form);
+    const categoryId = button.getAttribute('data-category-id');
+
+    const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
+
+    const url = `/category/${categoryId}/edit/`;
+    const method = "POST";
+
+    sendRequest(url, method, requestBody).then(data => {
+        console.log(data);
+        if (data && data.success) {
+            location.reload();
+        } else {
+            console.error("Server error:", data ? data.error : "No response");
+        }
+    });
+
+    event.preventDefault();
 }

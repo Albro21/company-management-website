@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 import json
 
 from .models import Project, Category, Task
-from .forms import TaskCreationForm, ProjectForm, CategoryCreationForm
+from .forms import TaskCreationForm, ProjectForm, CategoryForm
 
 def filter_tasks(tasks, request):
     filter_type = request.GET.get('filter', 'all_time')
@@ -82,7 +82,7 @@ def archive(request):
     categories = Category.objects.filter(user=user)
 
     project_form = ProjectForm(request.POST or None, prefix='project')
-    category_form = CategoryCreationForm(request.POST or None, prefix='category')
+    category_form = CategoryForm(request.POST or None, prefix='category')
 
     if request.method == 'POST':
         if 'submit_project' in request.POST and project_form.is_valid():
@@ -128,6 +128,27 @@ def edit_project(request, project_id):
             return JsonResponse({'success': False, 'errors': 'Invalid JSON'}, status=400)
 
         form = ProjectForm(data, instance=project)
+
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+
+    return JsonResponse({'success': False, 'errors': 'Invalid request method'}, status=405)
+
+
+@login_required
+def edit_category(request, category_id):
+    category = get_object_or_404(Category, id=category_id, user=request.user)
+
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'errors': 'Invalid JSON'}, status=400)
+
+        form = CategoryForm(data, instance=category)
 
         if form.is_valid():
             form.save()
