@@ -35,7 +35,15 @@ async function completeTask(button) {
     const success = await sendRequest(url, method);
 
     if (success) {
-        document.getElementById(`task-${taskId}`).remove();
+		const sound = document.getElementById("completion-sound");
+		sound.currentTime = 0;
+		
+        try {
+            await sound.play();
+            document.getElementById(`task-${taskId}`).remove();
+        } catch (error) {
+            console.error("Error playing sound:", error);
+        }
     } else {
         console.error('Failed to complete task');
     }
@@ -150,7 +158,6 @@ toggleButtons.forEach((item) => {
   item.addEventListener("click", () => {
     let arrow = item.querySelector(".toggle-arrow")
     arrow.classList.toggle("collapsed-btn")
-    
   })
 })
 

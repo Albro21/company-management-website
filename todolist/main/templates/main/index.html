@@ -9,6 +9,7 @@
 {% endblock styles %}
 
 {% block content %}
+	<audio id="completion-sound" src="{% static 'sounds/completion_sound.mp3' %}" preload="auto"></audio>
 	<div class="main__todolist">
 		<header class="header">
 			<div class="container">
@@ -52,7 +53,7 @@
 											<div class="d-flex gap-3 align-items-center me-3">
 												<!-- Checkmark -->
 												<i 
-													class="bi {% if task.is_completed %}bi-check-circle-fill{% else %}bi-circle{% endif %} checkmark" 
+													class="bi {% if task.is_completed %}bi-check-circle-fill{% else %}bi-circle pointer{% endif %} checkmark" 
 													{% if not task.is_completed %}
 														data-task-id="{{ task.id }}" 
 														onclick="completeTask(this)"
@@ -84,8 +85,9 @@
 												{% else %}
 													<i class="bi bi-flag" style="font-size: 20px;"></i>
 												{% endif %}
-	
-												<i class="bi bi-pencil-square edit-icon ms-auto"></i>
+												
+												<!-- Edit icon -->
+												<i class="bi bi-pencil-square edit-icon ms-auto pointer"></i>
 											</div>
 										</div>
 

@@ -1069,11 +1069,9 @@ button{
     transition: background-color .1s linear;
 }
 
-.bi {
+.pointer {
     cursor: pointer;
-
 }
-
 
 .toggle-arrow {
     position: absolute;
