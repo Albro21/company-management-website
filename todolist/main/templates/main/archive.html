@@ -230,7 +230,7 @@
 						</div>
 
 						<!-- Right half -->
-						<div class="half-page w-50 px-5 p-relative">
+						<div class="half-page w-50 px-5 p-relative just">
 
 							<!-- Page Title -->
 							<h1 class="header-title">My categories:</h1>
@@ -314,10 +314,10 @@
 											rows="3">{{ category.description }}</textarea>
 
 										<!-- Category Color -->
-										<div class="d-flex mb-2 gap-2">
-											<div class="w-50">
-												<label for="{{ category_form.color.id_for_label }}" class="form-label">Color:</label>
-												<input
+										<div class="d-flex mb-2">
+											<label for="{{ category_form.color.id_for_label }}" class="form-label me-2" style="margin-top: auto;">Color:</label>
+											<div class="w-100">
+												<input 
 													class="form-control"
 													style="height: 38px;"
 													id="{{ category_form.color.id_for_label }}" 
