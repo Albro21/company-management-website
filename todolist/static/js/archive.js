@@ -15,6 +15,40 @@ async function deleteProject(button) {
     }
 }
 
+function openCloseForm(element) {
+    const closeId = element.getAttribute('data-close-id'); 
+    const openId = element.getAttribute('data-open-id');
+
+    document.getElementById(closeId).style.display = 'none';
+    document.getElementById(openId).style.display = 'flex';
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".note-form").forEach(form => {
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const projectId = this.closest(".list-group-item-settings").id.replace("edit-project-", "");
+
+            const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
+
+            const url = `/project/${projectId}/edit/`;
+            const method = "POST";
+
+            const data = await sendRequest(url, method, requestBody);
+
+            console.log(data);
+
+            if (data && data.success) {
+                location.reload();
+            } else {
+                console.error("Server error:", data ? data.error : "No response");
+            }
+        });
+    });
+});
+
 async function deleteCategory(button) {
     const categoryId = button.getAttribute('data-category-id');
     const url = `/${categoryId}/delete-category/`;

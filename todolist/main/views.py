@@ -1,9 +1,11 @@
 from datetime import date, timedelta
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+import json
+
 from .models import Project, Category, Task
-from .forms import TaskCreationForm, ProjectCreationForm, CategoryCreationForm
+from .forms import TaskCreationForm, ProjectForm, CategoryCreationForm
 
 def filter_tasks(tasks, request):
     filter_type = request.GET.get('filter', 'all_time')
@@ -79,7 +81,7 @@ def archive(request):
     projects = Project.objects.filter(user=user)
     categories = Category.objects.filter(user=user)
 
-    project_form = ProjectCreationForm(request.POST or None, prefix='project')
+    project_form = ProjectForm(request.POST or None, prefix='project')
     category_form = CategoryCreationForm(request.POST or None, prefix='category')
 
     if request.method == 'POST':
@@ -97,7 +99,6 @@ def archive(request):
             category_form.save_m2m()
             return redirect('archive')
 
-    # Render the template
     context = {
         'project_form': project_form,
         'category_form': category_form,
@@ -114,6 +115,27 @@ def delete_project(request, project_id):
         project.delete()
         return JsonResponse({'success': True, 'task_id': project_id})
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=400)
+
+
+@login_required
+def edit_project(request, project_id):
+    project = get_object_or_404(Project, id=project_id, user=request.user)
+
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'errors': 'Invalid JSON'}, status=400)
+
+        form = ProjectForm(data, instance=project)
+
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+
+    return JsonResponse({'success': False, 'errors': 'Invalid request method'}, status=405)
 
 
 @login_required
