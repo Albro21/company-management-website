@@ -9,71 +9,72 @@
 {% endblock styles %}
 
 {% block content %}
-	<div class="main__todolist">
-        <div class="container row justify-content-center">
+    <div class="container row py-4">
+        <!-- Left half -->
+        <div class="col-4 d-flex flex-column gap-4">
 
-            <!-- Profile info -->
-            <div class="card my-3 p-0" style="width: auto;">
-                <div class="d-flex">
-                    <div class="left-prof-site">
-                        <img src="{{ user.profile.profile_picture.url }}" class="img-fluid rounded-start profile-img" style="max-height: 220px; max-width: 220px">
-                        <div class="edit-profile-btn">
-                            <a class="edit-btn-title" href="http://127.0.0.1:8000/settings">Edit Profile</a>
-                        </div>
-                    </div>
-                    <div class="card-body d-flex align-items-center">
-                        <div class="d-flex flex-column me-3 col-items">
-                            <!-- First Name -->
-                            <div class="profile-item mb-3">
-                                <label for="first_name" class="form-label">First Name:</label>
-                                <div class="profile-text">{{ user.first_name }}</div>
-                            </div>
-                            
-                            <!-- Last Name -->
-                            <div class="profile-item">
-                                <label for="last_name" class="form-label">Last Name:</label>
-                                <div class="profile-text">{{ user.last_name }}</div>
-                            </div>
-                        
-                        
-                        
-                            <!-- Username -->
-                            <div class="profile-item mb-3">
-                                <label for="username" class="form-label">Username:</label>
-                                <div class="profile-text">{{ user.username }}</div>
-                            </div>
-                            
-                            <!-- Email -->
-                            <div class="profile-item">
-                                <label for="email" class="form-label">Email:</label>
-                                <div class="profile-text">{{ user.email }}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <!-- Profile card -->
+            <div class="card d-flex flex-column justify-content-center p-4 gap-4" id="profile-card">
+                <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" id="profile-picture">
+                <h3 class="text-center">{{ user.first_name }} {{ user.last_name }}</h3>
+                <a href="{% url 'settings' %}" class="btn btn-outline-secondary">Edit Profile</a>
             </div>
-            <hr class="profile-hr">
-
-            <!-- Statistics -->
-            <h2 class="d-flex justify-content-center my-2">Statistics</h2>
-            <div id="statistics" class="p-0 d-flex justify-content-center">
-                <div class="card p-3 me-2 my-2 d-inline-block" id="completed-tasks">
-                    <h5>{{ completed_tasks_statistics }}</h5>
-                </div>
-                <div class="card p-3 me-2 my-2 d-inline-block" id="overdue-tasks">
-                    <h5>Overdue: {{ overdue_tasks }}</h5>
-                </div>
-                <div class="card p-3 me-2 my-2 d-inline-block" id="remaining-tasks">
-                    <h5>Remaining: {{ remaining_tasks }}</h5>
-                </div>
+            
+            <!-- Donut chart -->
+            <div class="card p-4" id="donut-chart">
+                <h5 class="text-center mb-3">Completed tasks by project</h5>
+                <canvas id="myDonutChart" width="400" height="400"></canvas>
             </div>
-
-            <!-- Chart -->
-            {% include 'completed_tasks_chart.html' %} 
         </div>
-	</div>
+        
+        <!-- Right half -->
+        <div class="col-8 d-flex flex-column gap-4">
+            
+            <!-- Chart -->
+            <div class="card" id="completed-tasks-chart">
+                {% include 'completed_tasks_chart.html' %}
+            </div>
+            
+            <!-- Statistics -->
+            <div class="d-flex gap-4" id="statistics">
+                <h5 class="col card p-3 text-center" id="completed-tasks">Completed: {{ completed_tasks }}</h5>
+                <h5 class="col card p-3 text-center" id="overdue-tasks">Overdue: {{ overdue_tasks }}</h5>
+                <h5 class="col card p-3 text-center" id="remaining-tasks">Remaining: {{ remaining_tasks }}</h5>
+            </div>
+        </div>
+    </div>
     {% endblock content %}
     
     {% block scripts %}
     <script src="{% static 'js/script.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('myDonutChart').getContext('2d');
+        const myDonutChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ project_labels|safe }},
+                datasets: [{
+                    data: {{ project_data|safe }},
+                    backgroundColor: {{ project_colors|safe }},
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.label + ': ' + tooltipItem.raw + ' completed tasks';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 {% endblock scripts %}

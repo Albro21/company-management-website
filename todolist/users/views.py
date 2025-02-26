@@ -36,20 +36,34 @@ def settings(request):
 
 @login_required
 def profile(request):
-    tasks = request.user.task_set.all()
-    total_tasks = tasks.count()
+    user = request.user
+    
+    tasks = user.task_set.all()
+    projects = user.project_set.all()
     
     completed_tasks = tasks.filter(is_completed=True).count()
-    completed_tasks_statistics = f'Completed tasks: {completed_tasks} / {total_tasks}'
-    
     overdue_tasks = tasks.filter(is_completed=False, due_date__lt=date.today()).count()
     remaining_tasks = tasks.filter(is_completed=False).count()
     
+    project_labels = []
+    project_data = []
+    project_colors = []
+
+    for project in projects:
+        completed_task_count = project.task_set.filter(is_completed=True).count()
+        project_labels.append(project.title)
+        project_data.append(completed_task_count)
+        project_colors.append(project.color)
+    
     context = {
         'user': request.user,
-        'completed_tasks_statistics': completed_tasks_statistics,
+        'completed_tasks': completed_tasks,
         'overdue_tasks': overdue_tasks,
         'remaining_tasks': remaining_tasks,
+        'project_data': project_data,
+        'project_labels': project_labels,
+        'project_data': project_data,
+        'project_colors': project_colors,
     }
     
     return render(request, 'users/profile.html', context)
