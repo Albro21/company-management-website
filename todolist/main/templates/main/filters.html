@@ -1,11 +1,38 @@
-<!-- Filter Buttons -->
+{% comment %} Task filtring buttons {% endcomment %}
 <div class="container d-flex flex-column flex-xl-row my-3 justify-content-center">
+
+    <!-- Filter buttons -->
     <div class="btn-group mb-3 mb-xl-0" role="group">
-        <a href="?filter=today&completed={{ request.GET.completed|default:'false' }}" class="btn btn-outline-dark {% if request.GET.filter == 'today' %}active{% endif %}">Today</a>
-        <a href="?filter=tomorrow&completed={{ request.GET.completed|default:'false' }}" class="btn btn-outline-dark {% if request.GET.filter == 'tomorrow' %}active{% endif %}">Tomorrow</a>
-        <a href="?filter=this_week&completed={{ request.GET.completed|default:'false' }}" class="btn btn-outline-dark {% if request.GET.filter == 'this_week' %}active{% endif %}">This week</a>
-        <a href="?filter=next_week&completed={{ request.GET.completed|default:'false' }}" class="btn btn-outline-dark {% if request.GET.filter == 'next_week' %}active{% endif %}">Next week</a>
-        <a href="?filter=all_time&completed={{ request.GET.completed|default:'false' }}" class="btn btn-outline-dark {% if request.GET.filter == 'all_time' or not request.GET.filter %}active{% endif %}">All time</a>
+        <!-- Today -->
+        <a 
+            href="?filter=today&completed={{ request.GET.completed|default:'false' }}" 
+            class="btn btn-outline-secondary {% if request.GET.filter == 'today' %}active{% endif %}">
+            Today
+        </a>
+        <!-- Tommorrow -->
+        <a 
+            href="?filter=tomorrow&completed={{ request.GET.completed|default:'false' }}" 
+            class="btn btn-outline-secondary {% if request.GET.filter == 'tomorrow' %}active{% endif %}">
+            Tomorrow
+        </a>
+        <!-- This week -->
+        <a 
+            href="?filter=this_week&completed={{ request.GET.completed|default:'false' }}" 
+            class="btn btn-outline-secondary {% if request.GET.filter == 'this_week' %}active{% endif %}">
+            This week
+        </a>
+        <!-- Next week -->
+        <a 
+            href="?filter=next_week&completed={{ request.GET.completed|default:'false' }}" 
+            class="btn btn-outline-secondary {% if request.GET.filter == 'next_week' %}active{% endif %}">
+            Next week
+        </a>
+        <!-- All time -->
+        <a 
+            href="?filter=all_time&completed={{ request.GET.completed|default:'false' }}" 
+            class="btn btn-outline-secondary {% if request.GET.filter == 'all_time' or not request.GET.filter %}active{% endif %}">
+            All time
+        </a>
     </div>
 
     <!-- Show completed switch -->
@@ -23,4 +50,5 @@
             {% if request.GET.completed == 'true' %} checked {% endif %}>
         <label class="form-check-label" for="completed-switch">Include Completed Tasks</label>
     </div>
+    
 </div>

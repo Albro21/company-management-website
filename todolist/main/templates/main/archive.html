@@ -14,7 +14,7 @@
 			<!-- Left half -->
 			<div class="col-12 col-xl-6 mb-5 mb-xl-0 pe-xl-4">
 				<!-- Page Title -->
-				<h1 class="header-title p-0 mb-4">My projects:</h1>
+				<h1 class="mb-4 text-center">My projects:</h1>
 
 				<!-- Projects -->
 				{% for project in projects.all %}
@@ -33,7 +33,7 @@
 									<!-- Edit button -->
 									<button
 										type="button"
-										class="btn btn-edit btn-secondary"
+										class="btn btn-secondary"
 										data-close-id="project-{{ project.id }}" 
 										data-open-id="edit-project-{{ project.id }}"
 										onclick="openCloseForm(this)"
@@ -68,7 +68,7 @@
 							<div class="d-flex align-items-center mb-2">
 								<!-- Project Title -->
 								<input 
-									class="form-control form-control-sm note-title" 
+									class="form-control form-control-sm" 
 									type="text" 
 									name="{{ project_form.title.name }}"
 									autocomplete="off" 
@@ -89,7 +89,7 @@
 
 							<!-- Project Description -->
 							<textarea 
-								class="form-control area-text mb-2" 
+								class="form-control mb-2" 
 								name="{{ project_form.description.name }}" 
 								placeholder="Project Description" 
 								autocomplete="off" 
@@ -126,7 +126,7 @@
 
 							<!-- Submit button -->
 							<button 
-								class="btn btn-warning w-100 m-0 py-2 btn-add-final opacity-75" 
+								class="btn btn-warning w-100 m-0 py-2 opacity-75" 
 								type="submit" 
 								name="submit_project"
 								data-project-id="{{ project.id }}"
@@ -145,7 +145,7 @@
 						<div class="d-flex align-items-center mb-2">
 							<!-- Project Title -->
 							<input 
-								class="form-control form-control-sm my-2 note-title {% if project_form.title.errors %}is-invalid{% endif %}" 
+								class="form-control form-control-sm my-2 {% if project_form.title.errors %}is-invalid{% endif %}" 
 								type="text" 
 								name="project-{{ project_form.title.name }}" 
 								value="{{ project_form.title.value|default:'' }}" 
@@ -165,7 +165,7 @@
 
 						<!-- Project Description -->
 						<textarea 
-							class="form-control {% if project_form.description.errors %}is-invalid{% endif %} area-text mb-2" 
+							class="form-control {% if project_form.description.errors %}is-invalid{% endif %} mb-2" 
 							name="project-{{ project_form.description.name }}" 
 							placeholder="Project Description" 
 							rows="3">{{ project_form.description.value|default:'' }}</textarea>
@@ -201,7 +201,7 @@
 
 						<!-- Submit button -->
 						<button 
-							class="btn btn-warning w-100 m-0 py-2 btn-add-final opacity-75" 
+							class="btn btn-warning w-100 m-0 py-2 opacity-75" 
 							type="submit" 
 							name="submit_project">
 							Create project
@@ -227,7 +227,7 @@
 			<!-- Right half -->
 			<div class="col-12 col-xl-6 ps-xl-4 mb-5 mb-xl-0">
 				<!-- Page Title -->
-				<h1 class="header-title p-0 mb-4">My categories:</h1>
+				<h1 class="mb-4 text-center">My categories:</h1>
 
 				<!-- Categories -->
 				{% for category in categories.all %}
@@ -246,7 +246,7 @@
 									<!-- Edit button -->
 									<button
 										type="button"
-										class="btn btn-edit btn-secondary"
+										class="btn btn-secondary"
 										data-close-id="category-{{ category.id }}" 
 										data-open-id="edit-category-{{ category.id }}"
 										onclick="openCloseForm(this)"
@@ -281,7 +281,7 @@
 							<div class="d-flex align-items-center mb-2">
 								<!-- Category Title -->
 								<input 
-									class="form-control form-control-sm note-title" 
+									class="form-control form-control-sm" 
 									type="text" 
 									name="{{ category_form.title.name }}"
 									autocomplete="off" 
@@ -301,7 +301,7 @@
 
 							<!-- Category Description -->
 							<textarea 
-								class="form-control area-text mb-2" 
+								class="form-control mb-2" 
 								name="{{ category_form.description.name }}" 
 								placeholder="Category Description" 
 								autocomplete="off" 
@@ -323,7 +323,7 @@
 
 							<!-- Submit button -->
 							<button 
-								class="btn btn-warning w-100 m-0 py-2 btn-add-final opacity-75" 
+								class="btn btn-warning w-100 m-0 py-2 opacity-75" 
 								type="submit" 
 								name="submit_category"
 								data-category-id="{{ category.id }}"
@@ -342,7 +342,7 @@
 						<!-- Category Title -->
 						<div class="d-flex align-items-center mb-2">
 							<input 
-								class="form-control form-control-sm my-2 note-title {% if category_form.title.errors %}is-invalid{% endif %}" 
+								class="form-control form-control-sm my-2 {% if category_form.title.errors %}is-invalid{% endif %}" 
 								type="text" 
 								name="category-{{ category_form.title.name }}" 
 								value="{{ category_form.title.value|default:'' }}" 
@@ -361,7 +361,7 @@
 
 						<!-- Category Description -->
 						<textarea 
-							class="form-control {% if category_form.description.errors %}is-invalid{% endif %} area-text mb-2" 
+							class="form-control {% if category_form.description.errors %}is-invalid{% endif %} mb-2" 
 							name="category-{{ category_form.description.name }}" 
 							placeholder="Category Description" 
 							rows="3">{{ category_form.description.value|default:'' }}</textarea>
@@ -382,7 +382,7 @@
 
 						<!-- Submit button -->
 						<button 
-							class="btn btn-warning w-100 m-0 py-2 btn-add-final opacity-75" 
+							class="btn btn-warning w-100 m-0 py-2 opacity-75" 
 							type="submit" 
 							name="submit_category">
 							Add new category

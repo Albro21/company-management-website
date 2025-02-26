@@ -48,3 +48,13 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 });
+
+function closeWindow(button){
+    const elementId = button.getAttribute('data-close-id');
+    document.getElementById(elementId).style.display = 'none';
+}
+
+function openWindow(button){
+    const elementId = button.getAttribute('data-open-id');
+    document.getElementById(elementId).style.display = 'block';
+}
