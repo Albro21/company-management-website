@@ -47,15 +47,15 @@ def index(request):
     
     tasks = filter_tasks(tasks, request)
     
+    form = TaskCreationForm(request.POST or None)
+    
     if request.method == 'POST':
-        form = TaskCreationForm(request.POST)
         if form.is_valid():
             task = form.save(commit=False)
             task.user = user
             task.save()
             form.save_m2m()
-    else:
-        form = TaskCreationForm()
+            return redirect('index')
 
     context = {
         'projects': projects,
