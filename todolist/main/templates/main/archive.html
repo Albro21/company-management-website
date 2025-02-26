@@ -19,7 +19,7 @@
 				<!-- Projects -->
 				{% for project in projects.all %}
 					<!-- Project item -->
-					<div class="list-group-item-settings p-0 w-100" id="project-{{ project.id }}">
+					<div class="list-item p-0 w-100" id="project-{{ project.id }}">
 						<!-- Project Color -->
 						<div style="width: 10px; background-color: {{ project.color }}"></div>
 
@@ -61,7 +61,7 @@
 					</div>
 
 					<!-- Project editing form -->
-					<div class="list-group-item-settings p-3 w-100" id="edit-project-{{ project.id }}" style="display: none;">
+					<div class="list-item p-3 w-100" id="edit-project-{{ project.id }}" style="display: none;">
 						<form class="note-form">
 							{% csrf_token %}
 							
@@ -138,7 +138,7 @@
 				{% endfor %}
 
 				<!-- Add project Form -->
-				<div class="list-group-item-settings p-3 w-100" id="create-project" style="display: none;">
+				<div class="list-item p-3 w-100" id="create-project" style="display: none;">
 					<form class="note-form" method="POST">
 						{% csrf_token %}
 						
@@ -232,7 +232,7 @@
 				<!-- Categories -->
 				{% for category in categories.all %}
 					<!-- Category item -->
-					<div class="list-group-item-settings p-0 w-100" id="category-{{ category.id }}">
+					<div class="list-item p-0 w-100" id="category-{{ category.id }}">
 						<!-- Category Color -->
 						<div style="width: 10px; background-color: {{ category.color }}"></div>
 
@@ -274,7 +274,7 @@
 					</div>
 
 					<!-- Category editing form -->
-					<div class="list-group-item-settings p-3 w-100" id="edit-category-{{ category.id }}" style="display: none;">
+					<div class="list-item p-3 w-100" id="edit-category-{{ category.id }}" style="display: none;">
 						<form class="note-form">
 							{% csrf_token %}
 							
@@ -335,7 +335,7 @@
 				{% endfor %}
 
 				<!-- Add category Form -->
-				<div class="list-group-item-settings p-3 w-100" id="create-category" style="display: none;">
+				<div class="list-item p-3 w-100" id="create-category" style="display: none;">
 					<form class="note-form" method="POST">
 						{% csrf_token %}
 

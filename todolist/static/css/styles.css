@@ -355,21 +355,14 @@ button{
 }
 
 
-.list-group-item {
-    position: relative;
-    border-bottom: 1px solid #ccc;
-    display: flex;
-    
-
-    padding-left: 30px;
+.list-item {
+    border: 1px solid #ccc;
+    margin-top: -1px; /* Removes overlap between adjacent borders */
 }
 
-.list-group-item:hover {
-    position: relative;
+.list-item:hover {
     transform: scale(1.009);
-
     box-shadow: 2px 2px 5px #c4b6b6;
-
     transition: transform 0.2s linear;
     transition: box-shadow 0.2s linear;
 }
@@ -784,26 +777,6 @@ button{
     border: 1px solid #bdbdbd;
 }
 
-.list-group-item-settings {
-    position: relative;
-    border: 1px solid #ccc;
-    display: flex;
-    text-decoration: none;
-    
-
-    padding-left: 30px;
-}
-
-.list-group-item-settings:hover {
-    position: relative;
-    transform: scale(1.009);
-
-    box-shadow: 2px 2px 5px #c4b6b6;
-
-    transition: transform 0.2s linear;
-    transition: box-shadow 0.2s linear;
-}
-
 .category_case{
     color: #e5e5e5;
     width: fit-content;
@@ -1113,21 +1086,10 @@ button{
     transform: rotate(-135deg) translate(0px, 8px);
 }
 
-
 .filters-inner {
     position: absolute;
     right: 30px;
     top: 50px;
-}
-
-.list-group-item:first-child {
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-}
-
-.list-group-item:last-child {
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
 }
 
 .collapsed-btn{
