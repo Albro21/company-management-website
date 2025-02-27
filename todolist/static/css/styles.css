@@ -23,45 +23,6 @@ h6 {
     margin: 0;
 }
 
-hr {
-    display: block;
-    width: 100%;
-    height: 1px;
-    margin: 40px 0;
-
-    border: 0;
-    background-color: #e5e5e5;
-}
-
-li {
-    list-style-type: none;
-}
-
-i {
-    z-index: 10;
-
-}
-
-/* page*/
-.todolist__page {
-    margin: 0;
-    padding: 0;
-    position: relative;
-    min-height: 100vh;
-
-}
-
-img {
-    max-width: 100%;
-    height: auto;
-}
-
-
-.todolist__page {
-    width: 100;
-    height: 100%;
-}
-
 .page__inner {
     display: flex;
     width: 100%;
@@ -79,36 +40,6 @@ button {
 
 }
 
-/* ---------------------- header --------------*/
-
-.container {
-    width: 100%;
-    padding: 0px 15px;
-    max-width: 1230px;
-    margin: 0 auto;
-}
-
-.main__todolist {
-    width: 100vw;
-    height: 100%;
-    margin: 0;
-}
-
-.header {
-    width: 100%;
-    left: 0;
-    top: 0;
-    right: 0;
-}
-
-/* ---------------------- sidebar--------------*/
-
-.sidebar__todolist {
-    width: 25%;
-    background-color: #f2efed;
-    position: relative;
-}
-
 .list-item {
     border: 1px solid #ccc;
     margin-top: -1px; /* Removes overlap between adjacent borders */
@@ -119,23 +50,6 @@ button {
     box-shadow: 2px 2px 5px #c4b6b6;
     transition: transform 0.2s linear;
     transition: box-shadow 0.2s linear;
-}
-
-.btn-toggle {
-    position: relative;
-}
-
-.btn-toggle::before {
-    width: 0.1em;
-    line-height: 0;
-    content: url(static/assets/download.svg);
-
-    transition: transform .35s ease;
-    transform-origin: .5em 50%;
-}
-
-.btn-toggle[aria-expanded="true"]::before {
-    transform: rotate(89deg);
 }
 
 .plus_add_button_inner {
@@ -198,98 +112,8 @@ button {
     justify-content: space-around;
 }
 
-.oiloil {
-    font-size: 30px;
-    font-weight: 700;
-}
-
-.checkbox_inner {
-    padding: 5px 5px;
-    margin-left: 10px;
-}
-
-.btn-create-project {
-    opacity: 1;
-    background-color: #eb8909;
-}
-
-.btn-create-project:hover {
-    opacity: 1;
-    background-color: #eb8909;
-    transform: scale(1.09);
-    transition: transform 0.2s linear;
-}
-
-.project-item {
-    background-color: #e9e5e5;
-}
-
-.project-item:hover {
-    transform: scale(1.01);
-    background-color: #ccc;
-    transition: transform 0.2s linear;
-    transition: transform 0.2s linear;
-}
-
 .pointer {
     cursor: pointer;
-}
-
-.toggle-arrow {
-    position: absolute;
-    left: -10px;
-    top: 24px;
-    display: block;
-}
-
-.arrow-item {
-    display: block;
-    width: 12px;
-    border: 2px solid #000;
-    transition: transform 0.05s linear;
-}
-
-.arrow-item:first-child {
-    display: block;
-    width: 12px;
-    border: 2px solid #000;
-    transform: rotate(135deg) translate(0px, -8px);
-}
-
-.arrow-item:last-child {
-    display: block;
-    width: 12px;
-    border: 2px solid #000;
-    transform: rotate(-135deg) translate(0px, 8px);
-}
-
-.collapsed-btn {
-    transform: rotate(90deg);
-    transition: transform 0.05s linear;
-}
-
-.menu-lst {
-    position: relative;
-}
-
-.menu-lst:hover {
-    scale: 1.005;
-    font-weight: 600;
-    position: relative;
-    transition: scase 0.2s ease;
-}
-
-.left-ico {
-    position: absolute;
-    top: 6px;
-    left: 0;
-    width: 20px;
-    height: 20px;
-}
-
-.menu-lst a {
-    font-size: 22px;
-    margin-left: 30px;
 }
 
 .checkmark {

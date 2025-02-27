@@ -8,42 +8,38 @@
 {% endblock styles %}
 
 {% block content %}
-	<div class="main__todolist">
-        <div class="container row justify-content-center">
-            <div class="justify-content-center">
+    <div class="row justify-content-center gap-4">
 
-                <!-- Project Title and Description -->
-                <h1 class="mt-5">{{ project.title }}</h1>
-                <p>{{ project.description }}</p>
+        <!-- Project Title and Description -->
+        <h1>{{ project.title }}</h1>
+        <p>{{ project.description }}</p>
 
-                <!-- Statistics -->
-                <div id="statistics" class="p-0">
-                    <div class="card p-3 d-inline-block" id="completed-tasks">
-                        <h5>{{ completed_tasks_statistics }}</h5>
-                    </div>
-                    <div class="card p-3 d-inline-block" id="overdue-tasks">
-                        <h5>Overdue: {{ overdue_tasks }}</h5>
-                    </div>
-                    <div class="card p-3 d-inline-block" id="remaining-tasks">
-                        <h5>Remaining: {{ remaining_tasks }}</h5>
-                    </div>
-                </div>
-
-                <!-- Chart -->
-                {% include 'completed_tasks_chart.html' with project=project %}
-
-                <!-- Filters -->
-                {% include 'main/filters.html' %}
-
-                <!-- Tasks -->
-                <div class="my-4" id="tasks">
-                    {% for task in tasks %}
-                        {% include "main/task_item.html" %}
-                    {% endfor %}
-                </div>
+        <!-- Statistics -->
+        <div id="statistics">
+            <div class="card p-3 d-inline-block" id="completed-tasks">
+                <h5>{{ completed_tasks_statistics }}</h5>
+            </div>
+            <div class="card p-3 d-inline-block" id="overdue-tasks">
+                <h5>Overdue: {{ overdue_tasks }}</h5>
+            </div>
+            <div class="card p-3 d-inline-block" id="remaining-tasks">
+                <h5>Remaining: {{ remaining_tasks }}</h5>
             </div>
         </div>
-	</div>
+
+        <!-- Chart -->
+        {% include 'completed_tasks_chart.html' with project=project %}
+
+        <!-- Filters -->
+        {% include 'main/filters.html' %}
+
+        <!-- Tasks -->
+        <div id="tasks">
+            {% for task in tasks %}
+                {% include "main/task_item.html" %}
+            {% endfor %}
+        </div>
+    </div>
 {% endblock content %}
 
 {% block scripts %}

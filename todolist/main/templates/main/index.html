@@ -10,172 +10,164 @@
 
 {% block content %}
 	<audio id="completion-sound" src="{% static 'sounds/completion_sound.mp3' %}" preload="auto"></audio>
-	<div class="main__todolist">
-		<header class="header">
-			<div class="container">
-				<div class="d-flex flex-column flex-md-row p-3 gap-4 align-items-center justify-content-center">
-					<div class="d-flex flex-column align-items-center pb-15 w-100">
+	<div class="d-flex flex-column justify-content-center">
 
-						<!-- Filters -->
-						{% include 'main/filters.html' %}  
+		<!-- Filters -->
+		{% include 'main/filters.html' %}  
 
-						<!-- Page Title -->
-						<h1 class="note">
-							{% if request.GET.filter == 'today' %}Today
-							{% elif request.GET.filter == 'tomorrow' %}Tomorrow
-							{% elif request.GET.filter == 'this_week' %}This week
-							{% elif request.GET.filter == 'next_week' %}Next week
-							{% else %}All{% endif %} 
-							{% if request.GET.completed == 'false' %} pending {% endif %} 
-							tasks
-						</h1>
-						
-						{% regroup tasks by due_date as tasks_by_date %}
-						{% for task_group in tasks_by_date %}
-							<h5 class="my-3">
-								{{ task_group.grouper|date:"l, d.m" }}
-							</h5>
+		<!-- Page Title -->
+		<h1 class="note text-center">
+			{% if request.GET.filter == 'today' %}Today
+			{% elif request.GET.filter == 'tomorrow' %}Tomorrow
+			{% elif request.GET.filter == 'this_week' %}This week
+			{% elif request.GET.filter == 'next_week' %}Next week
+			{% else %}All{% endif %} 
+			{% if request.GET.completed == 'false' %} pending {% endif %} 
+			tasks
+		</h1>
+		
+		{% regroup tasks by due_date as tasks_by_date %}
+		{% for task_group in tasks_by_date %}
+			<h5 class="my-3 text-center">
+				{{ task_group.grouper|date:"l, d.m" }}
+			</h5>
 
-							<!-- Tasks -->
-							{% for task in task_group.list %}
-								<!-- Task item -->
-								{% include "main/task_item.html" %}
-							{% endfor %}
-						{% endfor %}
+			<!-- Tasks -->
+			{% for task in task_group.list %}
+				<!-- Task item -->
+				{% include "main/task_item.html" %}
+			{% endfor %}
+		{% endfor %}
 
-						<!-- Task creation form -->
-						<form 
-							class="mt-3 list-item w-100 container p-3" 
-							id="task-creation-form" style="display: none;" 
-							method="POST" 
-							action="?{% for key, value in request.GET.items %}{{ key }}={{ value }}&{% endfor %}">
+		<!-- Task creation form -->
+		<form 
+			class="mt-3 list-item w-100 container p-3" 
+			id="task-creation-form" style="display: none;" 
+			method="POST" 
+			action="?{% for key, value in request.GET.items %}{{ key }}={{ value }}&{% endfor %}">
 
-							{% csrf_token %}
+			{% csrf_token %}
 
-							<!-- Top row -->
-							<div class="d-flex">
-								<!-- Note Title -->
-								<div class="w-100">
-									<input 
-										class="w-100 form-control form-control-sm my-2 {% if form.title.errors %}is-invalid{% endif %}" 
-										type="text" 
-										name="{{ form.title.name }}" 
-										value="{{ form.title.value|default:'' }}" 
-										placeholder="Note Title" 
-										aria-label=".form-control-sm">
-									<div class="invalid-feedback">{{ form.title.errors }}</div>
-								</div>
-								<!-- Close button -->
-								<i 
-									class="bi bi-x-lg ms-3 me-1" 
-									data-close-id="task-creation-form" 
-									onclick="closeWindow(this)"
-									style="margin-top: 12px;">
-								</i>
-							</div>
+			<!-- Top row -->
+			<div class="d-flex">
+				<!-- Note Title -->
+				<div class="w-100">
+					<input 
+						class="w-100 form-control form-control-sm my-2 {% if form.title.errors %}is-invalid{% endif %}" 
+						type="text" 
+						name="{{ form.title.name }}" 
+						value="{{ form.title.value|default:'' }}" 
+						placeholder="Note Title" 
+						aria-label=".form-control-sm">
+					<div class="invalid-feedback">{{ form.title.errors }}</div>
+				</div>
+				<!-- Close button -->
+				<i 
+					class="bi bi-x-lg ms-3 me-1" 
+					data-close-id="task-creation-form" 
+					onclick="closeWindow(this)"
+					style="margin-top: 12px;">
+				</i>
+			</div>
 
-							<div class="d-flex mb-2 gap-2">
+			<div class="d-flex mb-2 gap-2">
 
-								<!-- Left half -->
-								<div class="d-flex flex-column flex-grow-1 gap-2">
+				<!-- Left half -->
+				<div class="d-flex flex-column flex-grow-1 gap-2">
 
-									<!-- Note Text -->
-									<div>
-										<textarea 
-											class="form-control {% if form.text.errors %}is-invalid{% endif %}" 
-											name="{{ form.text.name }}"
-											placeholder="Note Text" 
-											rows="3">{{ form.text.value|default:'' }}</textarea>
-									</div>
+					<!-- Note Text -->
+					<div>
+						<textarea 
+							class="form-control {% if form.text.errors %}is-invalid{% endif %}" 
+							name="{{ form.text.name }}"
+							placeholder="Note Text" 
+							rows="3">{{ form.text.value|default:'' }}</textarea>
+					</div>
 
-									<div class="d-flex flex-wrap justify-content-between gap-2">
-										<div class="d-flex align-items-center gap-2">
+					<div class="d-flex flex-wrap justify-content-between gap-2">
+						<div class="d-flex align-items-center gap-2">
 
-											<!-- Project select -->
-											<select class="form-control me-2" name="{{ form.project.name }}">
-												<option value="">Select a project</option>
-												{% for project in projects %}
-													<option value="{{ project.id }}" {% if form.project.value == project.id %}selected{% endif %}>{{ project.title }}</option>
-												{% endfor %}
-											</select>
+							<!-- Project select -->
+							<select class="form-control me-2" name="{{ form.project.name }}">
+								<option value="">Select a project</option>
+								{% for project in projects %}
+									<option value="{{ project.id }}" {% if form.project.value == project.id %}selected{% endif %}>{{ project.title }}</option>
+								{% endfor %}
+							</select>
 
-											<!-- High Priority checkbox -->
-											<input 
-												class="form-check-input mt-0" 
-												type="radio"
-												name="{{ form.is_high_priority.name }}" 
-												id="{{ form.is_high_priority.id_for_label }}" 
-												{% if form.is_high_priority.value %}
-													checked
-												{% endif %}>
-											<label class="form-check-label d-flex" for="{{ form.is_high_priority.id_for_label }}" style="white-space: nowrap;">
-												Is High Priority
-											</label>
-										</div>
-
-										<!-- Due Date -->
-										<div class="d-flex">
-											<input 
-												class="form-control {% if form.due_date.errors %}is-invalid{% endif %}" 
-												type="date" 
-												name="{{ form.due_date.name }}" 
-												{% if form.due_date.value %}
-													value="{{ form.due_date.value }}"
-												{% endif %}>
-											<div class="invalid-feedback">{{ form.due_date.errors }}</div>
-										</div>
-									</div>
-								</div>
-
-								<!-- Right half -->
-								<div class="d-flex flex-column custom-scroll">
-									
-									<!-- Category list -->
-									{% for category in categories %}
-										<div style="display: inline-flex; justify-content: left;">
-											<label class="form-check-label" style="white-space: nowrap;">{{ category.title }}</label>
-											<input 
-												class="form-check-input mx-2" 
-												type="checkbox" 
-												name="{{ form.categories.name }}" 
-												value="{{ category.id }}" 
-												{% if category.id in form.categories.value %}checked{% endif %}>
-										</div>
-									{% endfor %}
-								</div>
-							</div>
-
-							<!-- Add note (submit) button -->
-							<button class="btn btn-warning w-100" type="submit">Add note</button>
-						</form>
-
-						{% if form.errors %}
-							<script>
-								document.addEventListener("DOMContentLoaded", function() {
-									openWindow(document.getElementById("btn_add"));
-									document.getElementById("task-creation-form").scrollIntoView({ behavior: "smooth" });
-								});
-							</script>
-						{% endif %}
-
-						<!-- Add note button -->
-						<div class="plus_add_button_inner mb-5">
-							<div id="btn_add" data-open-id="task-creation-form" onclick="openWindow(this)">
-								<button type="button" aria-hidden="false" data-supports-active-task="true" class="plus_add_button">
-									<span class="icon_add" aria-hidden="true">
-										<svg width="13" height="13">
-											<path fill="currentColor" fill-rule="evenodd" d="M6 6V.5a.5.5 0 0 1 1 0V6h5.5a.5.5 0 1 1 0 1H7v5.5a.5.5 0 1 1-1 0V7H.5a.5.5 0 0 1 0-1H6z"></path>
-										</svg>
-									</span>
-									<div class="penis">Add note</div>
-								</button>
-							</div>
+							<!-- High Priority checkbox -->
+							<input 
+								class="form-check-input mt-0" 
+								type="radio"
+								name="{{ form.is_high_priority.name }}" 
+								id="{{ form.is_high_priority.id_for_label }}" 
+								{% if form.is_high_priority.value %}
+									checked
+								{% endif %}>
+							<label class="form-check-label d-flex" for="{{ form.is_high_priority.id_for_label }}" style="white-space: nowrap;">
+								Is High Priority
+							</label>
 						</div>
 
+						<!-- Due Date -->
+						<div class="d-flex">
+							<input 
+								class="form-control {% if form.due_date.errors %}is-invalid{% endif %}" 
+								type="date" 
+								name="{{ form.due_date.name }}" 
+								{% if form.due_date.value %}
+									value="{{ form.due_date.value }}"
+								{% endif %}>
+							<div class="invalid-feedback">{{ form.due_date.errors }}</div>
+						</div>
 					</div>
 				</div>
+
+				<!-- Right half -->
+				<div class="d-flex flex-column custom-scroll">
+					
+					<!-- Category list -->
+					{% for category in categories %}
+						<div style="display: inline-flex; justify-content: left;">
+							<label class="form-check-label" style="white-space: nowrap;">{{ category.title }}</label>
+							<input 
+								class="form-check-input mx-2" 
+								type="checkbox" 
+								name="{{ form.categories.name }}" 
+								value="{{ category.id }}" 
+								{% if category.id in form.categories.value %}checked{% endif %}>
+						</div>
+					{% endfor %}
+				</div>
 			</div>
-		</header>
+
+			<!-- Add note (submit) button -->
+			<button class="btn btn-warning w-100" type="submit">Add note</button>
+		</form>
+
+		{% if form.errors %}
+			<script>
+				document.addEventListener("DOMContentLoaded", function() {
+					openWindow(document.getElementById("btn_add"));
+					document.getElementById("task-creation-form").scrollIntoView({ behavior: "smooth" });
+				});
+			</script>
+		{% endif %}
+
+		<!-- Add note button -->
+		<div class="plus_add_button_inner mb-5">
+			<div id="btn_add" data-open-id="task-creation-form" onclick="openWindow(this)">
+				<button type="button" aria-hidden="false" data-supports-active-task="true" class="plus_add_button">
+					<span class="icon_add" aria-hidden="true">
+						<svg width="13" height="13">
+							<path fill="currentColor" fill-rule="evenodd" d="M6 6V.5a.5.5 0 0 1 1 0V6h5.5a.5.5 0 1 1 0 1H7v5.5a.5.5 0 1 1-1 0V7H.5a.5.5 0 0 1 0-1H6z"></path>
+						</svg>
+					</span>
+					<div class="penis">Add note</div>
+				</button>
+			</div>
+		</div>
+
 	</div>
 {% endblock content %}
 

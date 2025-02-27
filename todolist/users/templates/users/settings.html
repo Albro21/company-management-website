@@ -9,105 +9,103 @@
 {% endblock styles %}
 
 {% block content %}
-	<div class="main__todolist">
-        <div class="container row justify-content-center">
-            <h1 class="mt-4 mx-auto text-center">Settings</h1>
-            <div class="card my-3 p-0 w-auto">
-                <div>
-                    <form class="d-flexwrap sett-form" method="POST" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        
-                        <!-- Profile picture -->
-                        <div class="sett-picture">
-                            <label for="profile_picture_input">
-                                <img 
-                                    id="profile_picture" 
-                                    src="{{ user.profile.profile_picture.url }}" 
-                                    class="img-fluid rounded-start img-sett" 
-                                    style="max-height: 200px; max-width: 200px; cursor: pointer;">
-                            </label>
-                            <input type="file" id="profile_picture_input" name="profile_picture" class="d-none" accept="image/*">
-                        </div>
+    <div class="row justify-content-center gap-4">
+        <h1 class="text-center">Settings</h1>
+        <div class="card w-auto">
+            <div>
+                <form class="d-flexwrap sett-form" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
                     
-                        <div class="card-body mx-3 ">
-                            <div class="d-flexwrap">
-                                <!-- Username -->
-                                <div class="mb-2">
-                                    <label for="username" class="form-label">Username:</label>
-                                    <input type="text" class="form-control {% if form.username.errors %}is-invalid{% endif %}" id="username" name="username" value="{{ form.username.value }}" required>
-                                    {% if form.username.errors %}
-                                        <div class="invalid-feedback">
-                                            {% for error in form.username.errors %}
-                                                <p>{{ error }}</p>
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                    
-                                <!-- First Name -->
-                                <div class="mb-3">
-                                    <label for="first_name" class="form-label">First Name:</label>
-                                    <input type="text" class="form-control {% if form.first_name.errors %}is-invalid{% endif %}" id="first_name" name="first_name" value="{{ form.first_name.value }}" required>
-                                    {% if form.first_name.errors %}
-                                        <div class="invalid-feedback">
-                                            {% for error in form.first_name.errors %}
-                                                <p>{{ error }}</p>
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                    
-                                <!-- Last Name -->
-                                <div class="mb-3">
-                                    <label for="last_name" class="form-label">Last Name:</label>
-                                    <input type="text" class="form-control {% if form.last_name.errors %}is-invalid{% endif %}" id="last_name" name="last_name" value="{{ form.last_name.value }}" required>
-                                    {% if form.last_name.errors %}
-                                        <div class="invalid-feedback">
-                                            {% for error in form.last_name.errors %}
-                                                <p>{{ error }}</p>
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                    
-                            <div class="d-flex">
-                                <div class="d-flex" style="min-width: 315px;">
-                                    <!-- Email -->
-                                    <div class="mb-2">
-                                        <label for="email" class="form-label">Email:</label>
-                                        <input type="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" id="email" name="email" value="{{ form.email.value }}" required>
-                                        {% if form.email.errors %}
-                                            <div class="invalid-feedback">
-                                                {% for error in form.email.errors %}
-                                                    <p>{{ error }}</p>
-                                                {% endfor %}
-                                            </div>
-                                        {% endif %}
-                                    </div>                    
-                                </div>
-                                
-                                
-                                
-                                <!-- Messages -->
-                                {% if messages %}
-                                    <div class="messages mx-auto mt-auto mb-2 w-100">
-                                        {% for message in messages %}
-                                            <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% endif %} mb-0">{{ message }}</div>
+                    <!-- Profile picture -->
+                    <div class="sett-picture">
+                        <label for="profile_picture_input">
+                            <img 
+                                id="profile_picture" 
+                                src="{{ user.profile.profile_picture.url }}" 
+                                class="img-fluid rounded-start img-sett" 
+                                style="max-height: 200px; max-width: 200px; cursor: pointer;">
+                        </label>
+                        <input type="file" id="profile_picture_input" name="profile_picture" class="d-none" accept="image/*">
+                    </div>
+                
+                    <div class="card-body mx-3 ">
+                        <div class="d-flexwrap">
+                            <!-- Username -->
+                            <div class="mb-2">
+                                <label for="username" class="form-label">Username:</label>
+                                <input type="text" class="form-control {% if form.username.errors %}is-invalid{% endif %}" id="username" name="username" value="{{ form.username.value }}" required>
+                                {% if form.username.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.username.errors %}
+                                            <p>{{ error }}</p>
                                         {% endfor %}
                                     </div>
                                 {% endif %}
                             </div>
-                            <!-- Submit -->
-                            <div class="center mt-auto mb-2 me-3 sub-btn">
-                                <button type="submit" class="btn btn-primary">Save</button>
+                
+                            <!-- First Name -->
+                            <div class="mb-3">
+                                <label for="first_name" class="form-label">First Name:</label>
+                                <input type="text" class="form-control {% if form.first_name.errors %}is-invalid{% endif %}" id="first_name" name="first_name" value="{{ form.first_name.value }}" required>
+                                {% if form.first_name.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.first_name.errors %}
+                                            <p>{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                
+                            <!-- Last Name -->
+                            <div class="mb-3">
+                                <label for="last_name" class="form-label">Last Name:</label>
+                                <input type="text" class="form-control {% if form.last_name.errors %}is-invalid{% endif %}" id="last_name" name="last_name" value="{{ form.last_name.value }}" required>
+                                {% if form.last_name.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.last_name.errors %}
+                                            <p>{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
-                    </form>                                    
-                </div>
+                
+                        <div class="d-flex">
+                            <div class="d-flex" style="min-width: 315px;">
+                                <!-- Email -->
+                                <div class="mb-2">
+                                    <label for="email" class="form-label">Email:</label>
+                                    <input type="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" id="email" name="email" value="{{ form.email.value }}" required>
+                                    {% if form.email.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.email.errors %}
+                                                <p>{{ error }}</p>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>                    
+                            </div>
+                            
+                            
+                            
+                            <!-- Messages -->
+                            {% if messages %}
+                                <div class="messages mx-auto mt-auto mb-2 w-100">
+                                    {% for message in messages %}
+                                        <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% endif %} mb-0">{{ message }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <!-- Submit -->
+                        <div class="center mt-auto mb-2 me-3 sub-btn">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
+                </form>                                    
             </div>
         </div>
-	</div>
+    </div>
 {% endblock content %}
 
 {% block scripts %}

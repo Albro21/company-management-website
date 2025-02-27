@@ -1,3 +1,7 @@
+async function logoutUser() {
+	await sendRequest("/logout/", "POST");
+}
+
 async function completeTask(button) {
 	const taskId = button.getAttribute('data-task-id');
 	const url = `/${taskId}/complete/`;
@@ -48,15 +52,6 @@ endDate.forEach((item) => {
 		item.style.textDecorationLine = 'line-through';
 	}
 
-})
-
-let toggleButtons = document.querySelectorAll("#btn-toggle-switch")
-
-toggleButtons.forEach((item) => {
-	item.addEventListener("click", () => {
-		let arrow = item.querySelector(".toggle-arrow")
-		arrow.classList.toggle("collapsed-btn")
-	})
 })
 
 // Change checkmark icon on hover
