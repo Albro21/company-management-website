@@ -43,7 +43,7 @@ def index(request):
     
     projects = Project.objects.filter(user=user)
     categories = Category.objects.filter(user=user)
-    tasks = Task.objects.filter(user=user)
+    tasks = user.tasks.all()
     
     tasks = filter_tasks(tasks, request)
     
@@ -170,10 +170,8 @@ def delete_category(request, category_id):
 
 @login_required
 def project_detail(request, project_id):
-    user = request.user
-
-    project = get_object_or_404(Project, pk=project_id, user=user)
-    tasks = project.task_set.all()
+    project = get_object_or_404(Project, pk=project_id)
+    tasks = project.tasks.all()
     
     tasks = filter_tasks(tasks, request)
     

@@ -26,18 +26,21 @@
 			tasks
 		</h1>
 		
-		{% regroup tasks by due_date as tasks_by_date %}
-		{% for task_group in tasks_by_date %}
-			<h5 class="my-3 text-center">
-				{{ task_group.grouper|date:"l, d.m" }}
-			</h5>
-
-			<!-- Tasks -->
-			{% for task in task_group.list %}
-				<!-- Task item -->
-				{% include "main/task_item.html" %}
+		<!-- Tasks -->
+		<div class="d-flex flex-column justify-content-center gap-4" id="tasks">
+			{% regroup tasks by due_date as tasks_by_date %}
+			{% for task_group in tasks_by_date %}
+				<div class="task-group d-flex flex-column justify-content-center">
+					<h5 class="ms-3 mb-2">
+						{{ task_group.grouper|date:"l, d.m" }}
+					</h5>
+					
+					{% for task in task_group.list %}
+						{% include "main/task_item.html" %}
+					{% endfor %}
+				</div>
 			{% endfor %}
-		{% endfor %}
+		</div>
 
 		<!-- Task creation form -->
 		<form 
@@ -63,7 +66,7 @@
 				</div>
 				<!-- Close button -->
 				<i 
-					class="bi bi-x-lg ms-3 me-1" 
+					class="bi bi-x-lg ms-3" 
 					data-close-id="task-creation-form" 
 					onclick="closeWindow(this)"
 					style="margin-top: 12px;">
@@ -129,12 +132,13 @@
 					<!-- Category list -->
 					{% for category in categories %}
 						<div style="display: inline-flex; justify-content: left;">
-							<label class="form-check-label" style="white-space: nowrap;">{{ category.title }}</label>
+							<label class="form-check-label" style="white-space: nowrap;" for="category-{{ category.id }}">{{ category.title }}</label>
 							<input 
 								class="form-check-input mx-2" 
 								type="checkbox" 
-								name="{{ form.categories.name }}" 
-								value="{{ category.id }}" 
+								name="{{ form.categories.name }}"
+								id="category-{{ category.id }}"  
+								value="{{ category.id }}"
 								{% if category.id in form.categories.value %}checked{% endif %}>
 						</div>
 					{% endfor %}

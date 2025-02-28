@@ -2,7 +2,7 @@ from colorfield.fields import ColorField
 from django.db import models
 from django.contrib.auth.models import User
 from django.db import models
-from django.utils.timezone import now
+from django.utils.timezone import now, localdate
 
 
 class Project(models.Model):
@@ -12,8 +12,8 @@ class Project(models.Model):
         ('completed', 'Completed'),
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=200)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="projects")
+    title = models.CharField(max_length=50)
     description = models.TextField(blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
     color = ColorField(default='#FFFF00')
@@ -23,8 +23,8 @@ class Project(models.Model):
 
 
 class Category(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=200)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="categories")
+    title = models.CharField(max_length=50)
     description = models.TextField(blank=True)
     color = ColorField(default='#FFFF00')
 
@@ -36,9 +36,9 @@ class Category(models.Model):
 
 
 class Task(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, on_delete=models.SET_DEFAULT, default=None, blank=True, null=True)
-    categories = models.ManyToManyField(Category, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks")
+    project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, blank=True, related_name="tasks")
+    categories = models.ManyToManyField(Category, blank=True, related_name="tasks")
 
     title = models.CharField(max_length=200)
     text = models.TextField(blank=True)
@@ -55,6 +55,10 @@ class Task(models.Model):
     
     def __str__(self):
         return self.title
+    
+    @property
+    def is_overdue(self):
+        return self.due_date < localdate()
 
     def complete(self):
         self.is_completed = True

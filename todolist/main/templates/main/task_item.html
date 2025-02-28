@@ -21,7 +21,13 @@
 
                 <!-- Title -->
                 <div class="{% if task.is_completed %}opacity-50{% endif %} d-flex align-items-center gap-2">
-                    <span style="font-size: small;">{% if task.is_completed %}(Completed){% endif %}</span>
+                    <span style="font-size: small;">
+                        {% if task.is_completed %}
+                            (Completed)
+                        {% elif task.is_overdue %}
+                            <span class="text-danger">Overdue!</span>
+                        {% endif %}
+                    </span>
                     <h5>{{ task.title }}</h5>
                 </div>
             </div>
@@ -58,7 +64,7 @@
         <!-- Due date -->
         <div class="d-flex justify-content-end">
             <div class="note_path">{% if task.project %}{{ task.project }}{% endif %}</div>
-            <div class="endDateLabel">{{ task.due_date|date:"y.m.d" }}</div>
+            <div {% if task.is_overdue %}class="text-danger"{% endif %}>{{ task.due_date|date:"d/m" }}</div>
         </div>
     </div>
 </div>

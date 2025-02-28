@@ -45,7 +45,7 @@
 				My Projects
 			</button>
 			<div class="collapse list-group" id="dashboard-collapse">
-				{% for project in request.user.project_set.all %}
+				{% for project in request.user.projects.all %}
 					<a href="{% url 'project_detail' project.id %}" class="list-group-item text-center link-dark text-decoration-none rounded">{{ project.title }}</a>
 				{% endfor %}
 			</div>

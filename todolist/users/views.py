@@ -38,8 +38,8 @@ def settings(request):
 def profile(request):
     user = request.user
     
-    tasks = user.task_set.all()
-    projects = user.project_set.all()
+    tasks = user.tasks.all()
+    projects = user.projects.all()
     
     completed_tasks = tasks.filter(is_completed=True).count()
     overdue_tasks = tasks.filter(is_completed=False, due_date__lt=date.today()).count()
@@ -50,7 +50,7 @@ def profile(request):
     project_colors = []
 
     for project in projects:
-        completed_task_count = project.task_set.filter(is_completed=True).count()
+        completed_task_count = project.tasks.filter(is_completed=True).count()
         project_labels.append(project.title)
         project_data.append(completed_task_count)
         project_colors.append(project.color)
@@ -79,7 +79,7 @@ def filter_chart(request):
         except json.JSONDecodeError:
             return JsonResponse({"success": False, "error": "Invalid JSON"})
 
-        tasks = request.user.task_set.filter(is_completed=True)
+        tasks = request.user.tasks.filter(is_completed=True)
         
         if project_title:
             project = Project.objects.filter(title=project_title).first()
