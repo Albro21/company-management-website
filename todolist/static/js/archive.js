@@ -32,15 +32,9 @@ async function deleteCategory(button) {
     }
 }
 
-function openCloseForm(element) {
-    const closeId = element.getAttribute('data-close-id'); 
-    const openId = element.getAttribute('data-open-id');
-
-    document.getElementById(closeId).style.display = 'none';
-    document.getElementById(openId).style.display = 'flex';
-}
-
 function updateProject(button) {
+    event.preventDefault();
+
     const form = button.closest(".note-form");
     const formData = new FormData(form);
     const projectId = button.getAttribute('data-project-id');
@@ -58,11 +52,11 @@ function updateProject(button) {
             console.error("Server error:", data ? data.error : "No response");
         }
     });
-
-    event.preventDefault();
 }
 
 function updateCategory(button) {
+    event.preventDefault();
+
     const form = button.closest(".note-form");
     const formData = new FormData(form);
     const categoryId = button.getAttribute('data-category-id');
@@ -80,16 +74,4 @@ function updateCategory(button) {
             console.error("Server error:", data ? data.error : "No response");
         }
     });
-
-    event.preventDefault();
-}
-
-function showCreationForm(button) {
-    const formId = button.getAttribute('data-form-id');
-    document.getElementById(formId).style.display = 'flex'; 
-}
-
-function closeCreationForm(button) {
-    const formId = button.getAttribute('data-close-id');
-    document.getElementById(formId).style.display = 'none'; 
 }

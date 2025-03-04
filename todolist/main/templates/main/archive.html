@@ -34,7 +34,7 @@
 										class="btn btn-secondary"
 										data-close-id="project-{{ project.id }}" 
 										data-open-id="edit-project-{{ project.id }}"
-										onclick="openCloseForm(this)"
+										onclick="openCloseWindows(this)"
 										aria-label="Edit project">
 										Edit
 									</button>
@@ -79,7 +79,7 @@
 										class="bi bi-x-lg ms-3" 
 										data-close-id="edit-project-{{ project.id }}" 
 										data-open-id="project-{{ project.id }}" 
-										onclick="openCloseForm(this)">
+										onclick="openCloseWindows(this)">
 									</i>
 								</div>
 	
@@ -157,7 +157,7 @@
 							<i 
 								class="bi bi-x-lg ms-3" 
 								data-close-id="create-project" 
-								onclick="closeCreationForm(this)">
+								onclick="closeWindow(this)">
 							</i>
 						</div>
 
@@ -210,7 +210,7 @@
 
 			<!-- Add project button -->
 			<div class="plus_add_button_inner">
-				<div id="btn_add" data-form-id="create-project" onclick="showCreationForm(this)">
+				<div id="btn_add" data-open-id="create-project" onclick="openWindow(this)">
 					<button type="button" aria-hidden="false" data-supports-active-task="true" class="plus_add_button">
 						<span class="icon_add" aria-hidden="true">
 							<svg width="13" height="13">
@@ -248,7 +248,7 @@
 										class="btn btn-secondary"
 										data-close-id="category-{{ category.id }}" 
 										data-open-id="edit-category-{{ category.id }}"
-										onclick="openCloseForm(this)"
+										onclick="openCloseWindows(this)"
 										aria-label="Edit category">
 										Edit
 									</button>
@@ -293,7 +293,7 @@
 									class="bi bi-x-lg ms-3" 
 									data-close-id="edit-category-{{ category.id }}" 
 									data-open-id="category-{{ category.id }}" 
-									onclick="openCloseForm(this)">
+									onclick="openCloseWindows(this)">
 								</i>
 							</div>
 	
@@ -355,7 +355,7 @@
 						<i 
 							class="bi bi-x-lg ms-3" 
 							data-close-id="create-category" 
-							onclick="closeCreationForm(this)">
+							onclick="closeWindow(this)">
 						</i>
 					</div>
 
@@ -393,7 +393,7 @@
 
 			<!-- Add category button -->
 			<div class="plus_add_button_inner">
-				<div id="btn_add" data-form-id="create-category" onclick="showCreationForm(this)">
+				<div id="btn_add" data-open-id="create-category" onclick="openWindow(this)">
 					<button type="button" aria-hidden="false" data-supports-active-task="true" class="plus_add_button">
 						<span class="icon_add" aria-hidden="true">
 							<svg width="13" height="13">
