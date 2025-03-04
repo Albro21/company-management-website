@@ -1,6 +1,6 @@
 async function deleteProject(button) {
     const projectId = button.getAttribute('data-project-id');
-    const url = `/${projectId}/delete-project/`;
+    const url = `/project/${projectId}/delete/`;
     const method = 'DELETE';
 
     const success = await sendRequest(url, method);
@@ -17,7 +17,7 @@ async function deleteProject(button) {
 
 async function deleteCategory(button) {
     const categoryId = button.getAttribute('data-category-id');
-    const url = `/${categoryId}/delete-category/`;
+    const url = `/category/${categoryId}/delete/`;
     const method = 'DELETE';
 
     const success = await sendRequest(url, method);

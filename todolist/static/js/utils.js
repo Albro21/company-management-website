@@ -56,7 +56,7 @@ function closeWindow(button){
 
 function openWindow(button){
     const elementId = button.getAttribute('data-open-id');
-    document.getElementById(elementId).style.display = 'block';
+    document.getElementById(elementId).style.display = 'flex';
 }
 
 function openCloseWindows(button){

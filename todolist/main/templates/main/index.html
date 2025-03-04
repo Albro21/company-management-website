@@ -39,7 +39,7 @@
 						{% include "main/task_item.html" %}
 
 						<form 
-							class="mt-3 list-item w-100 container p-3 flex-column" 
+							class="list-item w-100 container p-3 flex-column" 
 							id="edit-task-{{ task.id }}" 
 							style="display: none;">
 
@@ -161,7 +161,7 @@
 
 		<!-- Task creation form -->
 		<form 
-			class="mt-3 list-item w-100 container p-3" 
+			class="mt-3 list-item w-100 container p-3 flex-column" 
 			id="task-creation-form" style="display: none;" 
 			method="POST" 
 			action="?{% for key, value in request.GET.items %}{{ key }}={{ value }}&{% endfor %}">

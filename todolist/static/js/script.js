@@ -4,7 +4,7 @@ async function logoutUser() {
 
 async function completeTask(button) {
 	const taskId = button.getAttribute('data-task-id');
-	const url = `/${taskId}/complete/`;
+	const url = `/task/${taskId}/complete/`;
 	const method = 'POST';
 
 	const success = await sendRequest(url, method);
