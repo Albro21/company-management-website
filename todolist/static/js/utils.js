@@ -58,3 +58,10 @@ function openWindow(button){
     const elementId = button.getAttribute('data-open-id');
     document.getElementById(elementId).style.display = 'block';
 }
+
+function openCloseWindows(button){
+    const openId = button.getAttribute('data-open-id');
+    const closeId = button.getAttribute('data-close-id');
+    document.getElementById(closeId).style.display = 'none';
+    document.getElementById(openId).style.display = 'flex';
+}

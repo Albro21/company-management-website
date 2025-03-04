@@ -33,6 +33,39 @@ async function completeTask(button) {
 	}
 }
 
+function updateTask(button) {
+    event.preventDefault();
+
+    const form = button.closest("form");
+    const formData = new FormData(form);
+    const taskId = button.getAttribute('data-task-id');
+
+    let requestBody = {};  
+
+    // Convert FormData to an object, handling multiple values for "categories"
+    formData.forEach((value, key) => {
+        if (key === "categories") {
+            if (!requestBody[key]) {
+                requestBody[key] = [];  // Ensure it's an array
+            }
+            requestBody[key].push(value);  // Add each category value
+        } else {
+            requestBody[key] = value;
+        }
+    });
+
+    requestBody = JSON.stringify(requestBody);
+
+    sendRequest(`/task/${taskId}/edit/`, "POST", requestBody).then(data => {
+        if (data && data.success) {
+            location.reload();
+        } else {
+            console.error("Server error:", data ? data.error : "No response");
+        }
+    });
+}
+
+
 // Change checkmark icon on hover
 document.addEventListener("DOMContentLoaded", function () {
 	document.querySelectorAll(".checkmark").forEach(icon => {

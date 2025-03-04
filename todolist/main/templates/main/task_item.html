@@ -1,4 +1,4 @@
-<div class="list-item d-flex w-100 p-0" id="task-{{ task.id }}">
+<div class="list-item w-100 p-0" id="task-{{ task.id }}" style="display: flex;">
 
     <!-- Project Color -->
     <div style="width: 10px;{% if task.project.color %} background-color: {{ task.project.color }}{% endif %}"></div>
@@ -52,7 +52,12 @@
                 {% endif %}
                 
                 <!-- Edit icon -->
-                <i class="bi bi-pencil-square edit-icon ms-auto pointer"></i>
+                <i 
+                    class="bi bi-pencil-square edit-icon ms-auto pointer" 
+                    data-close-id="task-{{ task.id }}" 
+                    data-open-id="edit-task-{{ task.id }}"
+                    onclick="openCloseWindows(this)">
+                </i>
             </div>
         </div>
 

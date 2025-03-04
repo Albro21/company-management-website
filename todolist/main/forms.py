@@ -13,7 +13,7 @@ class CategoryForm(forms.ModelForm):
         fields = ['title', 'description', 'color']
 
 
-class TaskCreationForm(forms.ModelForm):
+class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
         fields = ['title', 'text', 'project', 'categories', 'due_date', 'is_high_priority']
