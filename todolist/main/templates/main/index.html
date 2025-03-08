@@ -10,7 +10,7 @@
 
 {% block content %}
 	<audio id="completion-sound" src="{% static 'sounds/completion_sound.mp3' %}" preload="auto"></audio>
-	<div class="d-flex flex-column justify-content-center gap-3">
+	<div class="d-flex flex-column justify-content-center">
 
 		<!-- Filters -->
 		{% include 'main/filters.html' %}
@@ -20,7 +20,7 @@
 			<!-- Category filters -->
 			{% for category in request.user.categories.all %}
 				<span 
-					class="badge shadow-sm text-black pointer category-filter"
+					class="badge shadow-sm text-black pointer category-filter align-self-center"
 					data-category-id="{{ category.id }}"
 					data-category-color="{{ category.color }}"
 					style="outline: 1px solid black; border: 3px solid {{ category.color }};">
@@ -32,146 +32,44 @@
 			<i class="bi bi-flag" style="font-size: 20px;" id="high-priority-filter"></i>
 		</div>
 
-		<!-- Page Title -->
-		<h1 class="note text-center">
-			{% if request.GET.filter == 'today' %}Today
-			{% elif request.GET.filter == 'tomorrow' %}Tomorrow
-			{% elif request.GET.filter == 'this_week' %}This week
-			{% elif request.GET.filter == 'next_week' %}Next week
-			{% else %}All{% endif %} 
-			{% if request.GET.completed == 'false' %} pending {% endif %} 
-			tasks
-		</h1>
-		
 		<!-- Tasks -->
-		<div class="d-flex flex-column justify-content-center gap-4" id="tasks">
-			{% regroup tasks by due_date as tasks_by_date %}
-			{% for task_group in tasks_by_date %}
-				<div class="task-group d-flex flex-column justify-content-center">
-					<h5 class="ms-3 mb-2">
-						{{ task_group.grouper|date:"l, d.m" }}
-					</h5>
-					
-					{% for task in task_group.list %}
-						{% include "main/task_item.html" %}
+		<div class="d-flex flex-column justify-content-center" id="tasks">
+			{% regroup tasks by is_completed as tasks_by_completion %}
+			{% for completed_group in tasks_by_completion %}
+				{% if completed_group.grouper %}
+					<h2 class="mb-3 mt-4 mt-md-5 text-center">
+						Completed tasks
+					</h2>
+				{% else %}
+					<h2 class="mb-3 mb-md-0 mt-4 text-center">
+						Pending tasks
+					</h2>
+				{% endif %}
+				{% regroup completed_group.list by due_date as tasks_by_date %}
+				<div class="d-flex flex-column gap-4">
+					{% if not completed_group.grouper %}
+						{% for task_group in tasks_by_date %}
+							<div class="task-group d-flex flex-column justify-content-center">
+								<h5 class="ms-3 mb-2">
+									{{ task_group.grouper|date:"l, d.m" }}
+								</h5>
 
-						<form 
-							class="list-item w-100 container p-3 flex-column" 
-							id="edit-task-{{ task.id }}" 
-							style="display: none;">
-
-							{% csrf_token %}
-
-							<!-- Top row -->
-							<div class="d-flex">
-								<!-- Note Title -->
-								<div class="w-100">
-									<input 
-										class="w-100 form-control form-control-sm my-2 {% if form.title.errors %}is-invalid{% endif %}" 
-										type="text" 
-										name="{{ form.title.name }}" 
-										value="{{ task.title }}" 
-										placeholder="Note Title" 
-										aria-label=".form-control-sm">
-									<div class="invalid-feedback">{{ form.title.errors }}</div>
-								</div>
-								<!-- Close button -->
-								<i 
-									class="bi bi-x-lg ms-3" 
-									data-close-id="edit-task-{{ task.id }}"
-									data-open-id="task-{{ task.id }}"
-									onclick="openCloseWindows(this)"
-									style="margin-top: 12px;">
-								</i>
+								{% for task in task_group.list %}
+									{% include "main/task_item.html" %}
+									{% include "main/task_editing_form.html" %}
+								{% endfor %}
 							</div>
-
-							<div class="d-flex mb-2 gap-2">
-
-								<!-- Left half -->
-								<div class="d-flex flex-column flex-grow-1 gap-2">
-
-									<!-- Note Text -->
-									<div>
-										<textarea 
-											class="form-control {% if form.text.errors %}is-invalid{% endif %}" 
-											name="{{ form.text.name }}"
-											placeholder="Note Text" 
-											rows="3">{{ task.text }}</textarea>
-									</div>
-
-									<div class="d-flex flex-wrap justify-content-between gap-2">
-										<div class="d-flex align-items-center gap-2">
-
-											<!-- Project select -->
-											<select class="form-control me-2" name="{{ form.project.name }}">
-												<option value="" {% if not task.project %}selected{% endif %}>Select a project</option>
-												{% for project in projects %}
-													<option value="{{ project.id }}" 
-														{% if task.project and project.id == task.project.id or form.project.value == project.id %}selected{% endif %}>
-														{{ project.title }}
-													</option>
-												{% endfor %}
-											</select>
-
-											<!-- High Priority checkbox -->
-											<input 
-												class="form-check-input mt-0" 
-												type="checkbox"
-												name="{{ form.is_high_priority.name }}" 
-												id="{{ form.is_high_priority.id_for_label }}" 
-												{% if task.is_high_priority %}
-													checked
-												{% endif %}>	
-											<label class="form-check-label d-flex" for="{{ form.is_high_priority.id_for_label }}" style="white-space: nowrap;">
-												Is High Priority
-											</label>
-										</div>
-
-										<!-- Due Date -->
-										<div class="d-flex">
-											<input 
-												class="form-control {% if form.due_date.errors %}is-invalid{% endif %}" 
-												type="date" 
-												name="{{ form.due_date.name }}" 
-												value="{{ task.due_date|date:'Y-m-d' }}">
-											<div class="invalid-feedback">{{ form.due_date.errors }}</div>
-										</div>
-									</div>
-								</div>
-
-								<!-- Right half -->
-								<div class="d-flex flex-column custom-scroll">
-									
-									<!-- Category list -->
-									<div class="d-flex flex-column">
-										{% for category in categories %}
-											<div class="form-check">
-												<input 
-													class="form-check-input mx-2" 
-													type="checkbox" 
-													name="{{ form.categories.name }}"
-													id="category-{{ category.id }}"  
-													value="{{ category.id }}"
-													{% if category in task.categories.all %}checked{% endif %}>
-												<label class="form-check-label" style="white-space: nowrap;" for="category-{{ category.id }}">
-													{{ category.title }}
-												</label>
-											</div>
-										{% endfor %}
-									</div>
-								</div>
-							</div>
-
-							<!-- Submit button -->
-							<button 
-								class="btn btn-warning w-100" 
-								type="submit" 
-								data-task-id="{{ task.id }}"
-								onclick="updateTask(this)">
-								Add note
-							</button>
-						</form>
-					{% endfor %}
+						{% endfor %}
+					{% else %}
+						<div class="task-group d-flex flex-column justify-content-center">
+							{% for task_group in tasks_by_date %}
+								{% for task in task_group.list %}
+									{% include "main/task_item.html" %}
+									{% include "main/task_editing_form.html" %}
+								{% endfor %}
+							{% endfor %}
+						</div>
+					{% endif %}
 				</div>
 			{% endfor %}
 		</div>
@@ -227,7 +125,7 @@
 							<!-- Project select -->
 							<select class="form-control me-2" name="{{ form.project.name }}">
 								<option value="">Select a project</option>
-								{% for project in projects %}
+								{% for project in request.user.projects.all %}
 									<option value="{{ project.id }}" {% if form.project.value == project.id %}selected{% endif %}>{{ project.title }}</option>
 								{% endfor %}
 							</select>
@@ -264,7 +162,7 @@
 				<div class="d-flex flex-column custom-scroll">
 					
 					<!-- Category list -->
-					{% for category in categories %}
+					{% for category in request.user.categories.all %}
 						<div style="display: inline-flex; justify-content: left;">
 							<label class="form-check-label" style="white-space: nowrap;" for="category-{{ category.id }}">{{ category.title }}</label>
 							<input 

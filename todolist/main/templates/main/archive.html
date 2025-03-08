@@ -16,7 +16,7 @@
 
 			<!-- Projects -->
 			<div id="projects">
-				{% for project in projects.all %}
+				{% for project in request.user.projects.all %}
 					<div class="list-item p-0 w-100" id="project-{{ project.id }}" style="display: flex;">
 						<!-- Project Color -->
 						<div style="width: 10px; background-color: {{ project.color }}"></div>
@@ -230,7 +230,7 @@
 
 			<!-- Categories -->
 			<div id="categories">
-				{% for category in categories.all %}
+				{% for category in request.user.categories.all %}
 					<div class="list-item p-0 w-100" id="category-{{ category.id }}" style="display: flex;">
 						<!-- Category Color -->
 						<div style="width: 10px; background-color: {{ category.color }}"></div>

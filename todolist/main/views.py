@@ -10,10 +10,6 @@ from .forms import TaskForm, ProjectForm, CategoryForm
 
 def filter_tasks(tasks, request):
     filter_type = request.GET.get('filter', 'all_time')
-    show_completed = request.GET.get('completed', 'false') == 'true'
-    
-    if not show_completed:
-        tasks = tasks.filter(is_completed=False)
     
     if filter_type == 'today':
         tasks = tasks.filter(due_date=date.today())
@@ -35,7 +31,9 @@ def filter_tasks(tasks, request):
             due_date__gte=start_of_next_week,
             due_date__lt=end_of_next_week
         )
-        
+    else:
+        tasks = tasks.filter(is_completed=False)
+
     return tasks
 
 
@@ -43,10 +41,7 @@ def filter_tasks(tasks, request):
 def index(request):
     user = request.user
     
-    projects = Project.objects.filter(user=user)
-    categories = Category.objects.filter(user=user)
-    tasks = user.tasks.all()
-    
+    tasks = user.tasks.all().order_by('is_completed', 'due_date')
     tasks = filter_tasks(tasks, request)
     
     form = TaskForm(request.POST or None)
@@ -60,8 +55,6 @@ def index(request):
             return redirect('index')
 
     context = {
-        'projects': projects,
-        'categories': categories,
         'tasks': tasks,
         'form': form,
     }
@@ -102,8 +95,6 @@ def edit_task(request, task_id):
 @login_required
 def archive(request):
     user = request.user
-    projects = user.projects.all()
-    categories = user.categories.all()
 
     project_form = ProjectForm(request.POST or None, prefix='project')
     category_form = CategoryForm(request.POST or None, prefix='category')
@@ -126,9 +117,8 @@ def archive(request):
     context = {
         'project_form': project_form,
         'category_form': category_form,
-        'projects': projects,
-        'categories': categories,
     }
+
     return render(request, 'main/archive.html', context)
 
 

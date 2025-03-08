@@ -1,54 +1,38 @@
 {% comment %} Task filtring buttons {% endcomment %}
-<div class="container d-flex flex-column flex-xl-row my-3 justify-content-center">
+<div class="container d-flex flex-xl-row my-2 justify-content-center">
 
     <!-- Filter buttons -->
-    <div class="btn-group mb-3 mb-xl-0" role="group">
+    <div class="btn-group" role="group">
         <!-- Today -->
         <a 
-            href="?filter=today&completed={{ request.GET.completed|default:'false' }}" 
+            href="?filter=today" 
             class="btn btn-outline-secondary {% if request.GET.filter == 'today' %}active{% endif %}">
             Today
         </a>
         <!-- Tommorrow -->
         <a 
-            href="?filter=tomorrow&completed={{ request.GET.completed|default:'false' }}" 
+            href="?filter=tomorrow" 
             class="btn btn-outline-secondary {% if request.GET.filter == 'tomorrow' %}active{% endif %}">
             Tomorrow
         </a>
         <!-- This week -->
         <a 
-            href="?filter=this_week&completed={{ request.GET.completed|default:'false' }}" 
+            href="?filter=this_week" 
             class="btn btn-outline-secondary {% if request.GET.filter == 'this_week' %}active{% endif %}">
             This week
         </a>
         <!-- Next week -->
         <a 
-            href="?filter=next_week&completed={{ request.GET.completed|default:'false' }}" 
+            href="?filter=next_week" 
             class="btn btn-outline-secondary {% if request.GET.filter == 'next_week' %}active{% endif %}">
             Next week
         </a>
         <!-- All time -->
         <a 
-            href="?filter=all_time&completed={{ request.GET.completed|default:'false' }}" 
+            href="?filter=all_time" 
             class="btn btn-outline-secondary {% if request.GET.filter == 'all_time' or not request.GET.filter %}active{% endif %}">
             All time
         </a>
     </div>
 
-    <!-- Show completed switch -->
-    <div class="form-check form-switch align-self-center ms-3 fs-6">
-        <input 
-            class="form-check-input" 
-            type="checkbox" 
-            role="switch" 
-            id="completed-switch"
-            onchange="
-                const params = new URLSearchParams(window.location.search);
-                params.set('completed', this.checked ? 'true' : 'false');
-                window.location.search = params.toString();
-            "
-            {% if request.GET.completed == 'true' %} checked {% endif %}>
-        <label class="form-check-label" for="completed-switch">Include Completed Tasks</label>
-    </div>
-    
 </div>
