@@ -2,12 +2,12 @@ import calendar
 from datetime import date, timedelta
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 import json
 
-from main.models import Project
 from .forms import ProfileForm
 
 
@@ -15,7 +15,7 @@ from .forms import ProfileForm
 def settings(request):
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=request.user)
-        
+
         if form.is_valid():
             form.save()
 
@@ -37,14 +37,14 @@ def settings(request):
 @login_required
 def profile(request):
     user = request.user
-    
+
     tasks = user.tasks.all()
     projects = user.projects.all()
-    
+
     completed_tasks = tasks.filter(is_completed=True).count()
     overdue_tasks = tasks.filter(is_completed=False, due_date__lt=date.today()).count()
     remaining_tasks = tasks.filter(is_completed=False).count()
-    
+
     project_labels = []
     project_data = []
     project_colors = []
@@ -54,7 +54,7 @@ def profile(request):
         project_labels.append(project.title)
         project_data.append(completed_task_count)
         project_colors.append(project.color)
-    
+
     context = {
         'user': request.user,
         'completed_tasks': completed_tasks,
@@ -71,6 +71,8 @@ def profile(request):
 
 @login_required
 def filter_chart(request):
+    user = request.user
+
     if request.method == "POST":
         try:
             data = json.loads(request.body)
@@ -79,15 +81,16 @@ def filter_chart(request):
         except json.JSONDecodeError:
             return JsonResponse({"success": False, "error": "Invalid JSON"})
 
-        tasks = request.user.tasks.filter(is_completed=True)
-        
+        tasks = user.tasks.filter(is_completed=True)
+
         if project_title:
-            project = Project.objects.filter(title=project_title).first()
+            project = user.projects.filter(title=project_title).first()
             if project:
                 tasks = tasks.filter(project=project)
             else:
                 return JsonResponse({"success": False, "error": "Project not found"})
 
+        # Filter by date range
         if filter_option == "week":
             start_date = date.today() - timedelta(days=date.today().weekday())
             end_date = start_date + timedelta(days=6)
@@ -107,15 +110,21 @@ def filter_chart(request):
             _, last_day = calendar.monthrange(start_date.year, start_date.month)
             end_date = start_date.replace(day=last_day)
         elif filter_option == "allTime":
-            start_date = tasks.earliest("completed_at").completed_at
+            try:
+                start_date = tasks.earliest("completed_at").completed_at
+            except ObjectDoesNotExist:
+                start_date = date.today() - timedelta(days=date.today().weekday())
             end_date = date.today()
         else:
             return JsonResponse({"success": False, "error": "Invalid filter option"})
 
+        # Filter tasks by date
         filtered_tasks = tasks.filter(completed_at__gte=start_date)
 
+        # Generate date list for the chart
         date_list = [start_date + timedelta(days=i) for i in range((end_date - start_date).days + 1)]
 
+        # Prepare chart data
         task_counts = filtered_tasks.values("completed_at").annotate(count=Count("id"))
         task_data = {entry["completed_at"]: entry["count"] for entry in task_counts}
 
