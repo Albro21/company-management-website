@@ -48,7 +48,7 @@
                     <!-- Project select -->
                     <select class="form-control me-2" name="{{ form.project.name }}">
                         <option value="" {% if not task.project %}selected{% endif %}>Select a project</option>
-                        {% for project in projects %}
+                        {% for project in request.user.projects.all %}
                             <option value="{{ project.id }}" 
                                 {% if task.project and project.id == task.project.id or form.project.value == project.id %}selected{% endif %}>
                                 {{ project.title }}
@@ -87,7 +87,7 @@
             
             <!-- Category list -->
             <div class="d-flex flex-column">
-                {% for category in categories %}
+                {% for category in request.user.categories.all %}
                     <div class="form-check">
                         <input 
                             class="form-check-input mx-2" 
