@@ -138,3 +138,19 @@ button {
     transition: transform 0.2s linear;
     transition: box-shadow 0.2s linear;
 }
+
+@media screen and (max-width: 576px) {
+    .filter-button {
+        font-size: 12px;
+        padding: 3px 5px;
+        text-wrap: nowrap;
+    }
+
+    .date-header, .task-title {
+        font-size: 16px;
+    }
+
+    .category-filter {
+        font-size: 12px;
+    }
+}

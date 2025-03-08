@@ -16,7 +16,7 @@
 		{% include 'main/filters.html' %}
 		
 		<!-- Category and high priority filters -->
-		<div class="d-flex justify-content-center gap-3">
+		<div class="d-flex justify-content-center gap-2 gap-md-3">
 			<!-- Category filters -->
 			{% for category in request.user.categories.all %}
 				<span 
@@ -46,11 +46,11 @@
 					</h2>
 				{% endif %}
 				{% regroup completed_group.list by due_date as tasks_by_date %}
-				<div class="d-flex flex-column gap-4">
+				<div class="d-flex flex-column gap-3 gap-sm-4">
 					{% if not completed_group.grouper %}
 						{% for task_group in tasks_by_date %}
 							<div class="task-group d-flex flex-column justify-content-center">
-								<h5 class="ms-3 mb-2">
+								<h5 class="ms-3 mb-2 date-header">
 									{{ task_group.grouper|date:"l, d.m" }}
 								</h5>
 

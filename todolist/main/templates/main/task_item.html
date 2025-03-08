@@ -26,14 +26,16 @@
 
                 <!-- Title -->
                 <div class="{% if task.is_completed %}opacity-50{% endif %} d-flex align-items-center gap-2">
-                    <span style="font-size: small;">
-                        {% if task.is_completed %}
-                            (Completed)
-                        {% elif task.is_overdue %}
-                            <span class="text-danger">Overdue!</span>
-                        {% endif %}
-                    </span>
-                    <h5>{{ task.title }}</h5>
+                    {% if task.is_completed or task.is_overdue %}
+                        <span style="font-size: small;">
+                            {% if task.is_completed %}
+                                (Completed)
+                            {% elif task.is_overdue %}
+                                <span class="text-danger">Overdue!</span>
+                            {% endif %}
+                        </span>
+                    {% endif %}
+                    <h5 class="task-title">{{ task.title }}</h5>
                 </div>
             </div>
             
