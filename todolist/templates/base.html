@@ -14,106 +14,139 @@
 	{% block styles %}{% endblock styles %}
 </head>
 
-<body class="row m-0">
+<body>
 
-	<!-- Desktop Sidebar -->
-	<aside class="col-2 border-end gap-4 position-fixed vh-100 d-none d-xl-flex flex-column justify-content-center p-4">
+	<!-- Navbar with offcanvas toggle button -->
+	<nav class="navbar sticky-top d-xl-none d-flex justify-content-start align-items-center bg-white gap-2 gap-sm-3 px-3 py-2 flex-nowrap">
+		<button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasResponsive">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<h5 class="my-auto text-nowrap overflow-hidden">
+			{{ request.user.first_name }} {{ request.user.last_name }}
+		</h5>
+		<h5 class="ms-auto border rounded p-2 text-nowrap">
+			To-Do List
+		</h5>
+	</nav>
 
-		<!-- Logo -->
-		<a href="{% url 'index' %}" class="link-dark text-decoration-none text-center text-center display-6">To Do List</a>
+	<div class="d-flex">
+
+		<!-- Offcanvas menu -->
+		<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasResponsive">
+			<div class="offcanvas-header border-bottom">
+				<h2 class="offcanvas-title" id="offcanvasResponsiveLabel">To-Do List</h2>
+				<button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasResponsive"></button>
+			</div>
+			<div class="offcanvas-body d-flex flex-column gap-4">
+	
+				<!-- Navbar -->
+				<ul class="nav navbar-nav flex-column w-100 h5">
+					<a href="{% url 'index' %}" class="nav-link">
+						<i class="bi bi-house me-2"></i>Home
+					</a>
+					<a href="{% url 'archive' %}" class="nav-link">
+						<i class="bi bi-tags me-2"></i>Projects & Categories
+					</a>
+					<a href="{% url 'profile' %}" class="nav-link">
+						<i class="bi bi-person me-2"></i>Profile
+					</a>
+					<a href="{% url 'settings' %}" class="nav-link">
+						<i class="bi bi-gear me-2"></i>Settings
+					</a>
+				</ul>
+	
+				<!-- Projects dropdown -->
+				<div class="d-flex flex-column justify-content-center">
+					<button class="btn btn-outline-dark align-items-center rounded" data-bs-toggle="collapse"
+						data-bs-target="#dashboard-collapse">
+						My Projects
+					</button>
+					<div class="collapse list-group" id="dashboard-collapse">
+						{% for project in request.user.projects.all %}
+						<a href="{% url 'project_detail' project.id %}" class="list-group-item text-center link-dark text-decoration-none rounded">{{ project.title }}</a>
+						{% endfor %}
+					</div>
+				</div>
+	
+				<!-- Profile dropdown -->
+				<div class="mt-auto">
+					<hr>
+					<div class="dropdown w-100 d-flex justify-content-center">
+						<div class="d-flex align-items-center dropdown-toggle pointer" data-bs-toggle="dropdown">
+							<img src="{{ user.profile.profile_picture.url }}" alt="Profile picture" width="32" height="32"
+								class="rounded-circle me-2">
+							<strong>{{ user.first_name }} {{ user.last_name }}</strong>
+						</div>
+						<div class="dropdown-menu">
+							<a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
+							<a class="dropdown-item" href="{% url 'settings' %}">Settings</a>
+							<hr class="dropdown-divider">
+							<a class="dropdown-item" href="{% url 'login' %}" onclick="logoutUser()">Sign out</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 		
-		<!-- Navbar -->
-		<ul class="nav navbar-nav flex-column w-100 h5">
-			<a href="{% url 'index' %}" class="nav-link">
-				<i class="bi bi-house me-2"></i>Home
-			</a>
-			<a href="{% url 'archive' %}" class="nav-link">
-				<i class="bi bi-tags me-2"></i>Projects & Categories
-			</a>
-			<a href="{% url 'profile' %}" class="nav-link">
-				<i class="bi bi-person me-2"></i>Profile
-			</a>
-			<a href="{% url 'settings' %}" class="nav-link">
-				<i class="bi bi-gear me-2"></i>Settings
-			</a>
-		</ul>
+		<!-- Sidebar -->
+		<div class="d-none d-xl-flex flex-column p-4 vh-100 position-fixed border-end gap-3" style="width: 300px">
+			
+			<!-- Logo -->
+			<h3 class="text-center border-bottom pb-3">To-Do List</h3>
+			<!-- Navbar -->
+			<ul class="nav navbar-nav flex-column w-100 h5">
+				<a href="{% url 'index' %}" class="nav-link">
+					<i class="bi bi-house me-2"></i>Home
+				</a>
+				<a href="{% url 'archive' %}" class="nav-link">
+					<i class="bi bi-tags me-2"></i>Projects & Categories
+				</a>
+				<a href="{% url 'profile' %}" class="nav-link">
+					<i class="bi bi-person me-2"></i>Profile
+				</a>
+				<a href="{% url 'settings' %}" class="nav-link">
+					<i class="bi bi-gear me-2"></i>Settings
+				</a>
+			</ul>
 
-		<!-- Projects dropdown -->
-		<div class="d-flex flex-column justify-content-center">
-			<button class="btn btn-outline-dark align-items-center rounded" data-bs-toggle="collapse"
-				data-bs-target="#dashboard-collapse">
-				My Projects
-			</button>
-			<div class="collapse list-group" id="dashboard-collapse">
-				{% for project in request.user.projects.all %}
-					<a href="{% url 'project_detail' project.id %}" class="list-group-item text-center link-dark text-decoration-none rounded">{{ project.title }}</a>
-				{% endfor %}
-			</div>
-		</div>
-
-		<!-- Profile dropdown -->
-		<div class="mt-auto">
-			<hr>
-			<div class="dropdown w-100 d-flex justify-content-center">
-				<div class="d-flex align-items-center dropdown-toggle pointer" data-bs-toggle="dropdown">
-					<img src="{{ user.profile.profile_picture.url }}" alt="Profile picture" width="32" height="32"
-						class="rounded-circle me-2">
-					<strong>{{ user.first_name }} {{ user.last_name }}</strong>
-				</div>
-				<div class="dropdown-menu">
-					<a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
-					<a class="dropdown-item" href="{% url 'settings' %}">Settings</a>
-					<hr class="dropdown-divider">
-					<a class="dropdown-item" href="{% url 'login' %}" onclick="logoutUser()">Sign out</a>
+			<!-- Projects dropdown -->
+			<div class="d-flex flex-column justify-content-center">
+				<button class="btn btn-outline-dark align-items-center rounded" data-bs-toggle="collapse"
+					data-bs-target="#dashboard-collapse">
+					My Projects
+				</button>
+				<div class="collapse list-group" id="dashboard-collapse">
+					{% for project in request.user.projects.all %}
+					<a href="{% url 'project_detail' project.id %}"
+						class="list-group-item text-center link-dark text-decoration-none rounded">{{ project.title }}</a>
+					{% endfor %}
 				</div>
 			</div>
-		</div>
-	</aside>
 
-	<!-- Mobile sidebar -->
-	<aside class="px-lg-4 px-md-2 py-4 d-flex flex-column col-2 col-md-1 justify-content-center border-end gap-4 position-fixed vh-100 d-xl-none">
-
-		<!-- Navbar -->
-		<ul class="nav navbar-nav flex-column w-100 h2">
-			<a href="{% url 'index' %}" class="nav-link text-center">
-				<i class="bi bi-house"></i>
-			</a>
-			<a href="{% url 'archive' %}" class="nav-link text-center">
-				<i class="bi bi-tags"></i>
-			</a>
-			<a href="{% url 'profile' %}" class="nav-link text-center">
-				<i class="bi bi-person"></i>
-			</a>
-			<a href="{% url 'settings' %}" class="nav-link text-center">
-				<i class="bi bi-gear"></i>
-			</a>
-		</ul>
-
-		<!-- Profile dropdown -->
-		<div class="mt-auto">
-			<hr>
-			<div class="dropdown w-100 d-flex justify-content-center">
-				<img 
-					src="{{ user.profile.profile_picture.url }}" 
-					alt="Profile picture" 
-					width="45" 
-					height="45"
-					class="rounded-circle pointer"
-					data-bs-toggle="dropdown">
-				<div class="dropdown-menu">
-					<a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
-					<a class="dropdown-item" href="{% url 'settings' %}">Settings</a>
-					<hr class="dropdown-divider">
-					<a class="dropdown-item" href="{% url 'login' %}" onclick="logoutUser()">Sign out</a>
+			<!-- Profile dropdown -->
+			<div class="mt-auto">
+				<hr>
+				<div class="dropdown w-100 d-flex justify-content-center">
+					<div class="d-flex align-items-center dropdown-toggle pointer" data-bs-toggle="dropdown">
+						<img src="{{ user.profile.profile_picture.url }}" alt="Profile picture" width="32" height="32"
+							class="rounded-circle me-2">
+						<strong>{{ user.first_name }} {{ user.last_name }}</strong>
+					</div>
+					<div class="dropdown-menu">
+						<a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
+						<a class="dropdown-item" href="{% url 'settings' %}">Settings</a>
+						<hr class="dropdown-divider">
+						<a class="dropdown-item" href="{% url 'login' %}" onclick="logoutUser()">Sign out</a>
+					</div>
 				</div>
 			</div>
 		</div>
-	</aside>
 
-	<!-- Main content -->
-	<div class="col-10 col-md-11 col-xl-10 ms-auto p-0">
-		<div class="container mt-4 mb-5">
-			{% block content %}{% endblock content %}
+		<!-- Main content -->
+		<div class="w-100 px-xl-4" id="main-content">
+			<div class="container-xl mt-xl-4 mb-5">
+				{% block content %}{% endblock content %}
+			</div>
 		</div>
 	</div>
 

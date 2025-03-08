@@ -150,7 +150,24 @@ button {
         font-size: 16px;
     }
 
-    .category-filter {
-        font-size: 12px;
+    .task-title {
+        font-size: 14px;
+    }
+
+    .project-color {
+        width: 5px;
+    }
+
+    .checkmark {
+        position: relative;
+        bottom: 7px;
+        font-size: 20px;
+        height: 20px;
+    }
+}
+
+@media screen and (min-width: 1200px) {
+    #main-content {
+        margin-left: 300px
     }
 }
