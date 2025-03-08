@@ -1,7 +1,8 @@
 <div 
     class="list-item w-100 p-0 task" 
     id="task-{{ task.id }}" 
-    data-category-ids="{% for category in task.categories.all %}{{ category.id }}{% if not forloop.last %},{% endif %}{% endfor %}" 
+    data-category-ids="{% for category in task.categories.all %}{{ category.id }}{% if not forloop.last %},{% endif %}{% endfor %}"
+    data-is-high-priority="{{ task.is_high_priority }}"
     style="display: flex;">
 
     <!-- Project Color -->

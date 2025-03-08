@@ -15,7 +15,9 @@
 		<!-- Filters -->
 		{% include 'main/filters.html' %}
 		
+		<!-- Category and high priority filters -->
 		<div class="d-flex justify-content-center gap-3">
+			<!-- Category filters -->
 			{% for category in request.user.categories.all %}
 				<span 
 					class="badge shadow-sm text-black pointer category-filter"
@@ -25,6 +27,9 @@
 					{{ category.title }} 
 				</span>
 			{% endfor %}
+
+			<!-- High priority filter -->
+			<i class="bi bi-flag" style="font-size: 20px;" id="high-priority-filter"></i>
 		</div>
 
 		<!-- Page Title -->
