@@ -1,4 +1,8 @@
-<div class="list-item w-100 p-0" id="task-{{ task.id }}" style="display: flex;">
+<div 
+    class="list-item w-100 p-0 task" 
+    id="task-{{ task.id }}" 
+    data-category-ids="{% for category in task.categories.all %}{{ category.id }}{% if not forloop.last %},{% endif %}{% endfor %}" 
+    style="display: flex;">
 
     <!-- Project Color -->
     <div style="width: 10px;{% if task.project.color %} background-color: {{ task.project.color }}{% endif %}"></div>

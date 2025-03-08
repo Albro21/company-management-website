@@ -10,10 +10,22 @@
 
 {% block content %}
 	<audio id="completion-sound" src="{% static 'sounds/completion_sound.mp3' %}" preload="auto"></audio>
-	<div class="d-flex flex-column justify-content-center">
+	<div class="d-flex flex-column justify-content-center gap-3">
 
 		<!-- Filters -->
-		{% include 'main/filters.html' %}  
+		{% include 'main/filters.html' %}
+		
+		<div class="d-flex justify-content-center gap-3">
+			{% for category in request.user.categories.all %}
+				<span 
+					class="badge shadow-sm text-black pointer category-filter"
+					data-category-id="{{ category.id }}"
+					data-category-color="{{ category.color }}"
+					style="outline: 1px solid black; border: 3px solid {{ category.color }};">
+					{{ category.title }} 
+				</span>
+			{% endfor %}
+		</div>
 
 		<!-- Page Title -->
 		<h1 class="note text-center">
@@ -294,4 +306,5 @@
 
 {% block scripts %}
 	<script src="{% static 'js/script.js' %}"></script>
+	<script src="{% static 'js/filters.js' %}"></script>
 {% endblock scripts %}
