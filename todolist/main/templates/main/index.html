@@ -39,7 +39,7 @@
 						Completed tasks
 					</h2>
 				{% else %}
-					<h2 class="mb-3 mb-md-0 mt-4 text-center">
+					<h2 class="mb-2 mb-sm-3 mb-md-0 mt-2 mt-sm-4 text-center">
 						Pending tasks
 					</h2>
 				{% endif %}
@@ -48,7 +48,7 @@
 					{% if not completed_group.grouper %}
 						{% for task_group in tasks_by_date %}
 							<div class="task-group d-flex flex-column justify-content-center">
-								<h5 class="ms-3 mb-2 date-header">
+								<h5 class="ms-1 ms-sm-3 mb-1 mb-sm-2 date-header">
 									{{ task_group.grouper|date:"l, d.m" }}
 								</h5>
 

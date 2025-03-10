@@ -70,8 +70,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .edit-icon {
     position: absolute;
-    top: 8px;
-    right: 6px;
+    top: 3px;
+    right: 16px;
     font-size: 24px;
 }
 
@@ -114,15 +114,26 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .task-top {
-    margin-right: 25px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
-.task-top > * {
-    margin-right: 5px;
+.task-badge {
+    font-size: 12px;
+    border: 1px solid #aaa;
 }
 
-.task-top > *:last-child {
-    margin-right: 0;
+.task-priority-flag {
+    font-size: 20px;
+    margin-left: 8px;
+}
+
+.task-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
 }
 
 @media screen and (max-width: 576px) {
@@ -131,17 +142,18 @@ h1, h2, h3, h4, h5, h6 {
     }
 
     .filter-button {
-        font-size: 12px;
-        padding: 3px 5px;
+        font-size: 10px;
+        padding: 3px;
         text-wrap: nowrap;
     }
 
-    .date-header {
+    .date-header,.task-title {
         font-size: 16px;
     }
 
-    .task-title {
+    .task-description {
         font-size: 14px;
+        line-height: 1;
     }
 
     .project-color {
@@ -159,6 +171,43 @@ h1, h2, h3, h4, h5, h6 {
         top: 3px;
         right: 6px;
         font-size: 20px;
+        height: 20px;
+    }
+
+    .task-top {
+        width: 100%;
+        margin-right: 25px;
+    }
+
+    .task-top > * {
+        margin-right: 5px;
+    }
+
+    .task-top > *:last-child {
+        margin-right: 0;
+    }
+
+    .task-badge {
+        font-size: 9px;
+        text-rendering: optimizeLegibility;
+        font-weight: 400;
+        padding: 3px;
+    }
+
+    .task-priority-flag {
+        position: relative;
+        bottom: 3px;
+        height: 17px;
+        margin-left: 2px;
+        font-size: 14px;
+    }
+
+    .task-tags {
+        gap: 2px;
+    }
+
+    .task-bottom {
+        font-size: 12px;
     }
 }
 

@@ -19,59 +19,69 @@
             onclick="openCloseWindows(this)">
         </i>
 
-        <!-- Top row -->
-        <div class="task-top d-flex flex-wrap align-items-center">
+        <!-- Top part -->
+        <div class="d-flex flex-wrap align-items-center gap-1 gap-sm-2">
 
-            <!-- Checkmark -->
-            <i 
-                class="bi {% if task.is_completed %}bi-check-circle-fill{% else %}bi-circle pointer{% endif %} checkmark" 
-                {% if not task.is_completed %}
-                    data-task-id="{{ task.id }}" 
-                    onclick="completeTask(this)"
-                {% endif %}>
-            </i>
+            <!-- Checkmark and Title -->
+            <div class="task-top gap-sm-2">
 
-            <!-- Title -->
-            <div class="{% if task.is_completed %}opacity-50{% endif %} d-flex align-items-center gap-2 flex-wrap">
-                {% if task.is_completed or task.is_overdue %}
-                    <span style="font-size: small;">
+                <!-- Checkmark and Status -->
+                <div class="{% if task.is_completed %}opacity-50{% endif %} d-flex align-items-center gap-1 gap-sm-2">
+                    <!-- Checkmark -->
+                    <i 
+                        class="bi {% if task.is_completed %}bi-check-circle-fill{% else %}bi-circle pointer{% endif %} checkmark" 
+                        {% if not task.is_completed %}
+                            data-task-id="{{ task.id }}" 
+                            onclick="completeTask(this)"
+                        {% endif %}>
+                    </i>
+                    
+                    <!-- Status -->
+                    {% if task.is_completed or task.is_overdue %}
                         {% if task.is_completed %}
-                            (Completed)
+                            <span style="font-size: small;"></span>(Completed)
                         {% elif task.is_overdue %}
-                            <span class="text-danger">Overdue!</span>
+                            <span style="font-size: small;" class="text-danger">Overdue!</span>
                         {% endif %}
-                    </span>
-                {% endif %}
-                <h5 class="task-title">{{ task.title }}</h5>
+                    {% endif %}
+                </div>
+
+                <!-- Title -->
+                <h5 class="task-title {% if task.is_completed %}opacity-50{% endif %} overflow-hidden">{{ task.title }}</h5>
             </div>
             
-            <!-- Categories -->
-            {% if task.categories %} 
-                {% for category in task.categories.all %} 
-                    <span class="badge change-text-color shadow-sm" style="font-size: 11px; background-color: {{ category.color }}; border: 1px solid #aaa;"> 
-                        {{category.title }} 
-                    </span>
-                {% endfor %}
-            {% endif %}
-
-            <!-- High priority flag -->
-            {% if task.is_high_priority %}
-                <i class="bi bi-flag-fill" style="font-size: 20px;"></i>
-            {% else %}
-                <i class="bi bi-flag" style="font-size: 20px;"></i>
-            {% endif %}
+            <!-- Tags -->
+            <div class="task-tags">
+                <!-- Categories -->
+                {% if task.categories %} 
+                    {% for category in task.categories.all %} 
+                        <span class="badge change-text-color shadow-sm task-badge" style="background-color: {{ category.color }};"> 
+                            {{category.title }} 
+                        </span>
+                    {% endfor %}
+                {% endif %}
+    
+                <!-- High priority flag -->
+                {% if task.is_high_priority %}
+                    <i class="bi bi-flag-fill task-priority-flag"></i>
+                {% else %}
+                    <i class="bi bi-flag task-priority-flag"></i>
+                {% endif %}
+            </div>
         </div>
         
-
-        <!-- Description -->
-        <p class="ms-4 mb-0 {% if task.is_completed %}opacity-50{% endif %}">
-            {{task.text}}
-        </p>
-
-        <!-- Due date -->
-        <div class="d-flex justify-content-end">
-            <div class="me-2 opacity-50">{% if task.project %}{{ task.project }}{% endif %}</div>
-            <div {% if task.is_overdue %}class="text-danger"{% endif %}>{{ task.due_date|date:"d/m" }}</div>
+        <!-- Bottom part -->
+        <div class="d-flex flex-column task-bottom">
+            <!-- Description -->
+            <p class="ms-sm-4 mb-0 task-description overflow-hidden {% if task.is_completed %} opacity-50{% endif %}">
+                {{task.text}}
+            </p>
+    
+            <!-- Due date -->
+            <div class="d-flex justify-content-end">
+                <div class="me-2 opacity-50">{% if task.project %}{{ task.project }}{% endif %}</div>
+                <div {% if task.is_overdue %}class="text-danger"{% endif %}>{{ task.due_date|date:"d/m" }}</div>
+            </div>
         </div>
     </div>
 </div>
