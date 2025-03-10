@@ -4,9 +4,7 @@
 
 {% block title %}To do list{% endblock title %}
 
-{% block styles %}
-	<link rel="stylesheet" href="{% static 'css/styles.css' %}">
-{% endblock styles %}
+{% block styles %}{% endblock styles %}
 
 {% block content %}
 	<audio id="completion-sound" src="{% static 'sounds/completion_sound.mp3' %}" preload="auto"></audio>
@@ -16,7 +14,7 @@
 		{% include 'main/filters.html' %}
 		
 		<!-- Category and high priority filters -->
-		<div class="d-flex justify-content-center gap-2 gap-md-3">
+		<div class="d-flex justify-content-center gap-2 gap-md-3 flex-wrap">
 			<!-- Category filters -->
 			{% for category in request.user.categories.all %}
 				<span 

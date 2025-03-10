@@ -20,17 +20,6 @@ document.addEventListener("DOMContentLoaded", function () {
         highPriorityFilter.classList.replace("bi-flag", "bi-flag-fill");
     }
 
-    // Hides empty task groups if all tasks in the group are hidden
-    function hideEmptyTaskGroups() {
-        document.querySelectorAll(".task-group").forEach(group => {
-            const allTasksHidden = [...group.querySelectorAll(".task")].every(task => task.style.display === "none");
-
-            // Toggle visibility of the task group
-            group.classList.toggle('d-none', allTasksHidden);
-            group.classList.toggle('d-flex', !allTasksHidden);
-        });
-    }
-
     // Filters tasks based on both active category and high priority status
     function filterTasks() {
         tasks.forEach(task => {

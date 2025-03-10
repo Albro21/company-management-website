@@ -12,22 +12,11 @@ async function completeTask(button) {
 	if (success) {
 		const sound = document.getElementById("completion-sound");
 		sound.currentTime = 0;
+		await sound.play();
 
-		try {
-			await sound.play();
+		document.getElementById(`task-${taskId}`).remove();
 
-			const taskElement = document.getElementById(`task-${taskId}`);
-			const parentElement = taskElement.parentElement;
-			const childElements = parentElement.children;
-			
-			if (childElements.length === 2) {
-				parentElement.remove(); // Removes both task group date and tasks 
-			} else {
-				taskElement.remove(); // Removes only task
-			}
-		} catch (error) {
-			console.error("Error playing sound:", error);
-		}
+		hideEmptyTaskGroups();
 	} else {
 		console.error('Failed to complete task');
 	}
@@ -64,7 +53,6 @@ function updateTask(button) {
         }
     });
 }
-
 
 // Change checkmark icon on hover
 document.addEventListener("DOMContentLoaded", function () {

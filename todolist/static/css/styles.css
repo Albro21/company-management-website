@@ -8,36 +8,20 @@ body {
     background-color: #faf9f8;
 }
 
-*,
-*:before,
-*:after {
+*, *:before, *:after {
     box-sizing: border-box;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
     margin: 0;
 }
 
-.page__inner {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    min-height: 100vh;
-
+.pointer {
+    cursor: pointer;
 }
 
-button {
-    z-index: 10;
-}
-
-.toggle-arrow .collapsed {
-    transform: rotate(90deg);
-
+.bi-flag-fill, .edit-icon, .checkmark {
+    color: orange;
 }
 
 .list-item {
@@ -84,20 +68,11 @@ button {
     transition: opacity 1.9s;
 }
 
-.bi-flag-fill {
-    color: orange;
-}
-
 .edit-icon {
-    color: orange;
+    position: absolute;
+    top: 8px;
+    right: 6px;
     font-size: 24px;
-}
-
-.note_path {
-    padding-right: 10px;
-    display: flex;
-    opacity: 0.4;
-    font-size: 14px;
 }
 
 .note-form {
@@ -112,13 +87,8 @@ button {
     justify-content: space-around;
 }
 
-.pointer {
-    cursor: pointer;
-}
-
 .checkmark {
     font-size: 24px;
-    color: orange;
 }
 
 .custom-scroll {
@@ -139,14 +109,34 @@ button {
     transition: box-shadow 0.2s linear;
 }
 
+.project-color {
+    width: 10px;
+}
+
+.task-top {
+    margin-right: 25px;
+}
+
+.task-top > * {
+    margin-right: 5px;
+}
+
+.task-top > *:last-child {
+    margin-right: 0;
+}
+
 @media screen and (max-width: 576px) {
+    #filter-buttons {
+        width: 100%;
+    }
+
     .filter-button {
         font-size: 12px;
         padding: 3px 5px;
         text-wrap: nowrap;
     }
 
-    .date-header, .task-title {
+    .date-header {
         font-size: 16px;
     }
 
@@ -163,6 +153,12 @@ button {
         bottom: 7px;
         font-size: 20px;
         height: 20px;
+    }
+
+    .edit-icon {
+        top: 3px;
+        right: 6px;
+        font-size: 20px;
     }
 }
 
