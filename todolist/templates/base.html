@@ -45,6 +45,9 @@
 					<a href="{% url 'index' %}" class="nav-link">
 						<i class="bi bi-house me-2"></i>Home
 					</a>
+					<a href="{% url 'timetracker:timetracker' %}" class="nav-link">
+						<i class="bi bi-stopwatch me-2"></i>Timetracker
+					</a>
 					<a href="{% url 'archive' %}" class="nav-link">
 						<i class="bi bi-tags me-2"></i>Projects & Categories
 					</a>
@@ -98,6 +101,9 @@
 			<ul class="nav navbar-nav flex-column w-100 h5">
 				<a href="{% url 'index' %}" class="nav-link">
 					<i class="bi bi-house me-2"></i>Home
+				</a>
+				<a href="{% url 'timetracker:timetracker' %}" class="nav-link">
+					<i class="bi bi-stopwatch me-2"></i>Timetracker
 				</a>
 				<a href="{% url 'archive' %}" class="nav-link">
 					<i class="bi bi-tags me-2"></i>Projects & Categories
