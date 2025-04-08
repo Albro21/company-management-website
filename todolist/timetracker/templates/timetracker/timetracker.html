@@ -3,12 +3,150 @@
 
 {% block title %}Timetracker{% endblock title %}
 
-{% block styles %}{% endblock styles %}
+{% block styles %}
+	<link rel="stylesheet" href="{% static 'css/timetracker.css' %}">
+{% endblock styles %}
 
 {% block content %}
-Timetracker
+	<form method="post" class="card p-4 gap-3" id="tracker-form">
+		{% csrf_token %}
+
+		<!-- Top row -->
+		<div class="row">
+			<!-- Task select -->
+			<div class="col">
+				<select name="task" class="form-select" id="task-select">
+					<option value="" selected>Select a task</option>
+					{% for task in tasks %}
+					<option value="{{ task.id }}" data-title="{{ task.title }}" data-project-id="{{ task.project.id }}">{{ task.title }}</option>
+					{% endfor %}
+				</select>
+			</div>
+	
+			<!-- Name -->
+			<div class="col">
+				<input type="text" name="name" class="form-control" placeholder="What are you working on?" required id="name-input">
+			</div>
+	
+			<!-- Project select -->
+			<div class="col">
+				<select name="project" class="form-select" id="project-select">
+					<option value="" selected>Select a project</option>
+					{% for project in projects %}
+					<option value="{{ project.id }}">{{ project.title }}</option>
+					{% endfor %}
+				</select>
+			</div>
+		</div>
+
+		<!-- Bottom row -->
+		<div class="row">
+			<!-- Submit button -->
+			<div class="col-8">
+				<button type="submit" class="btn w-100" id="timer-button">Start</button>
+			</div>
+
+			<div class="col-4 d-flex justify-content-center align-items-center fs-3" id="timer">
+				00:00:00
+			</div>
+		</div>
+	</form>
+
+	<!-- Time entries -->
+	<div class="d-flex flex-column my-5 gap-4">
+		{% for date, name_groups in grouped_time_entries.items %}
+			<div>
+				<div class="time-entry-header p-2">
+					<div class="row">
+						<div class="fs-6 col-10">
+							{{ date }}
+						</div>
+						<div class="fs-6 col-2 text-center">
+							Total: {{ name_groups.date_total_duration }}
+						</div>
+					</div>
+				</div>
+				{% for name, group_data in name_groups.items %}
+					{% if name != 'date_total_duration' %}
+						{% with group_data.time_entries|first as first_entry %}
+							{% with group_data.time_entries|last as last_entry %}
+
+								<!-- Time entry grouper -->
+								<div 
+									class="time-entry d-flex pointer"
+									style="background-color: #f8f8f8;"
+									role="button"
+									data-bs-toggle="collapse"
+									data-bs-target="#time-entry-{{ first_entry.id }}"
+								>
+			
+									<!-- Project Color -->
+									<div class="project-color" style="{% if first_entry.project.color %} background-color: {{ first_entry.project.color }}{% endif %}"></div>
+									
+									<div class="row py-2 w-100 m-0">
+										<div class="col-6 col-lg-8 d-flex align-items-center">
+											<span class="badge text-bg-primary">{{ group_data.time_entries|length }}</span>
+											<!-- Name -->
+											<span class="time-entry-title mx-2">{{ first_entry.name }}</span>
+											<!-- Project -->
+											{% if time_entry.project %}
+												<span class="project-title">{{ first_entry.project }}</span>
+											{% endif %}
+										</div>
+						
+										<!-- Start time and End time -->
+										<div class="col-3 col-lg-2 text-center">
+											{{ last_entry.start_time|time:"H:i" }} - {{ first_entry.end_time|time:"H:i" }}
+										</div>
+						
+										<!-- Duration -->
+										<div class="col-3 col-lg-2 text-center">
+											{{ group_data.total_duration }}
+										</div>
+									</div>
+								</div>
+
+								<!-- Time entries -->
+								<div class="collapse" id="time-entry-{{ first_entry.id }}">
+									{% for time_entry in group_data.time_entries %}
+									<div class="time-entry d-flex">
+										
+										<!-- Project Color -->
+										<div class="project-color" style="{% if time_entry.project.color %} background-color: {{ time_entry.project.color }}{% endif %}"></div>
+										
+										<div class="row py-2 w-100 m-0">
+											<div class="col-6 col-lg-8 d-flex align-items-center">
+												<!-- Name -->
+												<span class="time-entry-title mx-2">{{ time_entry.name }}</span>
+												<!-- Project -->
+												{% if time_entry.project %}
+												<span class="project-title">{{ time_entry.project }}</span>
+												{% endif %}
+											</div>
+											
+											<!-- Start time and End time -->
+											<div class="col-3 col-lg-2 text-center">
+												{{ time_entry.start_time|time:"H:i" }} - {{ time_entry.end_time|time:"H:i" }}
+											</div>
+											
+											<!-- Duration -->
+											<div class="col-3 col-lg-2 text-center">
+												{{ time_entry.duration_formatted }}
+											</div>
+										</div>
+									</div>
+									{% endfor %}		
+								</div>
+							{% endwith %}
+						{% endwith %}
+					{% endif %}
+				{% endfor %}		
+			</div>
+		{% endfor %}
+	</div>
 {% endblock content %}
 
 {% block scripts %}
-	<script src="{% static 'js/script.js' %}"></script>
+<script src="{% static 'js/script.js' %}"></script>
+<script src="{% static 'js/timetracker.js' %}"></script>
 {% endblock scripts %}

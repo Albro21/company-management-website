@@ -1,0 +1,35 @@
+#timer-button {
+    color: white;
+    background-color: #006aff;
+}
+
+.time-entry {
+    background-color: white;
+    border: 1px solid #ccc;
+    margin-top: -1px; /* Removes overlap between adjacent borders */
+}
+
+.time-entry:hover {
+    transform: scale(1.009);
+    box-shadow: 2px 2px 5px #c4b6b6;
+    transition: transform 0.2s linear;
+    transition: box-shadow 0.2s linear;
+}
+
+.time-entry-header {
+    background-color: rgb(228, 234, 238);
+    border: 1px solid #ccc;
+    margin-top: -1px;
+}
+
+.project-color {
+    width: 5px;
+}
+
+.time-entry-title {
+    font-weight: bold;
+}
+
+.project-title {
+    font-size: smaller;
+}
