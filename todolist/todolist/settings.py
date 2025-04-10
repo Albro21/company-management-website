@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # Local apps
     'authentication',
     'main',
+    'teams',
     'timetracker',
     'users',
 ]
