@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Team{% endblock title %}
+
+{% block styles %}
+<style>
+    #main-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin-top: 0px !important;
+        margin-bottom: 0px !important;
+    }
+</style>
+{% endblock styles %}
+
+{% block content %}
+<div class="d-flex flex-column w-50" id="action-buttons">
+    <div class="btn card text-bg-primary text-center p-3 d-flex flex-column gap-3">
+        <div
+            class="fs-3"
+            role="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#join-company">
+            Join a company
+        </div>
+        <form class="collapse" id="join-company" method="post" action="{% url 'teams:create_join_request' %}">
+            {% csrf_token %}
+            <input type="text" name="company_name" placeholder="Company name" class="form-control" required>
+            <button type="submit" class="btn btn-light mt-2">Join</button>
+        </form>
+    </div>
+
+    {% if messages %}
+        <div class="mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} mt-2" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <a href="{% url 'teams:create_company' %}" class="btn card text-bg-primary text-center fs-3 p-3 mt-3">Create a company</a>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script src="{% static 'js/script.js' %}"></script>
+{% endblock scripts %}

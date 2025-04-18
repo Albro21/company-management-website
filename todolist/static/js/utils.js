@@ -79,3 +79,17 @@ window.hideEmptyTaskGroups = function() {
     });
 }
 
+// Displays image after upload
+function previewImage(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = function() {
+        document.getElementById("image_preview").src = reader.result;
+    };
+    
+    if (file) {
+        reader.readAsDataURL(file);
+    }
+}
+

@@ -12,12 +12,14 @@ class Project(models.Model):
         ('completed', 'Completed'),
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="projects")
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="projects")
     title = models.CharField(max_length=50)
     description = models.TextField(blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
     color = ColorField(default='#FFFF00')
-        
+    company = models.ForeignKey('teams.Company', on_delete=models.SET_NULL, null=True, blank=True, related_name="projects")
+    assigned_users = models.ManyToManyField(User, blank=True, related_name="company_projects")
+
     def __str__(self):
         return self.title
 

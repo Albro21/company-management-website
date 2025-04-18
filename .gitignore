@@ -6,3 +6,4 @@ db.sqlite3
 data.json
 */media/profile_pics/*
 !*/media/profile_pics/default.jpg
+*/media/company_logos/*

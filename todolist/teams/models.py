@@ -1,3 +1,81 @@
+from django.contrib.auth.models import User
 from django.db import models
+from django.utils.text import slugify
 
-# Create your models here.
+
+class Company(models.Model):
+    COMPANY_TYPES = [
+        ('client', 'Client'),
+        ('contractor', 'Contractor'),
+        ('internal', 'Internal'),
+        ('vendor', 'Vendor'),
+        ('other', 'Other'),
+    ]
+    
+    # Identity
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(unique=True, blank=True)
+    company_type = models.CharField(max_length=20, choices=COMPANY_TYPES, default='other')
+    industry = models.CharField(max_length=100, blank=True)
+    description = models.TextField(blank=True)
+    logo = models.ImageField(upload_to='company_logos/', blank=True, null=True)
+
+    # Ownership
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    
+    # Contact
+    email = models.EmailField(blank=True)
+    phone = models.CharField(max_length=20, blank=True)
+    website = models.URLField(blank=True)
+    address = models.CharField(max_length=255, blank=True)
+    city = models.CharField(max_length=255, blank=True)
+    country = models.CharField(max_length=100, blank=True)
+
+    class Meta:
+        ordering = ['name']
+        verbose_name_plural = 'companies'
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+        
+    def __str__(self):
+        return self.name
+
+
+class Role(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="roles")
+    name = models.CharField(max_length=100)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
+class Member(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="members")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True, blank=True)
+    rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
+    
+    @property
+    def is_active(self):
+        return self.user.time_entries.filter(end_time__isnull=True).exists()
+    
+    def __str__(self):
+        return f"{self.user.username} ({self.role})"
+
+
+class JoinRequest(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='join_requests')
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='join_requests')
+
+    class Meta:
+        unique_together = ('user', 'company')
+    
+    def __str__(self):
+        return f"Join Request for {self.user.username} → {self.company.name}"
