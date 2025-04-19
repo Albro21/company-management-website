@@ -2,7 +2,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Sum
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -14,7 +13,7 @@ from datetime import date, timedelta
 import json
 
 from main.forms import ProjectForm, TaskForm
-from main.models import Project
+from main.models import Project, Task
 from timetracker.models import TimeEntry
 from .forms import CompanyForm, RoleForm, MemberForm
 from .models import Company, Member, JoinRequest, Role
@@ -437,8 +436,16 @@ def member_analytics(request, member_id):
     if request.method == 'POST':
         return process_member_charts(request, member)
     else:
+        
+        assigned_tasks = Task.objects.filter(
+            user=member.user,
+            is_completed=False,
+            project__in=member.company.projects.all()
+        )
+        
         context = {
-            'member': member
+            'member': member,
+            'assigned_tasks': assigned_tasks
         }
 
         return render(request, 'teams/member_analytics.html', context)
