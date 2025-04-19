@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Sum
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -178,10 +179,24 @@ def process_company_charts(request):
     bar_chart_data = process_company_bar_chart(company, start_date, end_date)
     donut_chart_data = process_company_donut_chart(company, start_date, end_date)
     
+    time_entries = TimeEntry.objects.filter(
+        task__project__in=company.projects.all(),
+        start_time__date__gte=start_date,
+        start_time__date__lte=end_date
+    )
+
+    total_seconds = int(sum(entry.duration.total_seconds() for entry in time_entries))
+
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+    seconds = total_seconds % 60
+    total_time = f"{hours}h {minutes}m {seconds}s"
+    
     return JsonResponse({
         "success": True,
         "bar_chart_data": bar_chart_data,
-        "donut_chart_data": donut_chart_data
+        "donut_chart_data": donut_chart_data,
+        "total_time": total_time
     })
 
 @login_required

@@ -338,7 +338,10 @@
         
         <div class="d-flex gap-3" style="height: 350px;">
             <!-- Donut chart -->
-            <canvas id="companyDonutChart" style="height: 330px; width: 330px;"></canvas>
+            <div class="d-flex flex-column justify-content-between" style="height: 350px; width: 350px;">
+                <canvas id="companyDonutChart" style="height: 310px; width: 310px;"></canvas>
+                <h4 class="text-center" id="total_time"></h4>
+            </div>
             
             <!-- Stacked Bar chart -->
             <div style="width: 100%;">
