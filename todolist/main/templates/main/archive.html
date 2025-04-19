@@ -9,10 +9,10 @@
 	<div class="row">
 		<!-- Left half -->
 		<div class="col-12 col-xl-6 mb-5 mb-xl-0 pe-xl-4">
-			<!-- Page Title -->
+			<!-- My projects -->
 			<h1 class="mb-4 text-center">My projects:</h1>
 
-			<!-- Projects -->
+			<!-- Project list -->
 			<div id="projects">
 				{% for project in request.user.projects.all %}
 					<div class="list-item p-0 w-100" id="project-{{ project.id }}" style="display: flex;">
@@ -207,7 +207,7 @@
 			</div>
 
 			<!-- Add project button -->
-			<div class="plus_add_button_inner">
+			<div class="plus_add_button_inner mb-5">
 				<div id="btn_add" data-open-id="create-project" onclick="openWindow(this)">
 					<button type="button" aria-hidden="false" data-supports-active-task="true" class="plus_add_button">
 						<span class="icon_add" aria-hidden="true">
@@ -218,6 +218,106 @@
 						<div class="penis">Add project</div>
 					</button>
 				</div>
+			</div>
+
+			<!-- Company projects -->
+			<h1 class="mb-4 text-center">Company projects:</h1>
+
+			<!-- Project list -->
+			<div id="projects">
+				{% for project in request.user.profile.company.projects.all %}
+					<div class="list-item p-0 w-100" id="project-{{ project.id }}" style="display: flex;">
+						<!-- Project Color -->
+						<div style="width: 10px; background-color: {{ project.color }}"></div>
+	
+						<div class="d-flex flex-column w-100 p-3 justify-content-between">
+							<div class="d-flex justify-content-between align-items-center">
+								<!-- Project Title -->
+								<h5>{{ project.title }}</h5>
+							</div>
+	
+							<!-- Project Description -->
+							<div class="pt-2">
+								<p class="mb-0">{{ project.description }}</p>
+							</div>
+						</div>
+					</div>
+					
+					<div class="list-item p-3 w-100" id="edit-project-{{ project.id }}" style="display: none;">
+						<form class="note-form">
+							{% csrf_token %}
+							
+							<div class="d-flex align-items-center mb-2">
+								<!-- Project Title -->
+								<input 
+									class="form-control form-control-sm" 
+									type="text" 
+									name="{{ project_form.title.name }}"
+									autocomplete="off" 
+									maxlength="50"
+									value="{{ project.title }}" 
+									placeholder="Project Title" 
+									aria-label=".form-control-sm">
+	
+									<!-- Close button -->
+									<i 
+										class="bi bi-x-lg ms-3" 
+										data-close-id="edit-project-{{ project.id }}" 
+										data-open-id="project-{{ project.id }}" 
+										onclick="openCloseWindows(this)">
+									</i>
+								</div>
+	
+	
+							<!-- Project Description -->
+							<textarea 
+								class="form-control mb-2" 
+								name="{{ project_form.description.name }}" 
+								placeholder="Project Description" 
+								autocomplete="off" 
+								rows="3">{{ project.description }}</textarea>
+	
+							<!-- Project Color and Status -->
+							<div class="d-flex mb-2 gap-2">
+	
+								<!-- Project Color -->
+								<div class="w-50">
+									<label for="{{ project_form.color.id_for_label}}" class="form-label">Color:</label>
+									<input
+										class="form-control"
+										style="height: 38px;"
+										id="{{ project_form.color.id_for_label }}" 
+										type="color" 
+										name="{{ project_form.color.name }}"
+										value="{{ project.color }}">
+								</div>
+	
+								<!-- Project Status -->
+								<div class="w-50">
+									<label for="{{ project_form.status.id_for_label}}" class="form-label">Status:</label>
+									<select 
+										class="form-select" 
+										name="{{ project_form.status.name }}" 
+										id="{{ project_form.status.id_for_label }}">
+										<option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
+										<option value="archived" {% if project.status == 'archived' %}selected{% endif %}>Archived</option>
+										<option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
+									</select>
+								</div>
+							</div>
+	
+							<!-- Submit button -->
+							<button 
+								class="btn btn-warning w-100 m-0 py-2 opacity-75" 
+								type="submit" 
+								name="submit_project"
+								data-project-id="{{ project.id }}"
+								onclick="updateProject(this)">
+								Update project
+							</button>
+						</form>
+					</div>
+				{% endfor %}
 			</div>
 		</div>
 

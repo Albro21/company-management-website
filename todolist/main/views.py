@@ -102,7 +102,7 @@ def archive(request):
     if request.method == 'POST':
         if 'submit_project' in request.POST and project_form.is_valid():
             project = project_form.save(commit=False)
-            project.user = user
+            project.created_by = user
             project.save()
             project_form.save_m2m()
             return redirect('archive')
