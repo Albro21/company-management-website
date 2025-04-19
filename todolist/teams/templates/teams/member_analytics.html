@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ member.user.first_name }} {{ member.user.last_name }}'s analytics{% endblock title %}
+
+{% block styles %}
+{% endblock styles %}
+
+{% block content %}
+    {{ member.user.first_name }} {{ member.user.last_name }}
+    <!-- Chart -->
+    {% include 'teams/member_chart.html' with member=member %}
+{% endblock content %}
+
+{% block scripts %}
+    <script src="{% static 'js/script.js' %}"></script>
+{% endblock scripts %}

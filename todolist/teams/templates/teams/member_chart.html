@@ -1,0 +1,38 @@
+{% load static %}
+
+<div class="d-flex flex-column">
+
+    <!-- Title -->
+    <h3 class="my-3 text-center">Time spent on projects</h3>
+
+    <!-- Time range selection -->
+    <div class="btn-group btn-group-sm" role="group" aria-label="Time range selection">
+
+        <!-- This week -->
+        <input type="radio" class="btn-check" name="timeRange" id="week" autocomplete="off" checked>
+        <label class="btn btn-outline-secondary" for="week">This week</label>
+
+        <!-- Last week -->
+        <input type="radio" class="btn-check" name="timeRange" id="lastWeek" autocomplete="off">
+        <label class="btn btn-outline-secondary" for="lastWeek">Last week</label>
+
+        <!-- This month -->
+        <input type="radio" class="btn-check" name="timeRange" id="month" autocomplete="off">
+        <label class="btn btn-outline-secondary" for="month">This month</label>
+
+        <!-- Last month -->
+        <input type="radio" class="btn-check" name="timeRange" id="lastMonth" autocomplete="off">
+        <label class="btn btn-outline-secondary" for="lastMonth">Last month</label>
+
+        <!-- All time -->
+        <input type="radio" class="btn-check" name="timeRange" id="allTime" autocomplete="off">
+        <label class="btn btn-outline-secondary" for="allTime">All time</label>
+    </div>
+    
+    <!-- Chart canvas -->
+    <canvas id="memberChart" data-member-id="{{ member.id }}" height="300" class="my-3"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<script src="{% static 'js/member_chart.js' %}"></script>

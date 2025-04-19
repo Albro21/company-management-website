@@ -4,7 +4,7 @@
 {% block title %}Team{% endblock title %}
 
 {% block styles %}
-<link rel="stylesheet" href="{% static 'css/teams.css' %}">
+    <link rel="stylesheet" href="{% static 'css/teams.css' %}">
 {% endblock styles %}
 
 {% block content %}
@@ -183,7 +183,10 @@
                         </div>
 
                         <i class="bi bi-clock-history" data-bs-toggle="tooltip" title="View Member History"></i>
-                        <i class="bi bi-graph-up" data-bs-toggle="tooltip" title="View Member Analytics"></i>
+                        
+                        <a href="{% url 'teams:member_analytics' member.id %}">
+                            <i class="bi bi-graph-up" data-bs-toggle="tooltip" title="View Member Analytics"></i>
+                        </a>
                     </div>
                 </div>
             {% endfor %}
@@ -310,11 +313,11 @@
 {% endblock content %}
 
 {% block scripts %}
-<script src="{% static 'js/script.js' %}"></script>
-<script src="{% static 'js/teams.js' %}"></script>
-<!-- Tooltips -->
-<script>
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-</script>
+    <script src="{% static 'js/script.js' %}"></script>
+    <script src="{% static 'js/teams.js' %}"></script>
+    <!-- Tooltips -->
+    <script>
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    </script>
 {% endblock scripts %}

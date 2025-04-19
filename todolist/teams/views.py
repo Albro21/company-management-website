@@ -7,6 +7,11 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST, require_http_methods
 
+import calendar
+from collections import defaultdict
+from datetime import date, timedelta
+import json
+
 from main.forms import ProjectForm, TaskForm
 from main.models import Project
 from .forms import CompanyForm, RoleForm, MemberForm
@@ -187,3 +192,98 @@ def delete_role(request, role_id):
         return JsonResponse({"success": False, "error": "Role not found"}, status=404)
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=500)
+
+
+@login_required
+def member_analytics(request, member_id):
+    member = get_object_or_404(Member, id=member_id, company=request.user.profile.company)
+    
+    context = {
+        'member': member
+    }
+    
+    return render(request, 'teams/member_analytics.html', context)
+
+
+def get_date_range_from_filter(filter_option, user):
+    today = date.today()
+
+    if filter_option == "week":
+        start_date = today - timedelta(days=today.weekday())
+        end_date = start_date + timedelta(days=6)
+    elif filter_option == "lastWeek":
+        start_date = today - timedelta(days=today.weekday() + 7)
+        end_date = start_date + timedelta(days=6)
+    elif filter_option == "month":
+        start_date = today.replace(day=1)
+        end_date = today
+    elif filter_option == "lastMonth":
+        current_year = today.year
+        current_month = today.month
+        if current_month == 1:
+            start_date = date(current_year - 1, 12, 1)
+        else:
+            start_date = date(current_year, current_month - 1, 1)
+        _, last_day = calendar.monthrange(start_date.year, start_date.month)
+        end_date = start_date.replace(day=last_day)
+    elif filter_option == "allTime":
+        first_entry = user.time_entries.order_by("start_time").first()
+        if not first_entry:
+            return None
+        start_date = first_entry.start_time.date()
+        end_date = today
+    else:
+        return None
+
+    return start_date, end_date
+
+
+@require_POST
+@login_required
+def member_chart(request, member_id):
+    member = get_object_or_404(Member, id=member_id)
+
+    try:
+        data = json.loads(request.body)
+        filter_option = data.get("filter")
+    except json.JSONDecodeError:
+        return JsonResponse({"success": False, "error": "Invalid JSON"})
+
+    date_range = get_date_range_from_filter(filter_option, member.user)
+    if not date_range:
+        return JsonResponse({"success": False, "error": "Invalid filter or no time entries found"})
+
+    start_date, end_date = date_range
+
+    date_labels = []
+    project_time_by_date = defaultdict(lambda: defaultdict(int))
+    current_date = start_date
+    while current_date <= end_date:
+        date_str = current_date.strftime("%d/%m/%y")
+        date_labels.append(date_str)
+        daily_data = member.hours_spent_by_projects(current_date, member.company.projects.all())
+        for project_title, duration in daily_data.items():
+            project_time_by_date[project_title][date_str] += duration
+        current_date += timedelta(days=1)
+
+    project_titles = list(project_time_by_date.keys())
+
+    project_color_map = {
+        project.title: project.color
+        for project in member.user.projects.filter(title__in=project_titles)
+    }
+
+    datasets = []
+    for project_title in project_titles:
+        data = [project_time_by_date[project_title].get(day, 0) for day in date_labels]
+        datasets.append({
+            "label": project_title,
+            "data": data,
+            "backgroundColor": project_color_map.get(project_title, "#000000")
+        })
+
+    return JsonResponse({
+        "success": True,
+        "labels": date_labels,
+        "datasets": datasets
+    })

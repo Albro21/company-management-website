@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils.text import slugify
 
+from collections import defaultdict
+
 
 class Company(models.Model):
     COMPANY_TYPES = [
@@ -65,6 +67,24 @@ class Member(models.Model):
     @property
     def is_active(self):
         return self.user.time_entries.filter(end_time__isnull=True).exists()
+    
+    def hours_spent_by_projects(self, target_date, projects):
+        if projects is None:
+            raise ValueError("The 'projects' parameter is required.")
+
+        entries = self.user.time_entries.filter(
+            start_time__date=target_date,
+            project__in=projects
+        ).select_related('project')
+
+        result = defaultdict(float)
+
+        for entry in entries:
+            duration = entry.duration.total_seconds() / 3600
+            project_title = entry.project.title
+            result[project_title] += duration
+
+        return dict(result)
     
     def __str__(self):
         return f"{self.user.username} ({self.role})"

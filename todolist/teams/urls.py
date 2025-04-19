@@ -5,6 +5,8 @@ app_name = 'teams'
 
 urlpatterns = [
     path('team/', views.team, name='team'),
+    path('member/<int:member_id>/analytics/', views.member_analytics, name='member_analytics'),
+    path('member-chart/<int:member_id>/filter/', views.member_chart, name='member-chart'),
     
     path('company/create/', views.create_company, name='create_company'),
     path('company/settings/', views.settings, name='settings'),
