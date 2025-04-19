@@ -422,10 +422,25 @@ def process_member_charts(request, member):
     bar_chart_data = process_member_bar_chart(member, start_date, end_date)
     donut_chart_data = process_member_donut_chart(member, start_date, end_date)
     
+    time_entries = TimeEntry.objects.filter(
+        user=member.user,
+        task__project__in=member.user.profile.company.projects.all(),
+        start_time__date__gte=start_date,
+        start_time__date__lte=end_date
+    )
+
+    total_seconds = int(sum(entry.duration.total_seconds() for entry in time_entries))
+
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+    seconds = total_seconds % 60
+    total_time = f"{hours}h {minutes}m {seconds}s"
+    
     return JsonResponse({
         "success": True,
         "bar_chart_data": bar_chart_data,
-        "donut_chart_data": donut_chart_data
+        "donut_chart_data": donut_chart_data,
+        "total_time": total_time
     })
 
 @login_required

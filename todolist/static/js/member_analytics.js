@@ -1,3 +1,5 @@
+const totalTimeElement = document.getElementById("total_time");
+
 document.addEventListener("DOMContentLoaded", function () {
     const stackedBarCanvas = document.getElementById("memberChart");
     const stackedBarCTX = stackedBarCanvas.getContext("2d");
@@ -155,6 +157,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (data && data.success) {
             updateBarChart(data.bar_chart_data);
             updateDonutChart(data.donut_chart_data);
+            totalTimeElement.textContent = `Total Time: ${data.total_time}`;
         } else {
             console.error("Server error:", data ? data.error : "No response");
         }
