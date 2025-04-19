@@ -194,17 +194,6 @@ def delete_role(request, role_id):
         return JsonResponse({"success": False, "error": str(e)}, status=500)
 
 
-@login_required
-def member_analytics(request, member_id):
-    member = get_object_or_404(Member, id=member_id, company=request.user.profile.company)
-    
-    context = {
-        'member': member
-    }
-    
-    return render(request, 'teams/member_analytics.html', context)
-
-
 def get_date_range_from_filter(filter_option, user):
     today = date.today()
 
@@ -238,23 +227,7 @@ def get_date_range_from_filter(filter_option, user):
     return start_date, end_date
 
 
-@require_POST
-@login_required
-def member_chart(request, member_id):
-    member = get_object_or_404(Member, id=member_id)
-
-    try:
-        data = json.loads(request.body)
-        filter_option = data.get("filter")
-    except json.JSONDecodeError:
-        return JsonResponse({"success": False, "error": "Invalid JSON"})
-
-    date_range = get_date_range_from_filter(filter_option, member.user)
-    if not date_range:
-        return JsonResponse({"success": False, "error": "Invalid filter or no time entries found"})
-
-    start_date, end_date = date_range
-
+def processBarChart(member, start_date, end_date):
     date_labels = []
     project_time_by_date = defaultdict(lambda: defaultdict(int))
     current_date = start_date
@@ -282,8 +255,75 @@ def member_chart(request, member_id):
             "backgroundColor": project_color_map.get(project_title, "#000000")
         })
 
-    return JsonResponse({
-        "success": True,
+    return {
         "labels": date_labels,
         "datasets": datasets
+    }
+
+
+def processDonutChart(member, start_date, end_date):
+    project_time = defaultdict(int)
+    
+    current_date = start_date
+    while current_date <= end_date:
+        daily_data = member.hours_spent_by_projects(current_date, member.company.projects.all())
+        for project_title, duration in daily_data.items():
+            project_time[project_title] += duration
+        current_date += timedelta(days=1)
+    
+    labels = list(project_time.keys())
+    data = list(project_time.values())
+    
+    project_color_map = {
+        project.title: project.color
+        for project in member.user.projects.filter(title__in=labels)
+    }
+
+    datasets = [{
+        "data": data,
+        "backgroundColor": [project_color_map.get(title, "#000000") for title in labels],
+        "borderWidth": 1
+    }]
+    
+    return {
+        "labels": labels,
+        "datasets": datasets
+    }
+
+
+def processCharts(request, member):
+    try:
+        data = json.loads(request.body)
+        filter_option = data.get("filter")
+    except json.JSONDecodeError:
+        return JsonResponse({"success": False, "error": "Invalid JSON"})
+
+    date_range = get_date_range_from_filter(filter_option, member.user)
+    if not date_range:
+        return JsonResponse({"success": False, "error": "Invalid filter or no time entries found"})
+
+    start_date, end_date = date_range
+
+    bar_chart_data = processBarChart(member, start_date, end_date)
+    donut_chart_data = processDonutChart(member, start_date, end_date)
+    
+    return JsonResponse({
+        "success": True,
+        "bar_chart_data": bar_chart_data,
+        "donut_chart_data": donut_chart_data
     })
+
+
+@login_required
+def member_analytics(request, member_id):
+    
+    member = get_object_or_404(Member, id=member_id, company=request.user.profile.company)
+    
+    if request.method == 'POST':
+        return processCharts(request, member)
+    else:
+        context = {
+            'member': member
+        }
+
+        return render(request, 'teams/member_analytics.html', context)

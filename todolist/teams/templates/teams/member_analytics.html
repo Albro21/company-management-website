@@ -7,11 +7,55 @@
 {% endblock styles %}
 
 {% block content %}
-    {{ member.user.first_name }} {{ member.user.last_name }}
-    <!-- Chart -->
-    {% include 'teams/member_chart.html' with member=member %}
+    <div class="row">
+        <div class="card col d-flex flex-column justify-content-center align-items-center mb-5 p-3">
+            <img src="{{ member.user.profile.profile_picture.url }}" width="150px">
+            <h3>
+                {{ member.user.first_name }} {{ member.user.last_name }}
+            </h3>
+        </div>
+    </div>
+
+    <div class="d-flex flex-column gap-3">
+        <!-- Time range selection -->
+        <div class="btn-group btn-group-sm" role="group" aria-label="Time range selection">
+    
+            <!-- This week -->
+            <input type="radio" class="btn-check" name="timeRange" id="week" autocomplete="off" checked>
+            <label class="btn btn-outline-secondary" for="week">This week</label>
+    
+            <!-- Last week -->
+            <input type="radio" class="btn-check" name="timeRange" id="lastWeek" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="lastWeek">Last week</label>
+    
+            <!-- This month -->
+            <input type="radio" class="btn-check" name="timeRange" id="month" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="month">This month</label>
+    
+            <!-- Last month -->
+            <input type="radio" class="btn-check" name="timeRange" id="lastMonth" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="lastMonth">Last month</label>
+    
+            <!-- All time -->
+            <input type="radio" class="btn-check" name="timeRange" id="allTime" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="allTime">All time</label>
+        </div>
+        
+        <div class="d-flex gap-3" style="height: 350px;">
+            <!-- Donut chart -->
+            <canvas id="donutChart" style="height: 330px; width: 330px;"></canvas>
+            
+            <!-- Stacked Bar chart -->
+            <div style="width: 100%;">
+                <canvas id="memberChart" data-member-id="{{ member.id }}"></canvas>
+            </div>
+        </div>
+    </div>
 {% endblock content %}
 
 {% block scripts %}
     <script src="{% static 'js/script.js' %}"></script>
+    <script src="{% static 'js/member_analytics.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 {% endblock scripts %}

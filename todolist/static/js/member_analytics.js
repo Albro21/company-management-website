@@ -1,11 +1,15 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const canvas = document.getElementById("memberChart");
-    const memberId = canvas.dataset.memberId;
-    const ctx = canvas.getContext("2d");
+    const stackedBarCanvas = document.getElementById("memberChart");
+    const stackedBarCTX = stackedBarCanvas.getContext("2d");
+    
+    const donutCanvas = document.getElementById("donutChart");
+    const donutCTX = donutCanvas.getContext("2d");
 
+    const memberId = stackedBarCanvas.dataset.memberId;
+    
     Chart.register(ChartDataLabels);
 
-    let myChart = new Chart(ctx, {
+    let StackedBarChart = new Chart(stackedBarCTX, {
         type: "bar",
         data: {
             labels: [], 
@@ -20,6 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
         options: {
             plugins: [ChartDataLabels],
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: { display: true },
                 tooltip: {
@@ -81,25 +86,90 @@ document.addEventListener("DOMContentLoaded", function () {
         }        
     });
 
+    let DonutChart = new Chart(donutCTX, {
+        type: 'doughnut',
+        data: {
+            labels: [],
+            datasets: [{
+                data: [],
+                backgroundColor: [],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            const value = tooltipItem.raw;
+                            const totalSeconds = Math.round(value * 3600);
+    
+                            const hours = Math.floor(totalSeconds / 3600);
+                            const minutes = Math.floor((totalSeconds % 3600) / 60);
+                            const seconds = totalSeconds % 60;
+    
+                            // Return formatted tooltip label with hours, minutes, seconds
+                            return tooltipItem.label + ': ' + hours + 'h ' + minutes + 'm ' + seconds + 's';
+                        }
+                    }
+                },
+                datalabels: {
+                    color: '#fff',
+                    font: {
+                        weight: 'bold',
+                    },
+                    formatter: function(value, context) {
+                        const chart = context.chart;
+                        const index = context.dataIndex;
+                        const datasets = chart.data.datasets;
+                
+                        let total = 0;
+                        datasets.forEach(dataset => {
+                            const v = dataset.data[index];
+                            if (typeof v === 'number') {
+                                total += v;
+                            }
+                        });
+                
+                        const hours = Math.floor(total);
+                        const minutes = Math.floor((total - hours) * 60);
+                
+                        return `${hours}h ${minutes}m`;
+                    }
+                }                
+            }
+        }
+    });
+
     async function fetchChartData(filter) {
-        const url = `/teams/member-chart/${memberId}/filter/`;
+        const url = `/teams/member/${memberId}/analytics/`;
         const method = "POST";
         const requestBody = JSON.stringify({ filter: filter});
     
         const data = await sendRequest(url, method, requestBody);
     
         if (data && data.success) {
-            updateChart(data.labels, data.datasets);
+            updateBarChart(data.bar_chart_data);
+            updateDonutChart(data.donut_chart_data);
         } else {
             console.error("Server error:", data ? data.error : "No response");
         }
     }
-    
 
-    function updateChart(labels, datasets) {
-        myChart.data.labels = labels;
-        myChart.data.datasets = datasets;
-        myChart.update();
+    function updateBarChart(bar_chart_data) {
+        StackedBarChart.data.labels = bar_chart_data.labels;
+        StackedBarChart.data.datasets = bar_chart_data.datasets;
+        StackedBarChart.update();
+    }
+
+    function updateDonutChart(donut_chart_data) {
+        DonutChart.data.labels = donut_chart_data.labels;
+        DonutChart.data.datasets = donut_chart_data.datasets;
+        DonutChart.update();
     }    
 
     const timeRangeButtons = document.querySelectorAll('input[name="timeRange"]');
