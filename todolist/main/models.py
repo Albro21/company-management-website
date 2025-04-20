@@ -18,6 +18,7 @@ class Project(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
     color = ColorField(default='#FFFF00')
     company = models.ForeignKey('teams.Company', on_delete=models.SET_NULL, null=True, blank=True, related_name="projects")
+    client = models.CharField(max_length=50, blank=True)
     assigned_users = models.ManyToManyField(User, blank=True, related_name="company_projects")
 
     @property

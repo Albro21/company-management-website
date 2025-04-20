@@ -109,8 +109,7 @@
                                         name="task-text"
                                         class="form-control"
                                         rows="4"
-                                        placeholder="Task Description"
-                                        required>{{ task_form.text.value|default_if_none:'' }}</textarea>
+                                        placeholder="Task Description">{{ task_form.text.value|default_if_none:'' }}</textarea>
 
                                     <!-- Project -->
                                     <select name="task-project" class="form-select" required>
@@ -206,6 +205,9 @@
                     <!-- Title -->
                     <input type="text" name="project-title" class="form-control" placeholder="Project title" required maxlength="50">
 
+                    <!-- Client -->
+                    <input type="text" name="project-client" class="form-control" placeholder="Client" maxlength="50">
+
                     <!-- Description -->
                     <textarea name="project-description" class="form-control" rows="4" placeholder="Project description"></textarea>
 
@@ -248,7 +250,7 @@
 
                 <div class="row p-2 w-100">
                     <div class="col border-end">{{ project.title }}</div>
-                    <div class="col border-end">client</div>
+                    <div class="col border-end">{% if project.client %}{{ project.client }}{% else %}N/A{% endif %}</div>
                     <div class="col border-end">{{ project.total_tracked_time }}</div>
                     <div class="col border-end">0.00 USD</div>
                     <div class="col d-flex gap-3 action-icons">
@@ -278,6 +280,9 @@
                         {% csrf_token %}
                         <!-- Title -->
                         <input type="text" name="project_{{ project.id }}-title" class="form-control" placeholder="Project title" required maxlength="50" value="{{ project.title|default_if_none:'' }}">
+
+                        <!-- Client -->
+                        <input type="text" name="project_{{ project.id }}-client" class="form-control" placeholder="Client" maxlength="50" value="{{ project.client|default_if_none:'' }}">
 
                         <!-- Description -->
                         <textarea name="project_{{ project.id }}-description" class="form-control" rows="4" placeholder="Project description">{{ project.description|default_if_none:"" }}</textarea>

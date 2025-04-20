@@ -4,7 +4,7 @@ from .models import Project, Category, Task
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
-        fields = ['title', 'description', 'status', 'color']
+        fields = ['title', 'description', 'status', 'color', 'client']
     
     status = forms.CharField(required=False)
 
