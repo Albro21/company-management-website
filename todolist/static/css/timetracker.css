@@ -17,6 +17,8 @@
 }
 
 .time-entry-header {
+    display: flex;
+    justify-content: center;
     background-color: rgb(228, 234, 238);
     border: 1px solid #ccc;
     margin-top: -1px;

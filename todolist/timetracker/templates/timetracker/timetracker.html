@@ -56,13 +56,19 @@
 	<div class="d-flex flex-column my-5 gap-4">
 		{% for date, name_groups in grouped_time_entries.items %}
 			<div>
-				<div class="time-entry-header p-2">
-					<div class="row">
-						<div class="fs-6 col-10">
+				<div class="time-entry-header">
+					<div class="row w-100 p-2">
+						<div class="fs-6 col-7">
 							{{ date }}
+						</div>
+						<div class="col-2 text-center">
+							Time Range
 						</div>
 						<div class="fs-6 col-2 text-center">
 							Total: {{ name_groups.date_total_duration }}
+						</div>
+						<div class="col-1 text-center">
+							Actions
 						</div>
 					</div>
 				</div>
@@ -77,14 +83,13 @@
 									style="background-color: #f8f8f8;"
 									role="button"
 									data-bs-toggle="collapse"
-									data-bs-target="#time-entry-{{ first_entry.id }}"
-								>
+									data-bs-target="#time-entry-collapse-{{ first_entry.id }}">
 			
 									<!-- Project Color -->
 									<div class="project-color" style="{% if first_entry.project.color %} background-color: {{ first_entry.project.color }}{% endif %}"></div>
 									
 									<div class="row py-2 w-100 m-0">
-										<div class="col-6 col-lg-8 d-flex align-items-center">
+										<div class="col-7 d-flex align-items-center border-end">
 											<span class="badge text-bg-primary">{{ group_data.time_entries|length }}</span>
 											<!-- Name -->
 											<span class="time-entry-title mx-2">{{ first_entry.name }}</span>
@@ -95,27 +100,30 @@
 										</div>
 						
 										<!-- Start time and End time -->
-										<div class="col-3 col-lg-2 text-center">
+										<div class="col-2 text-center border-end">
 											{{ last_entry.start_time|time:"H:i" }} - {{ first_entry.end_time|time:"H:i" }}
 										</div>
 						
 										<!-- Duration -->
-										<div class="col-3 col-lg-2 text-center">
+										<div class="col-2 text-center border-end">
 											{{ group_data.total_duration }}
+										</div>
+										<div class="col-1 action-icons d-flex justify-content-center">
+											<i class="bi bi-chevron-down"></i>
 										</div>
 									</div>
 								</div>
 
 								<!-- Time entries -->
-								<div class="collapse" id="time-entry-{{ first_entry.id }}">
+								<div class="collapse" id="time-entry-collapse-{{ first_entry.id }}">
 									{% for time_entry in group_data.time_entries %}
-									<div class="time-entry d-flex">
+									<div class="time-entry d-flex" id="time-entry-{{ time_entry.id }}">
 										
 										<!-- Project Color -->
 										<div class="project-color" style="{% if time_entry.project.color %} background-color: {{ time_entry.project.color }}{% endif %}"></div>
 										
 										<div class="row py-2 w-100 m-0">
-											<div class="col-6 col-lg-8 d-flex align-items-center">
+											<div class="col-7 d-flex align-items-center border-end">
 												<!-- Name -->
 												<span class="time-entry-title mx-2">{{ time_entry.name }}</span>
 												<!-- Project -->
@@ -125,13 +133,24 @@
 											</div>
 											
 											<!-- Start time and End time -->
-											<div class="col-3 col-lg-2 text-center">
+											<div class="col-2 text-center border-end">
 												{{ time_entry.start_time|time:"H:i" }} - {{ time_entry.end_time|time:"H:i" }}
 											</div>
 											
 											<!-- Duration -->
-											<div class="col-3 col-lg-2 text-center">
+											<div class="col-2 text-center border-end">
 												{{ time_entry.duration_formatted }}
+											</div>
+
+											<div class="col-1 d-flex gap-3 action-icons justify-content-center">
+												
+												<!-- Delete Project Button -->
+												<i class="bi bi-trash" onclick="deleteTimeEntry({{ time_entry.id }})"></i>
+												
+												<!-- Edit Project Button -->
+												<a data-bs-toggle="offcanvas" data-bs-target="#edit-project-{{ project.id }}">
+													<i class="bi bi-pencil"></i>
+												</a>
 											</div>
 										</div>
 									</div>

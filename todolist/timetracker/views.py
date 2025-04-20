@@ -1,11 +1,13 @@
 from django.http import JsonResponse
-from django.shortcuts import render
-from django.views.decorators.http import require_POST
+from django.shortcuts import get_object_or_404, render
+from django.views.decorators.http import require_http_methods
+
 from collections import defaultdict
 from datetime import timedelta
 import json
 
 from .models import TimeEntry
+
 
 def format_timedelta(td):
     total_seconds = int(td.total_seconds())
@@ -57,7 +59,7 @@ def timetracker(request):
 
     return render(request, 'timetracker/timetracker.html', context)
 
-@require_POST
+@require_http_methods(["POST"])
 def start_timer(request):
     data = json.loads(request.body) 
     task_id = data.get('task_id')
@@ -84,8 +86,13 @@ def start_timer(request):
     time_entry.start()
     return JsonResponse({'success': True,})
 
-@require_POST
+@require_http_methods(["POST"])
 def stop_timer(request):
-    print(request.user.time_entries.filter(end_time__isnull=True).first())
     request.user.time_entries.filter(end_time__isnull=True).first().stop()
-    return JsonResponse({'success': True,})
+    return JsonResponse({'success': True})
+
+@require_http_methods(["DELETE"])
+def delete_time_entry(request, time_entry_id):
+    time_entry = get_object_or_404(TimeEntry, id=time_entry_id)
+    time_entry.delete()
+    return JsonResponse({'success': True})

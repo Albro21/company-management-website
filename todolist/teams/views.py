@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.decorators.http import require_POST, require_http_methods
+from django.views.decorators.http import require_http_methods
 
 import calendar
 from collections import defaultdict
@@ -47,6 +47,14 @@ def get_date_range_from_filter(filter_option, all_time_first_entry):
         return None
 
     return start_date, end_date
+
+def seconds_to_hms(seconds):
+    if seconds == 0:
+        return "—"
+    hours = int(seconds // 3600)
+    minutes = int((seconds % 3600) // 60)
+    seconds = int(seconds % 60)
+    return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
 
 def process_forms(request):
     form_type = request.POST.get('form_type')
@@ -198,145 +206,6 @@ def process_company_charts(request):
         "total_time": total_time
     })
 
-@login_required
-def team(request):
-    if not request.user.profile.company:
-        return render(request, 'teams/no_company.html')
-
-    task_form = TaskForm(prefix="task")
-    project_form = ProjectForm(prefix="project")
-
-    if request.method == 'POST':
-        if request.POST.get('form_type'):
-            return process_forms(request)
-        else:
-            return process_company_charts(request)
-
-    context = {
-        'company': request.user.profile.company,
-        'task_form': task_form,
-        'project_form': project_form,
-    }
-
-    return render(request, 'teams/team.html', context)
-
-@login_required
-def create_company(request):
-    if request.method == 'POST':
-        form = CompanyForm(request.POST, request.FILES)
-        
-        if form.is_valid():
-            company = form.save(commit=False)
-            company.created_by = request.user
-            company.save()
-            request.user.profile.set_company(company)
-            Member.objects.create(
-                company=company,
-                user=request.user
-            )
-            return redirect('teams:team') 
-        
-        return render(request, 'teams/create_company.html', {'form': form})
-    
-    else:
-        form = CompanyForm()
-    
-    return render(request, 'teams/create_company.html', {'form': form})
-
-@require_POST
-@login_required
-def create_join_request(request):
-    name = request.POST.get('company_name')
-    try:
-        company = Company.objects.get(name__iexact=name)
-        
-        existing_request = JoinRequest.objects.filter(user=request.user, company=company).first()
-        
-        if existing_request:
-            messages.error(request, f"You already requested to join {company.name}.")
-        else:
-            join_request = JoinRequest(user=request.user, company=company)
-            join_request.save()
-            messages.success(request, f"Join request for {company.name} has been submitted.")
-
-        return redirect('teams:team')
-    except Company.DoesNotExist:
-        messages.error(request, f"No company found with the name: {name}")
-        return redirect('teams:team')
-
-@require_POST
-@login_required
-def accept_join_request(request, request_id):
-    try:
-        join_request = JoinRequest.objects.get(id=request_id)
-        Member.objects.create(
-            company=join_request.company,
-            user=join_request.user
-        )
-        join_request.user.profile.set_company(join_request.company)
-        join_request.delete()
-        return JsonResponse({'success': True})
-    except JoinRequest.DoesNotExist:
-        return JsonResponse({'success': False})
-
-@require_POST
-@login_required
-def decline_join_request(request, request_id):
-    try:
-        join_request = JoinRequest.objects.get(id=request_id)
-        join_request.delete()
-        return JsonResponse({'success': True})
-    except JoinRequest.DoesNotExist:
-        return JsonResponse({'success': False})
-
-@login_required
-def settings(request):
-    company = request.user.profile.company
-
-    company_form = CompanyForm(instance=company, prefix='company')
-    role_form = RoleForm(prefix='role')
-
-    if request.method == 'POST':
-        form_type = request.POST.get('form_type')
-
-        if form_type == 'company':
-            company_form = CompanyForm(request.POST, request.FILES, instance=company, prefix='company')
-            if company_form.is_valid():
-                company_form.save()
-                messages.success(request, 'Company updated successfully.')
-                return redirect('teams:settings')
-
-        elif form_type == 'role':
-            role_form = RoleForm(request.POST, prefix='role')
-            if role_form.is_valid():
-                new_role = role_form.save(commit=False)
-                new_role.company = company
-                new_role.save()
-                messages.success(request, 'Role added successfully.')
-                return redirect('teams:settings')
-            else:
-                messages.error(request, 'Please correct the errors below.')
-
-    context = {
-        'company': company,
-        'company_form': company_form,
-        'role_form': role_form,
-    }
-
-    return render(request, 'teams/settings.html', context)
-
-@require_http_methods(["DELETE"])
-@login_required
-def delete_role(request, role_id):
-    try:
-        role = get_object_or_404(Role, id=role_id, company=request.user.profile.company)
-        role.delete()
-        return JsonResponse({"success": True}, status=200)
-    except ObjectDoesNotExist:
-        return JsonResponse({"success": False, "error": "Role not found"}, status=404)
-    except Exception as e:
-        return JsonResponse({"success": False, "error": str(e)}, status=500)
-
 def process_member_bar_chart(member, start_date, end_date):
     date_labels = []
     project_time_by_date = defaultdict(lambda: defaultdict(int))
@@ -444,6 +313,145 @@ def process_member_charts(request, member):
     })
 
 @login_required
+def team(request):
+    if not request.user.profile.company:
+        return render(request, 'teams/no_company.html')
+
+    task_form = TaskForm(prefix="task")
+    project_form = ProjectForm(prefix="project")
+
+    if request.method == 'POST':
+        if request.POST.get('form_type'):
+            return process_forms(request)
+        else:
+            return process_company_charts(request)
+
+    context = {
+        'company': request.user.profile.company,
+        'task_form': task_form,
+        'project_form': project_form,
+    }
+
+    return render(request, 'teams/team.html', context)
+
+@login_required
+def create_company(request):
+    if request.method == 'POST':
+        form = CompanyForm(request.POST, request.FILES)
+        
+        if form.is_valid():
+            company = form.save(commit=False)
+            company.created_by = request.user
+            company.save()
+            request.user.profile.set_company(company)
+            Member.objects.create(
+                company=company,
+                user=request.user
+            )
+            return redirect('teams:team') 
+        
+        return render(request, 'teams/create_company.html', {'form': form})
+    
+    else:
+        form = CompanyForm()
+    
+    return render(request, 'teams/create_company.html', {'form': form})
+
+@require_http_methods(["POST"])
+@login_required
+def create_join_request(request):
+    name = request.POST.get('company_name')
+    try:
+        company = Company.objects.get(name__iexact=name)
+        
+        existing_request = JoinRequest.objects.filter(user=request.user, company=company).first()
+        
+        if existing_request:
+            messages.error(request, f"You already requested to join {company.name}.")
+        else:
+            join_request = JoinRequest(user=request.user, company=company)
+            join_request.save()
+            messages.success(request, f"Join request for {company.name} has been submitted.")
+
+        return redirect('teams:team')
+    except Company.DoesNotExist:
+        messages.error(request, f"No company found with the name: {name}")
+        return redirect('teams:team')
+
+@require_http_methods(["POST"])
+@login_required
+def accept_join_request(request, request_id):
+    try:
+        join_request = JoinRequest.objects.get(id=request_id)
+        Member.objects.create(
+            company=join_request.company,
+            user=join_request.user
+        )
+        join_request.user.profile.set_company(join_request.company)
+        join_request.delete()
+        return JsonResponse({'success': True})
+    except JoinRequest.DoesNotExist:
+        return JsonResponse({'success': False})
+
+@require_http_methods(["POST"])
+@login_required
+def decline_join_request(request, request_id):
+    try:
+        join_request = JoinRequest.objects.get(id=request_id)
+        join_request.delete()
+        return JsonResponse({'success': True})
+    except JoinRequest.DoesNotExist:
+        return JsonResponse({'success': False})
+
+@login_required
+def settings(request):
+    company = request.user.profile.company
+
+    company_form = CompanyForm(instance=company, prefix='company')
+    role_form = RoleForm(prefix='role')
+
+    if request.method == 'POST':
+        form_type = request.POST.get('form_type')
+
+        if form_type == 'company':
+            company_form = CompanyForm(request.POST, request.FILES, instance=company, prefix='company')
+            if company_form.is_valid():
+                company_form.save()
+                messages.success(request, 'Company updated successfully.')
+                return redirect('teams:settings')
+
+        elif form_type == 'role':
+            role_form = RoleForm(request.POST, prefix='role')
+            if role_form.is_valid():
+                new_role = role_form.save(commit=False)
+                new_role.company = company
+                new_role.save()
+                messages.success(request, 'Role added successfully.')
+                return redirect('teams:settings')
+            else:
+                messages.error(request, 'Please correct the errors below.')
+
+    context = {
+        'company': company,
+        'company_form': company_form,
+        'role_form': role_form,
+    }
+
+    return render(request, 'teams/settings.html', context)
+
+@require_http_methods(["DELETE"])
+@login_required
+def delete_role(request, role_id):
+    try:
+        role = get_object_or_404(Role, id=role_id, company=request.user.profile.company)
+        role.delete()
+        return JsonResponse({"success": True}, status=200)
+    except ObjectDoesNotExist:
+        return JsonResponse({"success": False, "error": "Role not found"}, status=404)
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=500)
+
+@login_required
 def member_analytics(request, member_id):
     
     member = get_object_or_404(Member, id=member_id, company=request.user.profile.company)
@@ -524,11 +532,3 @@ def project_weekly_report(request, project_id):
     }
 
     return render(request, 'teams/project_weekly_report.html', context)
-
-def seconds_to_hms(seconds):
-    if seconds == 0:
-        return "—"
-    hours = int(seconds // 3600)
-    minutes = int((seconds % 3600) // 60)
-    seconds = int(seconds % 60)
-    return f"{hours:02d}:{minutes:02d}:{seconds:02d}"

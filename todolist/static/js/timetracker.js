@@ -114,3 +114,16 @@ window.onload = function () {
         projectSelect.disabled = true;
     }
 };
+
+async function deleteTimeEntry(timeEntryId) {
+    const url = `/timetracker/time-entry/${timeEntryId}/delete/`;
+    const method = 'DELETE';
+
+    const success = await sendRequest(url, method);
+
+    if (success) {
+        document.getElementById(`time-entry-${timeEntryId}`).remove();
+    } else {
+        console.error('Failed to delete project');
+    }
+}
