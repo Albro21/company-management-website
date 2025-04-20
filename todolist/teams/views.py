@@ -353,7 +353,7 @@ def process_member_bar_chart(member, start_date, end_date):
 
     project_color_map = {
         project.title: project.color
-        for project in member.user.projects.filter(title__in=project_titles)
+        for project in member.user.profile.company.projects.filter(title__in=project_titles)
     }
 
     datasets = []
@@ -385,7 +385,7 @@ def process_member_donut_chart(member, start_date, end_date):
     
     project_color_map = {
         project.title: project.color
-        for project in member.user.projects.filter(title__in=labels)
+        for project in member.user.profile.company.projects.filter(title__in=labels)
     }
 
     datasets = [{
