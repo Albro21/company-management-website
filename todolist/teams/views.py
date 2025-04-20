@@ -464,3 +464,62 @@ def member_analytics(request, member_id):
         }
 
         return render(request, 'teams/member_analytics.html', context)
+
+@login_required
+def project_weekly_report(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+
+    today = date.today()
+    start_of_week = today - timedelta(days=today.weekday())
+    week_dates = [start_of_week + timedelta(days=i) for i in range(7)]
+
+    assigned_members = project.assigned_users.all()
+
+    member_data = []
+    totals_by_day = [0] * 7
+    grand_total = 0
+
+    for user in assigned_members:
+        user_full_name = f"{user.first_name} {user.last_name}".strip() or user.username
+        daily_hours = []
+        user_total = 0
+
+        for i, current_date in enumerate(week_dates):
+            entries = user.time_entries.filter(
+                start_time__date=current_date,
+                project=project
+            )
+            total_seconds = sum(entry.duration.total_seconds() for entry in entries)
+            user_total += total_seconds
+            totals_by_day[i] += total_seconds
+            daily_hours.append(seconds_to_hms(total_seconds))
+
+        member_data.append({
+            "member_name": user_full_name,
+            "member_times": daily_hours,
+            "member_total": seconds_to_hms(user_total)
+        })
+        grand_total += user_total
+
+    project_row = [seconds_to_hms(s) for s in totals_by_day]
+    project_total = seconds_to_hms(grand_total)
+
+    context = {
+        'project': project,
+        'week_dates': week_dates,
+        'project_row': project_row,
+        'project_total': project_total,
+        'member_data': member_data,
+        'start_date': start_of_week,
+        'end_date': week_dates[-1],
+    }
+
+    return render(request, 'teams/project_weekly_report.html', context)
+
+def seconds_to_hms(seconds):
+    if seconds == 0:
+        return "—"
+    hours = int(seconds // 3600)
+    minutes = int((seconds % 3600) // 60)
+    seconds = int(seconds % 60)
+    return f"{hours:02d}:{minutes:02d}:{seconds:02d}"

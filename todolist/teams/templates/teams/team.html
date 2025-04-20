@@ -264,7 +264,9 @@
                         <i class="bi bi-trash" data-bs-toggle="tooltip" title="Delete" onclick="deleteProject({{ project.id }})"></i>
 
                         <!-- View Project Analytics Button -->
-                        <i class="bi bi-graph-up" data-bs-toggle="tooltip" title="View Member Analytics"></i>
+                        <a href="{% url 'teams:project_weekly_report' project.id %}">
+                            <i class="bi bi-graph-up" data-bs-toggle="tooltip" title="View Project Analytics"></i>
+                        </a>
                     </div>
                 </div>
             </div>

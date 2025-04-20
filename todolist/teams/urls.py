@@ -7,6 +7,8 @@ urlpatterns = [
     path('team/', views.team, name='team'),
     path('member/<int:member_id>/analytics/', views.member_analytics, name='member_analytics'),
     
+    path('project-weekly-report/<int:project_id>/', views.project_weekly_report, name='project_weekly_report'),
+    
     path('company/create/', views.create_company, name='create_company'),
     path('company/settings/', views.settings, name='settings'),
     
