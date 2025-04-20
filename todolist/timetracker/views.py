@@ -20,7 +20,9 @@ def timetracker(request):
     tasks = user.tasks.filter(is_completed=False)
     projects = user.projects.all().union(user.profile.company.projects.all())
     time_entries = user.time_entries.filter(end_time__isnull=False)
-    
+
+    running_entry = user.time_entries.filter(end_time__isnull=True).order_by('-start_time').first()
+
     grouped_time_entries = defaultdict(lambda: defaultdict(lambda: {'time_entries': [], 'total_duration': timedelta()}))
 
     for entry in time_entries:
@@ -50,6 +52,7 @@ def timetracker(request):
         'tasks': tasks,
         'projects': projects,
         'grouped_time_entries': grouped_time_entries,
+        'running_entry': running_entry,
     }
 
     return render(request, 'timetracker/timetracker.html', context)
@@ -83,5 +86,6 @@ def start_timer(request):
 
 @require_POST
 def stop_timer(request):
+    print(request.user.time_entries.filter(end_time__isnull=True).first())
     request.user.time_entries.filter(end_time__isnull=True).first().stop()
     return JsonResponse({'success': True,})

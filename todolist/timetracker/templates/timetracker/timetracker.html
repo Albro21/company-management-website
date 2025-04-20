@@ -148,5 +148,15 @@
 
 {% block scripts %}
 <script src="{% static 'js/script.js' %}"></script>
+{% if running_entry %}
+	<script>
+		window.runningTimer = {
+			startTime: "{{ running_entry.start_time|date:'c' }}",
+			taskId: "{{ running_entry.task.id }}",
+			name: "{{ running_entry.name|escapejs }}",
+			projectId: "{{ running_entry.project.id }}"
+		};
+	</script>
+{% endif %}
 <script src="{% static 'js/timetracker.js' %}"></script>
 {% endblock scripts %}

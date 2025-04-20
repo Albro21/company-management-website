@@ -8,9 +8,9 @@ from main.models import Task, Project
 class TimeEntry(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='time_entries')
     task = models.ForeignKey(Task, on_delete=models.SET_NULL, blank=True, null=True, related_name='time_entries')
-    name = models.CharField(max_length=200, blank=True, null=True)
+    name = models.CharField(max_length=200, blank=True)
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, blank=True, null=True, related_name='time_entries')
-    start_time = models.DateTimeField(default=timezone.now, blank=True, null=True)
+    start_time = models.DateTimeField(default=timezone.now)
     end_time = models.DateTimeField(blank=True, null=True)
 
     class Meta:
