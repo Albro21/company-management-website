@@ -256,7 +256,7 @@
                     <div class="col d-flex gap-3 action-icons">
 
                         <!-- Edit Project Button -->
-                        <a data-bs-toggle="offcanvas" data-bs-target="#edit-project_{{ project.id }}">
+                        <a data-bs-toggle="offcanvas" data-bs-target="#edit-project-{{ project.id }}">
                             <i class="bi bi-pencil" data-bs-toggle="tooltip" title="Edit"></i>
                         </a>
                         
@@ -264,15 +264,15 @@
                         <i class="bi bi-trash" data-bs-toggle="tooltip" title="Delete" onclick="deleteProject({{ project.id }})"></i>
 
                         <!-- View Project Analytics Button -->
-                        <a href="{% url 'teams:project_weekly_report' project.id %}">
-                            <i class="bi bi-graph-up" data-bs-toggle="tooltip" title="View Project Analytics"></i>
+                        <a data-bs-toggle="offcanvas" data-bs-target="#generate-report-{{ project.id }}">
+                            <i class="bi bi-file-earmark-bar-graph" data-bs-toggle="tooltip" title="Generate Report"></i>
                         </a>
                     </div>
                 </div>
             </div>
 
             <!-- Edit Project Offcanvas -->
-            <div class="offcanvas offcanvas-end" tabindex="-1" id="edit-project_{{ project.id }}">
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="edit-project-{{ project.id }}">
                 <div class="offcanvas-header">
                     <h5 class="offcanvas-title" id="offcanvasRightLabel">Edit Project: {{ project.title }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -313,6 +313,23 @@
                         <!-- Submit Button -->
                         <button type="submit" class="btn btn-primary">Save</button>
                     </form>                                
+                </div>
+            </div>
+
+            <!-- Generate Report Offcanvas -->
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="generate-report-{{ project.id }}">
+                <div class="offcanvas-header border-bottom">
+                    <h5 class="offcanvas-title" id="offcanvasRightLabel">Generate report for {{ project.title }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body d-flex flex-column gap-3">
+                    <h4 class="text-center">Weekly</h4>
+                    <div class="btn-group w-100">
+                        <button class="btn btn-light border w-100" id="date-display-{{ project.id }}">This week</button>
+                        <button class="btn btn-light border" onclick="previousWeek({{ project.id }})"><i class="bi bi-chevron-left"></i></button>
+                        <button class="btn btn-light border" onclick="nextWeek({{ project.id }})"><i class="bi bi-chevron-right"></i></button>
+                    </div>  
+                    <a href="{% url 'teams:project_weekly_report' project.id %}" id="generate-report-button-{{ project.id }}" class="btn btn-primary w-100" target="_blank">Generate weekly report</a>                    
                 </div>
             </div>
         {% endfor %}

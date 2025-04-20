@@ -9,7 +9,7 @@ from django.views.decorators.http import require_POST, require_http_methods
 
 import calendar
 from collections import defaultdict
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 import json
 
 from main.forms import ProjectForm, TaskForm
@@ -468,9 +468,18 @@ def member_analytics(request, member_id):
 @login_required
 def project_weekly_report(request, project_id):
     project = get_object_or_404(Project, id=project_id)
+    
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
 
-    today = date.today()
-    start_of_week = today - timedelta(days=today.weekday())
+    if start_date_str and end_date_str:
+        start_of_week = datetime.strptime(start_date_str, '%b %d, %Y')
+        end_of_week = datetime.strptime(end_date_str, '%b %d, %Y')
+    else:
+        today = datetime.today()
+        start_of_week = today - timedelta(days=today.weekday())
+        end_of_week = start_of_week + timedelta(days=6)
+    
     week_dates = [start_of_week + timedelta(days=i) for i in range(7)]
 
     assigned_members = project.assigned_users.all()
@@ -510,8 +519,8 @@ def project_weekly_report(request, project_id):
         'project_row': project_row,
         'project_total': project_total,
         'member_data': member_data,
-        'start_date': start_of_week,
-        'end_date': week_dates[-1],
+        'start_date': start_of_week.strftime('%d/%m/%y'),
+        'end_date': end_of_week.strftime('%d/%m/%y'),
     }
 
     return render(request, 'teams/project_weekly_report.html', context)

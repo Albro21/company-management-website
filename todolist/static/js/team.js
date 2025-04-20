@@ -3,16 +3,16 @@ const totalTimeElement = document.getElementById("total_time");
 document.addEventListener("DOMContentLoaded", function () {
     const stackedBarCanvas = document.getElementById("companyStackedBarChart");
     const stackedBarCTX = stackedBarCanvas.getContext("2d");
-    
+
     const donutCanvas = document.getElementById("companyDonutChart");
     const donutCTX = donutCanvas.getContext("2d");
-    
+
     Chart.register(ChartDataLabels);
 
     let StackedBarChart = new Chart(stackedBarCTX, {
         type: "bar",
         data: {
-            labels: [], 
+            labels: [],
             datasets: [{
                 label: "Completed Tasks",
                 data: [],
@@ -29,14 +29,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 legend: { display: true },
                 tooltip: {
                     callbacks: {
-                        label: function(context) {
+                        label: function (context) {
                             const value = context.parsed.y;
                             const totalSeconds = Math.round(value * 3600);
-                
+
                             const hours = Math.floor(totalSeconds / 3600);
                             const minutes = Math.floor((totalSeconds % 3600) / 60);
                             const seconds = totalSeconds % 60;
-                
+
                             return `${context.dataset.label}: ${hours}h ${minutes}m ${seconds}s`;
                         }
                     }
@@ -44,14 +44,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 datalabels: {
                     anchor: 'end',
                     align: 'top',
-                    display: function(context) {
+                    display: function (context) {
                         return context.dataset.data[context.dataIndex] !== 0;
                     },
                     formatter: function (value, context) {
                         const chart = context.chart;
                         const index = context.dataIndex;
                         const datasets = chart.data.datasets;
-        
+
                         let total = 0;
                         datasets.forEach(dataset => {
                             const v = dataset.data[index];
@@ -59,10 +59,10 @@ document.addEventListener("DOMContentLoaded", function () {
                                 total += v;
                             }
                         });
-        
+
                         const isTopDataset = context.datasetIndex === datasets.length - 1
                             || datasets.slice(context.datasetIndex + 1).every(ds => !ds.data[index]);
-        
+
                         return isTopDataset ? `${Math.floor(total)}h ${Math.round((total - Math.floor(total)) * 60)}m` : '';
                     }
                 }
@@ -77,13 +77,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     beginAtZero: true,
                     ticks: {
                         precision: 2,
-                        callback: function(value) {
+                        callback: function (value) {
                             return value + 'h';
                         },
                     }
                 }
             }
-        }        
+        }
     });
 
     let DonutChart = new Chart(donutCTX, {
@@ -104,14 +104,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
                 tooltip: {
                     callbacks: {
-                        label: function(tooltipItem) {
+                        label: function (tooltipItem) {
                             const value = tooltipItem.raw;
                             const totalSeconds = Math.round(value * 3600);
-    
+
                             const hours = Math.floor(totalSeconds / 3600);
                             const minutes = Math.floor((totalSeconds % 3600) / 60);
                             const seconds = totalSeconds % 60;
-    
+
                             // Return formatted tooltip label with hours, minutes, seconds
                             return tooltipItem.label + ': ' + hours + 'h ' + minutes + 'm ' + seconds + 's';
                         }
@@ -122,11 +122,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     font: {
                         weight: 'bold',
                     },
-                    formatter: function(value, context) {
+                    formatter: function (value, context) {
                         const chart = context.chart;
                         const index = context.dataIndex;
                         const datasets = chart.data.datasets;
-                
+
                         let total = 0;
                         datasets.forEach(dataset => {
                             const v = dataset.data[index];
@@ -134,13 +134,13 @@ document.addEventListener("DOMContentLoaded", function () {
                                 total += v;
                             }
                         });
-                
+
                         const hours = Math.floor(total);
                         const minutes = Math.floor((total - hours) * 60);
-                
+
                         return `${hours}h ${minutes}m`;
                     }
-                }                
+                }
             }
         }
     });
@@ -148,10 +148,10 @@ document.addEventListener("DOMContentLoaded", function () {
     async function fetchChartData(filter) {
         const url = `/teams/team/`;
         const method = "POST";
-        const requestBody = JSON.stringify({ filter: filter});
-    
+        const requestBody = JSON.stringify({ filter: filter });
+
         const data = await sendRequest(url, method, requestBody);
-    
+
         if (data && data.success) {
             updateBarChart(data.bar_chart_data);
             updateDonutChart(data.donut_chart_data);
@@ -171,7 +171,7 @@ document.addEventListener("DOMContentLoaded", function () {
         DonutChart.data.labels = donut_chart_data.labels;
         DonutChart.data.datasets = donut_chart_data.datasets;
         DonutChart.update();
-    }    
+    }
 
     const timeRangeButtons = document.querySelectorAll('input[name="timeRange"]');
     timeRangeButtons.forEach(button => {
@@ -223,8 +223,71 @@ async function deleteProject(projectId) {
 
     if (success) {
         document.getElementById(`project-${projectId}`).remove();
-        Array.from(document.getElementsByClassName('tooltip')).forEach(function(tooltip) {tooltip.remove();});
+        Array.from(document.getElementsByClassName('tooltip')).forEach(function (tooltip) { tooltip.remove(); });
     } else {
         console.error('Failed to delete project');
     }
+}
+
+let currentStartDate = new Date();
+currentStartDate.setDate(currentStartDate.getDate() - (currentStartDate.getDay() === 0 ? 6 : currentStartDate.getDay() - 1));
+
+function formatDate(date) {
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function updateDisplay(projectId, startDate) {
+    const endDate = new Date(startDate);
+    const displayElement = document.getElementById('date-display-' + projectId);
+    const today = new Date();
+    const startOfCurrentWeek = new Date(today);
+    startOfCurrentWeek.setDate(today.getDate() - (today.getDay() === 0 ? 6 : today.getDay() - 1)); // Start of this week
+
+    const startOfPreviousWeek = new Date(startOfCurrentWeek);
+    startOfPreviousWeek.setDate(startOfPreviousWeek.getDate() - 7);
+
+    if (startDate.getDate() === startOfCurrentWeek.getDate()) {
+        displayElement.textContent = "This week";
+    } else if (startDate.getDate() === startOfPreviousWeek.getDate()) {
+        displayElement.textContent = "Last week";
+    } else {
+        endDate.setDate(startDate.getDate() + 6);
+        displayElement.textContent = formatDate(startDate) + ' - ' + formatDate(endDate);
+    }
+}
+
+function previousWeek(projectId) {
+    currentStartDate.setDate(currentStartDate.getDate() - 7);
+    updateDisplay(projectId, currentStartDate);
+    updateUrlWithDates(projectId, currentStartDate);
+}
+
+function nextWeek(projectId) {
+    const today = new Date();
+    const startOfCurrentWeek = new Date(today);
+    startOfCurrentWeek.setDate(today.getDate() - (today.getDay() === 0 ? 6 : today.getDay() - 1));
+
+    const nextStartDate = new Date(currentStartDate);
+    nextStartDate.setDate(currentStartDate.getDate() + 7);
+
+    if (nextStartDate > startOfCurrentWeek) {
+        return;
+    }
+
+    currentStartDate.setDate(currentStartDate.getDate() + 7);
+    updateDisplay(projectId, currentStartDate);
+    updateUrlWithDates(projectId, currentStartDate);
+}
+
+function updateUrlWithDates(projectId, startDate) {
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 6);
+
+    const linkElement = document.getElementById(`generate-report-button-${projectId}`);
+
+    const url = new URL(linkElement.href);
+    url.searchParams.set('start_date', formatDate(startDate));
+    url.searchParams.set('end_date', formatDate(endDate));
+
+    linkElement.href = url.toString();
 }
