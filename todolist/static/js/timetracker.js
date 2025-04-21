@@ -123,16 +123,15 @@ async function deleteTimeEntry(timeEntryId) {
 
     if (success) {
         const timeEntry = document.getElementById(`time-entry-${timeEntryId}`);
-        const collapseId = timeEntry.dataset.timeEntryParent;
-        const grouperId = timeEntry.dataset.timeEntryGrouper;
-    
+        
         timeEntry.remove();
-    
-        const collapse = document.getElementById(collapseId);
+        document.getElementById(timeEntry.dataset.offcanvas).remove();
+        
+        const collapse = document.getElementById(timeEntry.dataset.timeEntryParent);
         if (collapse.children.length === 0) {
             collapse.remove();
-    
-            const grouper = document.getElementById(grouperId);
+            
+            const grouper = document.getElementById(timeEntry.dataset.timeEntryGrouper);
             const grouperParent = grouper.parentElement;
             
             grouper.remove();
@@ -145,3 +144,36 @@ async function deleteTimeEntry(timeEntryId) {
         console.error('Failed to delete project');
     }
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+	document.querySelectorAll(".time-entry-form").forEach(form => {
+		const id = form.getAttribute("data-time-entry-id");
+		const taskSelect = form.querySelector(`#task-${id}`);
+		const nameInput = form.querySelector(`#name-${id}`);
+		const projectSelect = form.querySelector(`#project-${id}`);
+
+		function toggleInputs() {
+			const selectedOption = taskSelect.options[taskSelect.selectedIndex];
+
+			if (taskSelect.value) {
+				nameInput.disabled = true;
+				projectSelect.disabled = true;
+
+				const taskName = selectedOption.getAttribute("data-task-name");
+				const taskProjectId = selectedOption.getAttribute("data-task-project-id");
+
+				if (taskName !== null) nameInput.value = taskName;
+				if (taskProjectId !== null) {
+					projectSelect.value = taskProjectId;
+				}
+			} else {
+				nameInput.disabled = false;
+				projectSelect.disabled = false;
+			}
+		}
+
+		toggleInputs();
+
+		taskSelect.addEventListener("change", toggleInputs);
+	});
+});

@@ -1,12 +1,14 @@
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
 from collections import defaultdict
-from datetime import timedelta
+from datetime import datetime, timedelta
 import json
 
 from .models import TimeEntry
+from .forms import TimeEntryForm
 
 
 def format_timedelta(td):
@@ -16,7 +18,47 @@ def format_timedelta(td):
     seconds = total_seconds % 60
     return f'{hours:02}:{minutes:02}:{seconds:02}'
 
+def process_form(request):
+    time_entry_id = request.POST.get('time_entry_id')
+    time_entry = get_object_or_404(TimeEntry, id=time_entry_id)
+
+    post_data = request.POST.copy()
+
+    start_time_str = post_data.get('start_time')
+    end_time_str = post_data.get('end_time')
+
+    if start_time_str:
+        start_datetime = datetime.combine(
+            time_entry.start_time.date(),
+            datetime.strptime(start_time_str, "%H:%M").time()
+        )
+        post_data['start_time'] = start_datetime
+
+    if end_time_str:
+        end_datetime = datetime.combine(
+            time_entry.end_time.date(),
+            datetime.strptime(end_time_str, "%H:%M").time()
+        )
+        post_data['end_time'] = end_datetime
+
+    task_id = post_data.get("task")
+    if task_id:
+        task = request.user.tasks.filter(id=task_id).first()
+        if task:
+            post_data['name'] = task.title
+            post_data['project'] = task.project.id if task.project else ''
+
+    time_entry_update_form = TimeEntryForm(post_data, instance=time_entry)
+
+    if time_entry_update_form.is_valid():
+        time_entry_update_form.save()
+        return HttpResponseRedirect(reverse('timetracker:timetracker'))
+
 def timetracker(request):
+    if request.method == 'POST':
+        if request.POST.get('time_entry_id'):
+            process_form(request)
+    
     user = request.user
     
     tasks = user.tasks.filter(is_completed=False)

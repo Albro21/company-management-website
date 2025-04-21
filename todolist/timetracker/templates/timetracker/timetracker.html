@@ -87,7 +87,7 @@
 									id="time-entry-grouper-{{ first_entry.id }}">
 			
 									<!-- Project Color -->
-									<div class="project-color" style="{% if first_entry.project.color %} background-color: {{ first_entry.project.color }}{% endif %}"></div>
+									<div class="project-color" {% if first_entry.project.color %}style="background-color: {{ first_entry.project.color }}"{% endif %}></div>
 									
 									<div class="row py-2 w-100 m-0">
 										<div class="col-7 d-flex align-items-center border-end">
@@ -115,47 +115,121 @@
 									</div>
 								</div>
 
-								<!-- Time entries -->
+								<!-- Time entry collapse -->
 								<div class="collapse" id="time-entry-collapse-{{ first_entry.id }}">
 									{% for time_entry in group_data.time_entries %}
-									<div class="time-entry d-flex" data-time-entry-parent="time-entry-collapse-{{ first_entry.id }}" data-time-entry-grouper="time-entry-grouper-{{ first_entry.id }}" id="time-entry-{{ time_entry.id }}">
-										
-										<!-- Project Color -->
-										<div class="project-color" style="{% if time_entry.project.color %} background-color: {{ time_entry.project.color }}{% endif %}"></div>
-										
-										<div class="row py-2 w-100 m-0">
-											<div class="col-7 d-flex align-items-center border-end">
-												<!-- Name -->
-												<span class="time-entry-title mx-2">{{ time_entry.name }}</span>
-												<!-- Project -->
-												{% if time_entry.project %}
-												<span class="project-title">{{ time_entry.project }}</span>
-												{% endif %}
-											</div>
-											
-											<!-- Start time and End time -->
-											<div class="col-2 text-center border-end">
-												{{ time_entry.start_time|time:"H:i" }} - {{ time_entry.end_time|time:"H:i" }}
-											</div>
-											
-											<!-- Duration -->
-											<div class="col-2 text-center border-end">
-												{{ time_entry.duration_formatted }}
-											</div>
 
-											<div class="col-1 d-flex gap-3 action-icons justify-content-center">
+										<!-- Time Entry -->
+										<div 
+											class="time-entry d-flex" 
+											data-time-entry-parent="time-entry-collapse-{{ first_entry.id }}" 
+											data-time-entry-grouper="time-entry-grouper-{{ first_entry.id }}" 
+											data-offcanvas="edit-time-entry-{{ time_entry.id }}" 
+											id="time-entry-{{ time_entry.id }}">
+											
+											<!-- Project Color -->
+											<div class="project-color" {% if time_entry.project.color %}style=" background-color: {{ time_entry.project.color }}"{% endif %}></div>
+											
+											<div class="row py-2 w-100 m-0">
+												<div class="col-7 d-flex align-items-center border-end">
+													<!-- Name -->
+													<span class="time-entry-title mx-2">{{ time_entry.name }}</span>
+													<!-- Project -->
+													{% if time_entry.project %}
+														<span class="project-title">{{ time_entry.project }}</span>
+													{% endif %}
+												</div>
 												
-												<!-- Delete Project Button -->
-												<i class="bi bi-trash" onclick="deleteTimeEntry({{ time_entry.id }})"></i>
+												<!-- Start time and End time -->
+												<div class="col-2 text-center border-end">
+													{{ time_entry.start_time|time:"H:i" }} - {{ time_entry.end_time|time:"H:i" }}
+												</div>
 												
-												<!-- Edit Project Button -->
-												<a data-bs-toggle="offcanvas" data-bs-target="#edit-project-{{ project.id }}">
-													<i class="bi bi-pencil"></i>
-												</a>
+												<!-- Duration -->
+												<div class="col-2 text-center border-end">
+													{{ time_entry.duration_formatted }}
+												</div>
+
+												<div class="col-1 d-flex gap-3 action-icons justify-content-center">
+													
+													<!-- Delete Project Button -->
+													<i class="bi bi-trash" onclick="deleteTimeEntry({{ time_entry.id }})"></i>
+													
+													<!-- Edit Project Button -->
+													<a data-bs-toggle="offcanvas" data-bs-target="#edit-time-entry-{{ time_entry.id }}">
+														<i class="bi bi-pencil"></i>
+													</a>
+												</div>
 											</div>
 										</div>
-									</div>
-									{% endfor %}		
+
+										<!-- Edit Time Entry Offcanvas -->
+										<div class="offcanvas offcanvas-end" tabindex="-1" id="edit-time-entry-{{ time_entry.id }}">
+											<div class="offcanvas-header">
+												<h5 class="offcanvas-title" id="offcanvasRightLabel">Edit Time Entry</h5>
+												<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+											</div>
+											<div class="offcanvas-body">
+												<form method="post" class="d-flex flex-column gap-2 time-entry-form" data-time-entry-id="{{ time_entry.id }}">
+													{% csrf_token %}
+													
+													<!-- Task select -->
+													<div class="row align-items-center px-3">
+														<label for="task-{{ time_entry.id }}" class="col-3 p-0">Task: </label>
+														<select class="form-select col" id="task-{{ time_entry.id }}" name="task">
+															<option value="" {% if not time_entry.task %}disabled selected{% endif %}>No assigned task</option>
+															{% for task in tasks %}
+																<option 
+																	value="{{ task.id }}" 
+																	{% if time_entry.task.id == task.id %}selected{% endif %}
+																	data-task-name="{{ task.title }}" 
+																	data-task-project-id="{{ task.project.id }}"
+																>
+																	{{ task.title }}
+																</option>
+															{% endfor %}
+														</select>
+													</div>
+
+													<!-- name -->
+													<div class="row align-items-center px-3">
+														<label for="name-{{ time_entry.id }}" class="col-3 p-0">Name: </label>
+														<input type="text" name="name" id="name-{{ time_entry.id }}" class="form-control col" placeholder="Name" required maxlength="50" value="{{ time_entry.name }}">
+													</div>
+													
+													<!-- Project -->
+													<div class="row align-items-center px-3">
+														<label class="col-3 p-0" for="project-{{ time_entry.id }}">Project: </label>
+														<select class="form-select col" id="project-{{ time_entry.id }}" name="project">
+															<option value="" disabled {% if not time_entry.project %}selected{% endif %}>Select a Project</option>
+															{% for project in projects %}
+																<option value="{{ project.id }}" {% if time_entry.project.id == project.id %}selected{% endif %}>
+																	{{ project.title }}
+																</option>
+															{% endfor %}
+														</select>
+													</div>
+													
+													<!-- Start time -->
+													<div class="row align-items-center px-3">
+														<label class="col-3 p-0" for="start-time-{{ time_entry.id }}">From: </label>
+														<input type="time" class="form-control col" name="start_time" id="start-time-{{ time_entry.id }}" value="{{ time_entry.start_time|time:'H:i' }}">
+													</div>
+													
+													<!-- End time -->
+													<div class="row align-items-center px-3">
+														<label class="col-3 p-0" for="end-time-{{ time_entry.id }}">To: </label>
+														<input type="time" class="form-control col" name="end_time" id="end-time-{{ time_entry.id }}" value="{{ time_entry.end_time|time:'H:i' }}">
+													</div>
+													
+													<input type="hidden" name="time_entry_id" value="{{ time_entry.id }}">
+													
+													<!-- Submit Button -->
+													<button type="submit" class="btn btn-primary px-3">Save</button>
+												</form>                                
+											</div>
+										</div>	
+									{% endfor %}
 								</div>
 							{% endwith %}
 						{% endwith %}
