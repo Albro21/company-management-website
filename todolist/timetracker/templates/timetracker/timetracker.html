@@ -57,14 +57,14 @@
 		{% for date, name_groups in grouped_time_entries.items %}
 			<div>
 				<div class="time-entry-header">
-					<div class="row w-100 p-2">
-						<div class="fs-6 col-7">
+					<div class="row w-100 py-2">
+						<div class="fs-6 col-7 border-end">
 							{{ date }}
 						</div>
-						<div class="col-2 text-center">
+						<div class="col-2 text-center border-end">
 							Time Range
 						</div>
-						<div class="fs-6 col-2 text-center">
+						<div class="fs-6 col-2 text-center border-end">
 							Total: {{ name_groups.date_total_duration }}
 						</div>
 						<div class="col-1 text-center">
@@ -83,7 +83,8 @@
 									style="background-color: #f8f8f8;"
 									role="button"
 									data-bs-toggle="collapse"
-									data-bs-target="#time-entry-collapse-{{ first_entry.id }}">
+									data-bs-target="#time-entry-collapse-{{ first_entry.id }}"
+									id="time-entry-grouper-{{ first_entry.id }}">
 			
 									<!-- Project Color -->
 									<div class="project-color" style="{% if first_entry.project.color %} background-color: {{ first_entry.project.color }}{% endif %}"></div>
@@ -117,7 +118,7 @@
 								<!-- Time entries -->
 								<div class="collapse" id="time-entry-collapse-{{ first_entry.id }}">
 									{% for time_entry in group_data.time_entries %}
-									<div class="time-entry d-flex" id="time-entry-{{ time_entry.id }}">
+									<div class="time-entry d-flex" data-time-entry-parent="time-entry-collapse-{{ first_entry.id }}" data-time-entry-grouper="time-entry-grouper-{{ first_entry.id }}" id="time-entry-{{ time_entry.id }}">
 										
 										<!-- Project Color -->
 										<div class="project-color" style="{% if time_entry.project.color %} background-color: {{ time_entry.project.color }}{% endif %}"></div>

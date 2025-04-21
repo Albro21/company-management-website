@@ -122,7 +122,25 @@ async function deleteTimeEntry(timeEntryId) {
     const success = await sendRequest(url, method);
 
     if (success) {
-        document.getElementById(`time-entry-${timeEntryId}`).remove();
+        const timeEntry = document.getElementById(`time-entry-${timeEntryId}`);
+        const collapseId = timeEntry.dataset.timeEntryParent;
+        const grouperId = timeEntry.dataset.timeEntryGrouper;
+    
+        timeEntry.remove();
+    
+        const collapse = document.getElementById(collapseId);
+        if (collapse.children.length === 0) {
+            collapse.remove();
+    
+            const grouper = document.getElementById(grouperId);
+            const grouperParent = grouper.parentElement;
+            
+            grouper.remove();
+
+            if (grouperParent.children.length === 1) {
+                grouperParent.remove();
+            }
+        }
     } else {
         console.error('Failed to delete project');
     }
