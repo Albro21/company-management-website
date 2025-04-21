@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.db import models
 from django.utils.text import slugify
 
@@ -23,7 +22,6 @@ class Company(models.Model):
     logo = models.ImageField(upload_to='company_logos/', blank=True, null=True)
 
     # Ownership
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     
     # Contact
@@ -48,7 +46,7 @@ class Company(models.Model):
 
 
 class Role(models.Model):
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="roles")
+    company = models.ForeignKey("teams.Company", on_delete=models.CASCADE, related_name="roles")
     name = models.CharField(max_length=100)
 
     class Meta:
@@ -59,9 +57,9 @@ class Role(models.Model):
 
 
 class Member(models.Model):
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="members")
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True, blank=True)
+    company = models.ForeignKey("teams.Company", on_delete=models.CASCADE, related_name="members")
+    user = models.ForeignKey("users.CustomUser", on_delete=models.CASCADE)
+    role = models.ForeignKey("teams.Role", on_delete=models.SET_NULL, null=True, blank=True)
     rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     
     @property
@@ -91,8 +89,8 @@ class Member(models.Model):
 
 
 class JoinRequest(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='join_requests')
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='join_requests')
+    user = models.ForeignKey("users.CustomUser", on_delete=models.CASCADE, related_name='join_requests')
+    company = models.ForeignKey("teams.Company", on_delete=models.CASCADE, related_name='join_requests')
 
     class Meta:
         unique_together = ('user', 'company')

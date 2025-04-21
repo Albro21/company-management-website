@@ -1,5 +1,4 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse, HttpResponseRedirect
@@ -90,9 +89,8 @@ def process_forms(request):
         if project_create_form.is_valid():
             project = project_create_form.save(commit=False)
             project.created_by = request.user
-            project.company = request.user.profile.company
+            project.company = request.user.company
             project.save()
-            project.assigned_users.set(User.objects.filter(profile__company=request.user.profile.company))
             return HttpResponseRedirect(reverse('teams:team'))
 
 def process_company_bar_chart(company, start_date, end_date):
@@ -171,7 +169,7 @@ def process_company_charts(request):
 
     all_time_first_entry = (
         TimeEntry.objects
-        .filter(task__project__in=request.user.profile.company.projects.all())
+        .filter(task__project__in=request.user.company.projects.all())
         .order_by('start_time')
         .first()
     )
@@ -181,7 +179,7 @@ def process_company_charts(request):
         return JsonResponse({"success": False, "error": "Invalid filter or no time entries found"})
 
     start_date, end_date = date_range
-    company = request.user.profile.company
+    company = request.user.company
     
     bar_chart_data = process_company_bar_chart(company, start_date, end_date)
     donut_chart_data = process_company_donut_chart(company, start_date, end_date)
@@ -222,7 +220,7 @@ def process_member_bar_chart(member, start_date, end_date):
 
     project_color_map = {
         project.title: project.color
-        for project in member.user.profile.company.projects.filter(title__in=project_titles)
+        for project in member.user.company.projects.filter(title__in=project_titles)
     }
 
     datasets = []
@@ -254,7 +252,7 @@ def process_member_donut_chart(member, start_date, end_date):
     
     project_color_map = {
         project.title: project.color
-        for project in member.user.profile.company.projects.filter(title__in=labels)
+        for project in member.user.company.projects.filter(title__in=labels)
     }
 
     datasets = [{
@@ -293,7 +291,7 @@ def process_member_charts(request, member):
     
     time_entries = TimeEntry.objects.filter(
         user=member.user,
-        task__project__in=member.user.profile.company.projects.all(),
+        task__project__in=member.user.company.projects.all(),
         start_time__date__gte=start_date,
         start_time__date__lte=end_date
     )
@@ -314,7 +312,7 @@ def process_member_charts(request, member):
 
 @login_required
 def team(request):
-    if not request.user.profile.company:
+    if not request.user.company:
         return render(request, 'teams/no_company.html')
 
     task_form = TaskForm(prefix="task")
@@ -327,7 +325,7 @@ def team(request):
             return process_company_charts(request)
 
     context = {
-        'company': request.user.profile.company,
+        'company': request.user.company,
         'task_form': task_form,
         'project_form': project_form,
     }
@@ -343,7 +341,7 @@ def create_company(request):
             company = form.save(commit=False)
             company.created_by = request.user
             company.save()
-            request.user.profile.set_company(company)
+            request.user.set_company(company)
             Member.objects.create(
                 company=company,
                 user=request.user
@@ -387,7 +385,7 @@ def accept_join_request(request, request_id):
             company=join_request.company,
             user=join_request.user
         )
-        join_request.user.profile.set_company(join_request.company)
+        join_request.user.set_company(join_request.company)
         join_request.delete()
         return JsonResponse({'success': True})
     except JoinRequest.DoesNotExist:
@@ -405,7 +403,7 @@ def decline_join_request(request, request_id):
 
 @login_required
 def settings(request):
-    company = request.user.profile.company
+    company = request.user.company
 
     company_form = CompanyForm(instance=company, prefix='company')
     role_form = RoleForm(prefix='role')
@@ -443,7 +441,7 @@ def settings(request):
 @login_required
 def delete_role(request, role_id):
     try:
-        role = get_object_or_404(Role, id=role_id, company=request.user.profile.company)
+        role = get_object_or_404(Role, id=role_id, company=request.user.company)
         role.delete()
         return JsonResponse({"success": True}, status=200)
     except ObjectDoesNotExist:
@@ -454,7 +452,7 @@ def delete_role(request, role_id):
 @login_required
 def member_analytics(request, member_id):
     
-    member = get_object_or_404(Member, id=member_id, company=request.user.profile.company)
+    member = get_object_or_404(Member, id=member_id, company=request.user.company)
     
     if request.method == 'POST':
         return process_member_charts(request, member)
@@ -490,13 +488,14 @@ def project_weekly_report(request, project_id):
     
     week_dates = [start_of_week + timedelta(days=i) for i in range(7)]
 
-    assigned_members = project.assigned_users.all()
+    company_members = project.company.members.all()
 
     member_data = []
     totals_by_day = [0] * 7
     grand_total = 0
 
-    for user in assigned_members:
+    for member in company_members:
+        user = member.user
         user_full_name = f"{user.first_name} {user.last_name}".strip() or user.username
         daily_hours = []
         user_total = 0

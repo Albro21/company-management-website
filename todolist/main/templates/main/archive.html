@@ -14,7 +14,7 @@
 
 			<!-- Project list -->
 			<div id="projects">
-				{% for project in personal_projects %}
+				{% for project in request.user.personal_projects.all %}
 					<div class="list-item p-0 w-100" id="project-{{ project.id }}" style="display: flex;">
 						<!-- Project Color -->
 						<div style="width: 10px; background-color: {{ project.color }}"></div>
@@ -225,7 +225,7 @@
 
 			<!-- Project list -->
 			<div id="projects">
-				{% for project in company_projects %}
+				{% for project in request.user.company_projects.all %}
 					<div class="list-item p-0 w-100" id="project-{{ project.id }}" style="display: flex;">
 						<!-- Project Color -->
 						<div style="width: 10px; background-color: {{ project.color }}"></div>

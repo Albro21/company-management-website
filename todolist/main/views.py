@@ -42,7 +42,7 @@ def filter_tasks(tasks, request):
 def index(request):
     user = request.user
     
-    tasks = user.tasks.all().order_by('is_completed', 'due_date')
+    tasks = user.tasks.order_by('is_completed', 'due_date')
     tasks = filter_tasks(tasks, request)
     
     form = TaskForm(request.POST or None)
@@ -108,15 +108,10 @@ def archive(request):
             category.save()
             category_form.save_m2m()
             return redirect('archive')
-    
-    company_projects = request.user.profile.company.projects.all()
-    personal_projects = request.user.projects.all().exclude(id__in=company_projects.values('id'))
 
     context = {
         'project_form': project_form,
         'category_form': category_form,
-        'personal_projects': personal_projects,
-        'company_projects': company_projects
     }
 
     return render(request, 'main/archive.html', context)

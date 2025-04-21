@@ -21,7 +21,7 @@
 					class="badge shadow-sm text-black pointer category-filter align-self-center"
 					data-category-id="{{ category.id }}"
 					data-category-color="{{ category.color }}"
-					style="outline: 1px solid black; border: 3px solid {{ category.color }};">
+					style="border: 3px solid {{ category.color }};">
 					{{ category.title }} 
 				</span>
 			{% endfor %}
@@ -123,7 +123,7 @@
 							<!-- Project select -->
 							<select class="form-control me-2" name="{{ form.project.name }}">
 								<option value="">Select a project</option>
-								{% for project in request.user.projects.all %}
+								{% for project in request.user.all_projects %}
 									<option value="{{ project.id }}" {% if form.project.value == project.id %}selected{% endif %}>{{ project.title }}</option>
 								{% endfor %}
 							</select>

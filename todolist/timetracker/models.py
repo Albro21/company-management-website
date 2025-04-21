@@ -3,13 +3,12 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
-from main.models import Task, Project
 
 class TimeEntry(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='time_entries')
-    task = models.ForeignKey(Task, on_delete=models.SET_NULL, blank=True, null=True, related_name='time_entries')
+    user = models.ForeignKey("users.CustomUser", on_delete=models.CASCADE, related_name='time_entries')
+    task = models.ForeignKey("main.Task", on_delete=models.SET_NULL, blank=True, null=True, related_name='time_entries')
     name = models.CharField(max_length=200, blank=True)
-    project = models.ForeignKey(Project, on_delete=models.SET_NULL, blank=True, null=True, related_name='time_entries')
+    project = models.ForeignKey("main.Project", on_delete=models.SET_NULL, blank=True, null=True, related_name='time_entries')
     start_time = models.DateTimeField(default=timezone.now)
     end_time = models.DateTimeField(blank=True, null=True)
 

@@ -69,7 +69,7 @@
 						My Projects
 					</button>
 					<div class="collapse list-group" id="dashboard-collapse">
-						{% for project in request.user.projects.all %}
+						{% for project in request.user.all_projects %}
 						<a href="{% url 'project_detail' project.id %}" class="list-group-item text-center link-dark text-decoration-none rounded">{{ project.title }}</a>
 						{% endfor %}
 					</div>
@@ -80,7 +80,7 @@
 					<hr>
 					<div class="dropdown w-100 d-flex justify-content-center">
 						<div class="d-flex align-items-center dropdown-toggle pointer" data-bs-toggle="dropdown">
-							<img src="{{ user.profile.profile_picture.url }}" alt="Profile picture" width="32" height="32"
+							<img src="{{ user.profile_picture.url }}" alt="Profile picture" width="32" height="32"
 								class="rounded-circle me-2">
 							<strong>{{ user.first_name }} {{ user.last_name }}</strong>
 						</div>
@@ -96,7 +96,7 @@
 		</div>
 		
 		<!-- Sidebar -->
-		<div class="d-none d-xl-flex flex-column p-4 vh-100 position-fixed border-end gap-3" style="width: 300px">
+		<div class="d-none d-xl-flex flex-column p-4 vh-100 position-fixed border-end gap-3" id="sidebar" style="width: 300px">
 			
 			<!-- Logo -->
 			<h3 class="text-center border-bottom pb-3">To-Do List</h3>
@@ -129,7 +129,7 @@
 					My Projects
 				</button>
 				<div class="collapse list-group" id="dashboard-collapse">
-					{% for project in request.user.projects.all %}
+					{% for project in request.user.all_projects %}
 					<a href="{% url 'project_detail' project.id %}"
 						class="list-group-item text-center link-dark text-decoration-none rounded">{{ project.title }}</a>
 					{% endfor %}
@@ -141,7 +141,7 @@
 				<hr>
 				<div class="dropdown w-100 d-flex justify-content-center">
 					<div class="d-flex align-items-center dropdown-toggle pointer" data-bs-toggle="dropdown">
-						<img src="{{ user.profile.profile_picture.url }}" alt="Profile picture" width="32" height="32"
+						<img src="{{ user.profile_picture.url }}" alt="Profile picture" width="32" height="32"
 							class="rounded-circle me-2">
 						<strong>{{ user.first_name }} {{ user.last_name }}</strong>
 					</div>

@@ -1,17 +1,17 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+User = get_user_model()
 from django.utils import timezone
 
 from datetime import timedelta
 
-from .models import Profile
 from main.models import Category, Task
 
 DEFAULT_CATEGORIES = [
-    {'title': 'Work', 'description': 'Work-related tasks and projects', 'color': '#FF6347'},  # Tomato color
-    {'title': 'Personal', 'description': 'Personal tasks and goals', 'color': '#3CB371'},  # Medium Sea Green
-    {'title': 'Hobby', 'description': 'Leisure and hobby activities', 'color': '#1E90FF'},  # Dodger Blue
+    {'title': 'Work', 'description': 'Work-related tasks and projects', 'color': '#FF6347'},
+    {'title': 'Personal', 'description': 'Personal tasks and goals', 'color': '#3CB371'},
+    {'title': 'Hobby', 'description': 'Leisure and hobby activities', 'color': '#1E90FF'},
 ]
 
 DEFAULT_TASKS = [
@@ -24,7 +24,6 @@ DEFAULT_TASKS = [
 ]
 
 def create_default_categories(user):
-    """Create default categories for a user if they do not exist."""
     for category_data in DEFAULT_CATEGORIES:
         Category.objects.create(
             user=user,
@@ -34,7 +33,6 @@ def create_default_categories(user):
         )
 
 def create_default_tasks(user):
-    """Create default tasks for a user, assigning them to categories."""
     personal_category = Category.objects.get(title='Personal', user=user)
     work_category = Category.objects.get(title='Work', user=user)
 
@@ -54,14 +52,7 @@ def create_default_tasks(user):
         task.categories.add(category)
 
 @receiver(post_save, sender=User)
-def create_profile(sender, instance, created, **kwargs):
-    """Create a profile for the user upon creation."""
-    if created:
-        Profile.objects.create(user=instance)
-
-@receiver(post_save, sender=User)
 def create_defaults(sender, instance, created, **kwargs):
-    """Main function to create default categories and tasks after user creation."""
-    if created:  # Only create defaults for newly created users
+    if created:
         create_default_categories(instance)
         create_default_tasks(instance)

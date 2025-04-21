@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %} Profile | {{ user.username }} {% endblock title %}
+{% block title %} Profile | {{ request.user.username }} {% endblock title %}
 
 {% block styles %}
     <link rel="stylesheet" href="{% static 'css/profile.css' %}">
@@ -14,8 +14,8 @@
 
             <!-- Profile card -->
             <div class="card d-flex flex-column justify-content-center p-4 gap-4" id="profile-card">
-                <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" id="profile-picture">
-                <h3 class="text-center">{{ user.first_name }} {{ user.last_name }}</h3>
+                <img src="{{ request.user.profile_picture.url }}" alt="Profile Picture" id="profile-picture">
+                <h3 class="text-center">{{ request.user.first_name }} {{ request.user.last_name }}</h3>
                 <a href="{% url 'settings' %}" class="btn btn-outline-secondary">Edit Profile</a>
             </div>
             

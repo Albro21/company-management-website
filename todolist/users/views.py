@@ -20,7 +20,7 @@ def settings(request):
             form.save()
 
             if 'profile_picture' in request.FILES:
-                profile = request.user.profile
+                profile = request.user
                 profile.profile_picture = request.FILES['profile_picture']
                 profile.save()
 
@@ -36,10 +36,7 @@ def settings(request):
 
 @login_required
 def profile(request):
-    user = request.user
-
-    tasks = user.tasks.all()
-    projects = user.projects.all()
+    tasks = request.user.tasks.all()
 
     completed_tasks = tasks.filter(is_completed=True).count()
     overdue_tasks = tasks.filter(is_completed=False, due_date__lt=date.today()).count()
@@ -49,14 +46,13 @@ def profile(request):
     project_data = []
     project_colors = []
 
-    for project in projects:
+    for project in request.user.all_projects:
         completed_task_count = project.tasks.filter(is_completed=True).count()
         project_labels.append(project.title)
         project_data.append(completed_task_count)
         project_colors.append(project.color)
 
     context = {
-        'user': request.user,
         'completed_tasks': completed_tasks,
         'overdue_tasks': overdue_tasks,
         'remaining_tasks': remaining_tasks,
@@ -84,7 +80,7 @@ def filter_chart(request):
         tasks = user.tasks.filter(is_completed=True)
 
         if project_title:
-            project = user.projects.filter(title=project_title).first()
+            project = user.all_projects.filter(title=project_title).first()
             if project:
                 tasks = tasks.filter(project=project)
             else:

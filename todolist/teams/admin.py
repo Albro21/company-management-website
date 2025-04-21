@@ -11,7 +11,7 @@ class RoleInline(admin.TabularInline):
 
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):
-    list_display = ('name', 'company_type', 'industry', 'created_by', 'created_at')
+    list_display = ('name', 'company_type', 'industry', 'created_at')
     search_fields = ('name', 'industry', 'email', 'city', 'country')
     list_filter = ('company_type', 'industry', 'created_at')
     prepopulated_fields = {'slug': ('name',)}

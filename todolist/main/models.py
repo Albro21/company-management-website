@@ -1,8 +1,7 @@
-from colorfield.fields import ColorField
-from django.db import models
-from django.contrib.auth.models import User
 from django.db import models
 from django.utils.timezone import now, localdate
+
+from colorfield.fields import ColorField
 
 
 class Project(models.Model):
@@ -12,14 +11,13 @@ class Project(models.Model):
         ('completed', 'Completed'),
     ]
 
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="projects")
+    created_by = models.ForeignKey("users.CustomUser", on_delete=models.SET_NULL, null=True, related_name="projects")
     title = models.CharField(max_length=50)
     description = models.TextField(blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
     color = ColorField(default='#FFFF00')
     company = models.ForeignKey('teams.Company', on_delete=models.SET_NULL, null=True, blank=True, related_name="projects")
     client = models.CharField(max_length=50, blank=True)
-    assigned_users = models.ManyToManyField(User, blank=True, related_name="company_projects")
 
     @property
     def total_tracked_time(self):
@@ -34,7 +32,7 @@ class Project(models.Model):
 
 
 class Category(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="categories")
+    user = models.ForeignKey("users.CustomUser", on_delete=models.CASCADE, related_name="categories")
     title = models.CharField(max_length=50)
     description = models.TextField(blank=True)
     color = ColorField(default='#FFFF00')
@@ -47,8 +45,8 @@ class Category(models.Model):
 
 
 class Task(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks")
-    project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, blank=True, related_name="tasks")
+    user = models.ForeignKey("users.CustomUser", on_delete=models.CASCADE, related_name="tasks")
+    project = models.ForeignKey("main.Project", on_delete=models.SET_NULL, null=True, blank=True, related_name="tasks")
     categories = models.ManyToManyField(Category, blank=True, related_name="tasks")
 
     title = models.CharField(max_length=200)

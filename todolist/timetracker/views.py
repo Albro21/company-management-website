@@ -7,6 +7,7 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 import json
 
+from main.models import Project, Task
 from .models import TimeEntry
 from .forms import TimeEntryForm
 
@@ -57,12 +58,11 @@ def process_form(request):
 def timetracker(request):
     if request.method == 'POST':
         if request.POST.get('time_entry_id'):
-            process_form(request)
+            return process_form(request)
     
     user = request.user
     
     tasks = user.tasks.filter(is_completed=False)
-    projects = user.projects.all().union(user.profile.company.projects.all())
     time_entries = user.time_entries.filter(end_time__isnull=False)
 
     running_entry = user.time_entries.filter(end_time__isnull=True).order_by('-start_time').first()
@@ -94,7 +94,6 @@ def timetracker(request):
     
     context = {
         'tasks': tasks,
-        'projects': projects,
         'grouped_time_entries': grouped_time_entries,
         'running_entry': running_entry,
     }
@@ -103,15 +102,12 @@ def timetracker(request):
 
 @require_http_methods(["POST"])
 def start_timer(request):
-    data = json.loads(request.body) 
+    data = json.loads(request.body)
     task_id = data.get('task_id')
-    name = data.get('name')
-    project_id = data.get('project_id')
 
-    task = request.user.tasks.filter(id=task_id).first() if task_id else None
-    project = request.user.projects.filter(id=project_id).first() if project_id else None
-
-    if task:
+    if task_id:
+        task = get_object_or_404(Task, id=task_id)
+        
         time_entry = TimeEntry.objects.create(
             user=request.user, 
             task=task, 
@@ -119,12 +115,16 @@ def start_timer(request):
             project=task.project,
         )
     else:
+        name = data.get('name')
+        project_id = data.get('project_id')
+        project = get_object_or_404(Project, id=project_id) if project_id else None
+        
         time_entry = TimeEntry.objects.create(
             user=request.user, 
             name=name, 
             project=project,
         )
-
+    
     time_entry.start()
     return JsonResponse({'success': True,})
 

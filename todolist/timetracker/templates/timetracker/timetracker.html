@@ -32,8 +32,8 @@
 			<div class="col">
 				<select name="project" class="form-select" id="project-select">
 					<option value="" selected>Select a project</option>
-					{% for project in projects %}
-					<option value="{{ project.id }}">{{ project.title }}</option>
+					{% for project in request.user.all_projects %}
+						<option value="{{ project.id }}">{{ project.title }}</option>
 					{% endfor %}
 				</select>
 			</div>
@@ -202,7 +202,7 @@
 														<label class="col-3 p-0" for="project-{{ time_entry.id }}">Project: </label>
 														<select class="form-select col" id="project-{{ time_entry.id }}" name="project">
 															<option value="" disabled {% if not time_entry.project %}selected{% endif %}>Select a Project</option>
-															{% for project in projects %}
+															{% for project in request.user.all_projects %}
 																<option value="{{ project.id }}" {% if time_entry.project.id == project.id %}selected{% endif %}>
 																	{{ project.title }}
 																</option>
