@@ -185,36 +185,6 @@ document.addEventListener("DOMContentLoaded", function () {
     fetchChartData("week");
 });
 
-function acceptJoinRequest(requestId) {
-    const requestElement = document.getElementById(`join-request-${requestId}`);
-
-    const url = `/teams/join-request/${requestId}/accept/`;
-    const method = "POST";
-
-    sendRequest(url, method).then(data => {
-        if (data && data.success) {
-            requestElement.remove();
-        } else {
-            console.error("Server error:", data ? data.error : "No response");
-        }
-    });
-}
-
-function declineJoinRequest(requestId) {
-    const requestElement = document.getElementById(`join-request-${requestId}`);
-
-    const url = `/teams/join-request/${requestId}/decline/`;
-    const method = "POST";
-
-    sendRequest(url, method).then(data => {
-        if (data && data.success) {
-            requestElement.remove();
-        } else {
-            console.error("Server error:", data ? data.error : "No response");
-        }
-    });
-}
-
 async function deleteProject(projectId) {
     const url = `/project/${projectId}/delete/`;
     const method = 'DELETE';

@@ -341,7 +341,7 @@ def create_company(request):
             company = form.save(commit=False)
             company.created_by = request.user
             company.save()
-            request.user.set_company(company)
+            request.user.join_company(company)
             Member.objects.create(
                 company=company,
                 user=request.user
@@ -379,27 +379,21 @@ def create_join_request(request):
 @require_http_methods(["POST"])
 @login_required
 def accept_join_request(request, request_id):
-    try:
-        join_request = JoinRequest.objects.get(id=request_id)
-        Member.objects.create(
-            company=join_request.company,
-            user=join_request.user
-        )
-        join_request.user.set_company(join_request.company)
-        join_request.delete()
-        return JsonResponse({'success': True})
-    except JoinRequest.DoesNotExist:
-        return JsonResponse({'success': False})
+    join_request = JoinRequest.objects.get(id=request_id)
+    Member.objects.create(
+        company=join_request.company,
+        user=join_request.user
+    )
+    join_request.user.join_company(join_request.company)
+    join_request.delete()
+    return redirect('teams:team')
 
 @require_http_methods(["POST"])
 @login_required
 def decline_join_request(request, request_id):
-    try:
-        join_request = JoinRequest.objects.get(id=request_id)
-        join_request.delete()
-        return JsonResponse({'success': True})
-    except JoinRequest.DoesNotExist:
-        return JsonResponse({'success': False})
+    join_request = JoinRequest.objects.get(id=request_id)
+    join_request.delete()
+    return redirect('teams:team')
 
 @login_required
 def settings(request):

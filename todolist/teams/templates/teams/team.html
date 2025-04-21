@@ -44,8 +44,14 @@
                                         @{{ join_request.user.username }}
                                     </div>
                                     <div class="d-flex flex-column gap-2" style="min-width: 100px;">
-                                        <button class="btn btn-primary" onclick="acceptJoinRequest({{ join_request.id }})">Accept</button>
-                                        <button class="btn btn-danger" onclick="declineJoinRequest({{ join_request.id }})">Decline</button>
+                                        <form action="{% url 'teams:accept_join_request' join_request.id %}" method="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-primary">Accept</button>
+                                        </form>
+                                        <form action="{% url 'teams:decline_join_request' join_request.id %}" method="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger">Decline</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>

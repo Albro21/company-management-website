@@ -22,7 +22,7 @@ class CustomUser(AbstractUser):
             return self.personal_projects
         return self.personal_projects.union(self.company.projects.all())
     
-    def set_company(self, company):
-        if self.company != company:
-            self.company = company
-            self.save()
+    def join_company(self, company):
+        self.company = company
+        self.save()
+    
