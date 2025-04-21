@@ -10,11 +10,11 @@
 		<!-- Left half -->
 		<div class="col-12 col-xl-6 mb-5 mb-xl-0 pe-xl-4">
 			<!-- My projects -->
-			<h1 class="mb-4 text-center">My projects:</h1>
+			<h1 class="mb-4 text-center">Personal projects:</h1>
 
 			<!-- Project list -->
 			<div id="projects">
-				{% for project in request.user.projects.all %}
+				{% for project in personal_projects %}
 					<div class="list-item p-0 w-100" id="project-{{ project.id }}" style="display: flex;">
 						<!-- Project Color -->
 						<div style="width: 10px; background-color: {{ project.color }}"></div>
@@ -225,7 +225,7 @@
 
 			<!-- Project list -->
 			<div id="projects">
-				{% for project in request.user.profile.company.projects.all %}
+				{% for project in company_projects %}
 					<div class="list-item p-0 w-100" id="project-{{ project.id }}" style="display: flex;">
 						<!-- Project Color -->
 						<div style="width: 10px; background-color: {{ project.color }}"></div>
