@@ -1,6 +1,5 @@
-from django.http import HttpResponseRedirect, JsonResponse
-from django.shortcuts import get_object_or_404, render
-from django.urls import reverse
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods
 
 from collections import defaultdict
@@ -53,7 +52,7 @@ def process_form(request):
 
     if time_entry_update_form.is_valid():
         time_entry_update_form.save()
-        return HttpResponseRedirect(reverse('timetracker:timetracker'))
+        return redirect("timetracker:timetracker")
 
 def timetracker(request):
     if request.method == 'POST':

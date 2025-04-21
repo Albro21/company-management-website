@@ -1,9 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
 import calendar
@@ -64,7 +63,7 @@ def process_forms(request):
             member_update_form = MemberForm(request.POST, instance=member, prefix=f"member_{member_id}")
             if member_update_form.is_valid():
                 member_update_form.save()
-                return HttpResponseRedirect(reverse('teams:team'))
+                return redirect("teams:team")
 
     elif form_type == 'update_project':
         project_id = request.POST.get('project_id')
@@ -72,7 +71,7 @@ def process_forms(request):
         project_update_form = ProjectForm(request.POST, instance=project, prefix=f"project_{project_id}")
         if project_update_form.is_valid():
             project_update_form.save()
-            return HttpResponseRedirect(reverse('teams:team'))
+            return redirect("teams:team")
 
     elif form_type == 'create_task':
         member_id = request.POST.get('member_id')
@@ -82,7 +81,7 @@ def process_forms(request):
             task = task_create_form.save(commit=False)
             task.user = user
             task.save()
-            return HttpResponseRedirect(reverse('teams:team'))
+            return redirect("teams:team")
 
     elif form_type == 'create_project':
         project_create_form = ProjectForm(request.POST, prefix="project")
@@ -91,7 +90,7 @@ def process_forms(request):
             project.created_by = request.user
             project.company = request.user.company
             project.save()
-            return HttpResponseRedirect(reverse('teams:team'))
+            return redirect("teams:team")
 
 def process_company_bar_chart(company, start_date, end_date):
     date_labels = []
