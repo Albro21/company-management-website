@@ -183,7 +183,11 @@
 
                                     <!-- Submit Button -->
                                     <button type="submit" class="btn btn-primary">Save</button>
-                                </form>                                
+                                </form>
+                                <form action="{% url 'teams:kick_member' member.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger w-100">Kick Member</button>
+                                </form>
                             </div>
                         </div>
                         

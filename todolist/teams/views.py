@@ -524,3 +524,19 @@ def project_weekly_report(request, project_id):
     }
 
     return render(request, 'teams/project_weekly_report.html', context)
+
+@require_http_methods(["POST"])
+@login_required
+def leave_company(request):
+    request.user.leave_company()
+    messages.success(request, "You have left the company.")
+    return redirect("teams:team")
+
+@require_http_methods(["POST"])
+@login_required
+def kick_member(request, member_id):
+    member = get_object_or_404(Member, id=member_id)
+    user = member.user
+    user.leave_company()
+    messages.success(request, f"{user.full_name} was kicked from the company.")
+    return redirect("teams:team")

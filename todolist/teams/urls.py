@@ -11,6 +11,8 @@ urlpatterns = [
     
     path('company/create/', views.create_company, name='create_company'),
     path('company/settings/', views.settings, name='settings'),
+    path('company/leave/', views.leave_company, name='leave_company'),
+    path('company/kick/<int:member_id>/', views.kick_member, name='kick_member'),
     
     path('join-request/create/', views.create_join_request, name='create_join_request'),
     path('join-request/<int:request_id>/accept/', views.accept_join_request, name='accept_join_request'),

@@ -30,3 +30,7 @@ class CustomUser(AbstractUser):
         self.company = company
         self.save()
     
+    def leave_company(self):
+        self.member.delete()
+        self.company = None
+        self.save()
