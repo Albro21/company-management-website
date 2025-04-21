@@ -490,7 +490,7 @@ def project_weekly_report(request, project_id):
 
     for member in company_members:
         user = member.user
-        user_full_name = f"{user.first_name} {user.last_name}".strip() or user.username
+        user_full_name = user.full_name
         daily_hours = []
         user_total = 0
 

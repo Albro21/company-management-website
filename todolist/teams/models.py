@@ -58,7 +58,7 @@ class Role(models.Model):
 
 class Member(models.Model):
     company = models.ForeignKey("teams.Company", on_delete=models.CASCADE, related_name="members")
-    user = models.ForeignKey("users.CustomUser", on_delete=models.CASCADE)
+    user = models.OneToOneField("users.CustomUser", on_delete=models.CASCADE, related_name="member")
     role = models.ForeignKey("teams.Role", on_delete=models.SET_NULL, null=True, blank=True)
     rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     

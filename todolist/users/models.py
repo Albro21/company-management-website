@@ -7,6 +7,10 @@ class CustomUser(AbstractUser):
     company = models.ForeignKey('teams.Company', related_name="company", on_delete=models.SET_NULL, null=True, blank=True)
     
     @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
+    
+    @property
     def personal_projects(self):
         return self.projects.filter(company=None)
 
@@ -14,7 +18,7 @@ class CustomUser(AbstractUser):
     def company_projects(self):
         if not self.company:
             return []
-        return self.company.project
+        return self.company.projects
 
     @property
     def all_projects(self):

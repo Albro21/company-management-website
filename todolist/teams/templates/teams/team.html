@@ -38,7 +38,7 @@
                             <div class="card mb-3" id="join-request-{{ join_request.id }}">
                                 <div class="card-body d-flex">
                                     <div class="d-flex flex-column w-100">
-                                        <h5 class="card-title">{{ join_request.user.first_name }} {{ join_request.user.last_name }}</h5>
+                                        <h5 class="card-title">{{ join_request.user.full_name }}</h5>
                                         {{ join_request.user.email }} 
                                         <br>
                                         @{{ join_request.user.username }}
@@ -80,7 +80,7 @@
                 <div class="row w-100 row-hover">
                     <div class="col border-end">
                         <i class="bi {% if member.is_active %}bi-circle-fill{% else %}bi-circle{% endif %} me-2" {% if member.is_active %}style="color: green;"{% endif %}></i>
-                        {{ member.user.first_name }} {{ member.user.last_name }} {% if member.user == request.user %}(You){% endif %}
+                        {{ member.user.full_name }} {% if member.user == request.user %}(You){% endif %}
                     </div>
                     <div class="col border-end">{{ member.user.email }}</div>
                     <div class="col border-end">{{ member.role }}</div>
@@ -93,7 +93,7 @@
                         </a>
                         <div class="offcanvas offcanvas-end" tabindex="-1" id="assign-task-{{ member.id }}">
                             <div class="offcanvas-header">
-                                <h5 class="offcanvas-title" id="offcanvasRightLabel">Assign task to: {{ member.user.first_name }} {{ member.user.last_name }}</h5>
+                                <h5 class="offcanvas-title" id="offcanvasRightLabel">Assign task to: {{ member.user.full_name }}</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                             </div>
                             <div class="offcanvas-body">
@@ -155,10 +155,10 @@
                         </a>
                         <div class="offcanvas offcanvas-end" tabindex="-1" id="edit-member-{{ member.id }}">
                             <div class="offcanvas-header">
-                                <h5 class="offcanvas-title" id="offcanvasRightLabel">Edit Member: {{ member.user.first_name }} {{ member.user.last_name }}</h5>
+                                <h5 class="offcanvas-title" id="offcanvasRightLabel">Edit Member: {{ member.user.full_name }}</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                             </div>
-                            <div class="offcanvas-body">
+                            <div class="offcanvas-body d-flex flex-column justify-content-between">
                                 <form method="post" class="d-flex flex-column">
                                     {% csrf_token %}
                                     
@@ -186,8 +186,6 @@
                                 </form>                                
                             </div>
                         </div>
-
-                        <i class="bi bi-clock-history" data-bs-toggle="tooltip" title="View Member History"></i>
                         
                         <a href="{% url 'teams:member_analytics' member.id %}">
                             <i class="bi bi-graph-up" data-bs-toggle="tooltip" title="View Member Analytics"></i>
