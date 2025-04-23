@@ -188,6 +188,7 @@ async function deleteProject(projectId) {
     const success = await sendRequest(url, 'DELETE');
 
     if (success) {
+        bootstrap.Modal.getInstance(document.getElementById(`delete-project-modal-${projectId}`)).hide();
         document.getElementById(`project-${projectId}`).remove();
         Array.from(document.getElementsByClassName('tooltip')).forEach(function (tooltip) { tooltip.remove(); });
     }
