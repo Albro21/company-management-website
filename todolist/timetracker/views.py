@@ -26,20 +26,18 @@ def process_form(request):
 
     start_time_str = post_data.get('start_time')
     end_time_str = post_data.get('end_time')
+    date_str = post_data.get('date')
 
-    if start_time_str:
-        start_datetime = datetime.combine(
-            time_entry.start_time.date(),
-            datetime.strptime(start_time_str, "%H:%M").time()
-        )
-        post_data['start_time'] = start_datetime
+    if date_str:
+        date = datetime.strptime(date_str, "%Y-%m-%d").date()
 
-    if end_time_str:
-        end_datetime = datetime.combine(
-            time_entry.end_time.date(),
-            datetime.strptime(end_time_str, "%H:%M").time()
-        )
-        post_data['end_time'] = end_datetime
+        if start_time_str:
+            start_time = datetime.strptime(start_time_str, "%H:%M").time()
+            post_data['start_time'] = datetime.combine(date, start_time)
+
+        if end_time_str:
+            end_time = datetime.strptime(end_time_str, "%H:%M").time()
+            post_data['end_time'] = datetime.combine(date, end_time)
 
     task_id = post_data.get("task")
     if task_id:

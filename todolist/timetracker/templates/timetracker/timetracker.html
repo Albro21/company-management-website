@@ -222,6 +222,12 @@
 														<input type="time" class="form-control col" name="end_time" id="end-time-{{ time_entry.id }}" value="{{ time_entry.end_time|time:'H:i' }}">
 													</div>
 													
+													<!-- Date -->
+													<div class="row align-items-center px-3">
+														<label class="col-3 p-0" for="date-{{ time_entry.id }}">To: </label>
+														<input type="date" class="form-control col" name="date" id="date-{{ time_entry.id }}" value="{{ time_entry.end_time|date:'Y-m-d' }}">
+													</div>
+													
 													<input type="hidden" name="time_entry_id" value="{{ time_entry.id }}">
 													
 													<!-- Submit Button -->
