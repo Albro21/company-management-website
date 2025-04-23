@@ -152,13 +152,16 @@
 
 												<div class="col-1 d-flex gap-3 action-icons justify-content-center">
 													
-													<!-- Delete Project Button -->
+													<!-- Delete Time Entry -->
 													<i class="bi bi-trash" onclick="deleteTimeEntry({{ time_entry.id }})"></i>
 													
-													<!-- Edit Project Button -->
+													<!-- Edit Time Entry -->
 													<a data-bs-toggle="offcanvas" data-bs-target="#edit-time-entry-{{ time_entry.id }}">
 														<i class="bi bi-pencil"></i>
 													</a>
+													
+													<!-- Duplicate Time Entry -->
+													<i class="bi bi-copy" onclick="duplicateTimeEntry({{ time_entry.id }})"></i>
 												</div>
 											</div>
 										</div>

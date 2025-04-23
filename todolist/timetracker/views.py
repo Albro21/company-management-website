@@ -20,7 +20,7 @@ def format_timedelta(td):
 
 def process_form(request):
     time_entry_id = request.POST.get('time_entry_id')
-    time_entry = get_object_or_404(TimeEntry, id=time_entry_id)
+    time_entry = get_object_or_404(TimeEntry, id=time_entry_id, user=request.user)
 
     post_data = request.POST.copy()
 
@@ -132,6 +132,21 @@ def stop_timer(request):
 
 @require_http_methods(["DELETE"])
 def delete_time_entry(request, time_entry_id):
-    time_entry = get_object_or_404(TimeEntry, id=time_entry_id)
+    time_entry = get_object_or_404(TimeEntry, id=time_entry_id, user=request.user)
     time_entry.delete()
+    return JsonResponse({'success': True})
+
+@require_http_methods(["POST"])
+def duplicate_time_entry(request, time_entry_id):
+    original = get_object_or_404(TimeEntry, id=time_entry_id, user=request.user)
+
+    TimeEntry.objects.create(
+        user=original.user,
+        task=original.task,
+        name=original.name,
+        project=original.project,
+        start_time=original.start_time,
+        end_time=original.end_time,
+    )
+
     return JsonResponse({'success': True})

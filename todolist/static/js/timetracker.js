@@ -177,3 +177,9 @@ document.addEventListener("DOMContentLoaded", function () {
 		taskSelect.addEventListener("change", toggleInputs);
 	});
 });
+
+async function duplicateTimeEntry(timeEntryId) {
+    const url = `/timetracker/time-entry/${timeEntryId}/duplicate/`;
+    await sendRequest(url, 'POST');
+    window.location.reload();
+};
