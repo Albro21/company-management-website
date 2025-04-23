@@ -164,7 +164,7 @@ def process_company_charts(request):
         data = json.loads(request.body)
         filter_option = data.get("filter")
     except json.JSONDecodeError:
-        return JsonResponse({"success": False, "error": "Invalid JSON"})
+        return JsonResponse({"success": False, "error": "Invalid JSON"}, status=400)
 
     all_time_first_entry = (
         TimeEntry.objects
@@ -175,7 +175,7 @@ def process_company_charts(request):
 
     date_range = get_date_range_from_filter(filter_option, all_time_first_entry)
     if not date_range:
-        return JsonResponse({"success": False, "error": "Invalid filter or no time entries found"})
+        return JsonResponse({"success": False, "error": "Invalid filter or no time entries found"}, status=400)
 
     start_date, end_date = date_range
     company = request.user.company
@@ -201,7 +201,7 @@ def process_company_charts(request):
         "bar_chart_data": bar_chart_data,
         "donut_chart_data": donut_chart_data,
         "total_time": total_time
-    })
+    }, status=200)
 
 def process_member_bar_chart(member, start_date, end_date):
     date_labels = []
@@ -270,7 +270,7 @@ def process_member_charts(request, member):
         data = json.loads(request.body)
         filter_option = data.get("filter")
     except json.JSONDecodeError:
-        return JsonResponse({"success": False, "error": "Invalid JSON"})
+        return JsonResponse({"success": False, "error": "Invalid JSON"}, status=400)
 
     all_time_first_entry = (
         member.user.time_entries
@@ -281,7 +281,7 @@ def process_member_charts(request, member):
     
     date_range = get_date_range_from_filter(filter_option, all_time_first_entry)
     if not date_range:
-        return JsonResponse({"success": False, "error": "Invalid filter or no time entries found"})
+        return JsonResponse({"success": False, "error": "Invalid filter or no time entries found"}, status=400)
 
     start_date, end_date = date_range
 
@@ -307,7 +307,7 @@ def process_member_charts(request, member):
         "bar_chart_data": bar_chart_data,
         "donut_chart_data": donut_chart_data,
         "total_time": total_time
-    })
+    }, status=200)
 
 @login_required
 def team(request):

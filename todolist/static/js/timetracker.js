@@ -57,7 +57,7 @@ taskSelect.addEventListener('change', function () {
     }
 });
 
-document.querySelector('#tracker-form').addEventListener('submit', function (event) {
+document.querySelector('#tracker-form').addEventListener('submit', async function (event) {
     event.preventDefault();
 
     if (!window.runningTimer) {
@@ -66,34 +66,25 @@ document.querySelector('#tracker-form').addEventListener('submit', function (eve
         const projectId = projectSelect.value;
 
         const url = `/timetracker/start/`;
-        const method = "POST";
         const requestBody = JSON.stringify({ task_id: taskId, name: name, project_id: projectId });
 
-        sendRequest(url, method, requestBody).then(data => {
-            if (data && data.success) {
-                startTimer();
-                timerButton.textContent = "Stop";
-                timerButton.style.backgroundColor = "#ff0000";
-                taskSelect.disabled = true;
-                nameInput.disabled = true;
-                projectSelect.disabled = true;
+        const success = await sendRequest(url, "POST", requestBody);
 
-                window.runningTimer = true
-            } else {
-                console.error("Server error:", data ? data.error : "No response");
-            }
-        });
+        if (success) {
+            startTimer();
+            timerButton.textContent = "Stop";
+            timerButton.style.backgroundColor = "#ff0000";
+            taskSelect.disabled = true;
+            nameInput.disabled = true;
+            projectSelect.disabled = true;
+            window.runningTimer = true
+        }
     } else {
         const url = `/timetracker/stop/`;
-        const method = "POST";
-
-        sendRequest(url, method).then(data => {
-            if (data && data.success) {
-                window.location.reload();
-            } else {
-                console.error("Server error:", data ? data.error : "No response");
-            }
-        });
+        const success = await sendRequest(url, "POST");
+        if (success) {
+            window.location.reload();
+        }
     }
 });
 
@@ -117,9 +108,8 @@ window.onload = function () {
 
 async function deleteTimeEntry(timeEntryId) {
     const url = `/timetracker/time-entry/${timeEntryId}/delete/`;
-    const method = 'DELETE';
 
-    const success = await sendRequest(url, method);
+    const success = await sendRequest(url, 'DELETE');
 
     if (success) {
         const timeEntry = document.getElementById(`time-entry-${timeEntryId}`);
@@ -140,8 +130,6 @@ async function deleteTimeEntry(timeEntryId) {
                 grouperParent.remove();
             }
         }
-    } else {
-        console.error('Failed to delete project');
     }
 }
 
@@ -180,6 +168,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 async function duplicateTimeEntry(timeEntryId) {
     const url = `/timetracker/time-entry/${timeEntryId}/duplicate/`;
-    await sendRequest(url, 'POST');
-    window.location.reload();
+    const success = await sendRequest(url, 'POST');
+    if (success) {
+        window.location.reload();
+    }
 };

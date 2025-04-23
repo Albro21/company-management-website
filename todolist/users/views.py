@@ -75,7 +75,7 @@ def filter_chart(request):
             filter_option = data.get('filter')
             project_title = data.get('project_title')
         except json.JSONDecodeError:
-            return JsonResponse({"success": False, "error": "Invalid JSON"})
+            return JsonResponse({"success": False, "error": "Invalid JSON"}, status=400)
 
         tasks = user.tasks.filter(is_completed=True)
 
@@ -84,7 +84,7 @@ def filter_chart(request):
             if project:
                 tasks = tasks.filter(project=project)
             else:
-                return JsonResponse({"success": False, "error": "Project not found"})
+                return JsonResponse({"success": False, "error": "Project not found"}, status=404)
 
         # Filter by date range
         if filter_option == "week":
@@ -112,7 +112,7 @@ def filter_chart(request):
                 start_date = date.today() - timedelta(days=date.today().weekday())
             end_date = date.today()
         else:
-            return JsonResponse({"success": False, "error": "Invalid filter option"})
+            return JsonResponse({"success": False, "error": "Invalid filter option"}, status=400)
 
         # Filter tasks by date
         filtered_tasks = tasks.filter(completed_at__gte=start_date)
@@ -127,6 +127,6 @@ def filter_chart(request):
         chart_labels = [d.strftime("%d.%m") for d in date_list]
         chart_data = [task_data.get(d, 0) for d in date_list]
 
-        return JsonResponse({"success": True, "labels": chart_labels, "data": chart_data})
+        return JsonResponse({"success": True, "labels": chart_labels, "data": chart_data}, status=200)
 
-    return JsonResponse({"success": False, "error": "Invalid request"})
+    return JsonResponse({"success": False, "error": "Invalid request"}, status=400)

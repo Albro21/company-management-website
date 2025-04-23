@@ -2,12 +2,9 @@ async function logoutUser() {
 	await sendRequest("/logout/", "POST");
 }
 
-async function completeTask(button) {
-	const taskId = button.getAttribute('data-task-id');
+async function completeTask(taskId) {
 	const url = `/task/${taskId}/complete/`;
-	const method = 'POST';
-
-	const success = await sendRequest(url, method);
+	const success = await sendRequest(url, 'POST');
 
 	if (success) {
 		const sound = document.getElementById("completion-sound");
@@ -17,12 +14,10 @@ async function completeTask(button) {
 		document.getElementById(`task-${taskId}`).remove();
 
 		hideEmptyTaskGroups();
-	} else {
-		console.error('Failed to complete task');
 	}
 }
 
-function updateTask(button) {
+async function updateTask(button) {
     event.preventDefault();
 
     const form = button.closest("form");
@@ -43,15 +38,14 @@ function updateTask(button) {
         }
     });
 
+	const url = `/task/${taskId}/edit/`;
     requestBody = JSON.stringify(requestBody);
 
-    sendRequest(`/task/${taskId}/edit/`, "POST", requestBody).then(data => {
-        if (data && data.success) {
-            location.reload();
-        } else {
-            console.error("Server error:", data ? data.error : "No response");
-        }
-    });
+	const success = await sendRequest(url, "POST", requestBody);
+
+	if (success) {
+		location.reload();
+	}
 }
 
 // Change checkmark icon on hover

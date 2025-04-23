@@ -31,8 +31,7 @@
                     <i 
                         class="bi {% if task.is_completed %}bi-check-circle-fill{% else %}bi-circle pointer{% endif %} checkmark" 
                         {% if not task.is_completed %}
-                            data-task-id="{{ task.id }}" 
-                            onclick="completeTask(this)"
+                            onclick="completeTask({{ task.id }})"
                         {% endif %}>
                     </i>
                     

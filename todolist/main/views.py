@@ -67,7 +67,7 @@ def index(request):
 def complete_task(request, task_id):
     task = get_object_or_404(Task, id=task_id)
     task.complete()
-    return JsonResponse({'success': True, 'task_id': task_id})
+    return JsonResponse({'success': True}, status=200)
 
 @require_http_methods(["POST"])
 @login_required
@@ -77,15 +77,15 @@ def edit_task(request, task_id):
     try:
         data = json.loads(request.body)
     except json.JSONDecodeError:
-        return JsonResponse({'success': False, 'errors': 'Invalid JSON'}, status=400)
+        return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
 
     form = TaskForm(data, instance=task)
 
     if form.is_valid():
         form.save()
-        return JsonResponse({'success': True})
+        return JsonResponse({'success': True}, status=200)
     else:
-        return JsonResponse({'success': False, 'errors': form.errors})
+        return JsonResponse({'success': False, 'error': f'Form contains errors: {form.errors}'}, status=400)
 
 @login_required
 def archive(request):
@@ -121,7 +121,7 @@ def archive(request):
 def delete_project(request, project_id):
     project = get_object_or_404(Project, id=project_id)
     project.delete()
-    return JsonResponse({'success': True, 'task_id': project_id})
+    return JsonResponse({'success': True}, status=200)
 
 @require_http_methods(["POST"])
 @login_required
@@ -131,15 +131,15 @@ def edit_project(request, project_id):
     try:
         data = json.loads(request.body)
     except json.JSONDecodeError:
-        return JsonResponse({'success': False, 'errors': 'Invalid JSON'}, status=400)
+        return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
 
     form = ProjectForm(data, instance=project)
 
     if form.is_valid():
         form.save()
-        return JsonResponse({'success': True})
+        return JsonResponse({'success': True}, status=200)
     else:
-        return JsonResponse({'success': False, 'errors': form.errors})
+        return JsonResponse({'success': False, 'error': f'Form contains errors: {form.errors}'}, status=400)
 
 @require_http_methods(["POST"])
 @login_required
@@ -149,22 +149,22 @@ def edit_category(request, category_id):
     try:
         data = json.loads(request.body)
     except json.JSONDecodeError:
-        return JsonResponse({'success': False, 'errors': 'Invalid JSON'}, status=400)
+        return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
 
     form = CategoryForm(data, instance=category)
 
     if form.is_valid():
         form.save()
-        return JsonResponse({'success': True})
+        return JsonResponse({'success': True}, status=200)
     else:
-        return JsonResponse({'success': False, 'errors': form.errors})
+        return JsonResponse({'success': False, 'error': f'Form contains errors: {form.errors}'}, status=400)
 
 @require_http_methods(["DELETE"])
 @login_required
 def delete_category(request, category_id):
     category = get_object_or_404(Category, id=category_id)
     category.delete()
-    return JsonResponse({'success': True, 'task_id': category_id})
+    return JsonResponse({'success': True}, status=200)
 
 @login_required
 def project_detail(request, project_id):

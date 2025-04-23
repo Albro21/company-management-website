@@ -33,18 +33,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function fetchChartData(filter) {
         const url = "/chart/filter/";
-        const method = "POST";
         const requestBody = JSON.stringify({ filter: filter, project_title: projectTitle });
     
-        const data = await sendRequest(url, method, requestBody);
+        const data = await sendRequest(url, "POST", requestBody);
     
-        if (data && data.success) {
+        if (data) {
             updateChart(data.labels, data.data);
-        } else {
-            console.error("Server error:", data ? data.error : "No response");
         }
     }
-    
 
     function updateChart(labels, data) {
         myChart.data.labels = labels;

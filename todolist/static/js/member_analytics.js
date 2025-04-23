@@ -149,17 +149,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function fetchChartData(filter) {
         const url = `/teams/member/${memberId}/analytics/`;
-        const method = "POST";
         const requestBody = JSON.stringify({ filter: filter});
     
-        const data = await sendRequest(url, method, requestBody);
+        const data = await sendRequest(url, "POST", requestBody);
     
-        if (data && data.success) {
+        if (data) {
             updateBarChart(data.bar_chart_data);
             updateDonutChart(data.donut_chart_data);
             totalTimeElement.textContent = `Total Time: ${data.total_time}`;
-        } else {
-            console.error("Server error:", data ? data.error : "No response");
         }
     }
 

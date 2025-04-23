@@ -147,17 +147,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function fetchChartData(filter) {
         const url = `/teams/team/`;
-        const method = "POST";
         const requestBody = JSON.stringify({ filter: filter });
 
-        const data = await sendRequest(url, method, requestBody);
+        const data = await sendRequest(url, "POST", requestBody);
 
-        if (data && data.success) {
+        if (data) {
             updateBarChart(data.bar_chart_data);
             updateDonutChart(data.donut_chart_data);
             totalTimeElement.textContent = `Total Time: ${data.total_time}`;
-        } else {
-            console.error("Server error:", data ? data.error : "No response");
         }
     }
 
@@ -187,15 +184,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 async function deleteProject(projectId) {
     const url = `/project/${projectId}/delete/`;
-    const method = 'DELETE';
 
-    const success = await sendRequest(url, method);
+    const success = await sendRequest(url, 'DELETE');
 
     if (success) {
         document.getElementById(`project-${projectId}`).remove();
         Array.from(document.getElementsByClassName('tooltip')).forEach(function (tooltip) { tooltip.remove(); });
-    } else {
-        console.error('Failed to delete project');
     }
 }
 

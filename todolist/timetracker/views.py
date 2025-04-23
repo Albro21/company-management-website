@@ -123,18 +123,18 @@ def start_timer(request):
         )
     
     time_entry.start()
-    return JsonResponse({'success': True,})
+    return JsonResponse({'success': True}, status=200)
 
 @require_http_methods(["POST"])
 def stop_timer(request):
     request.user.time_entries.filter(end_time__isnull=True).first().stop()
-    return JsonResponse({'success': True})
+    return JsonResponse({'success': True}, status=200)
 
 @require_http_methods(["DELETE"])
 def delete_time_entry(request, time_entry_id):
     time_entry = get_object_or_404(TimeEntry, id=time_entry_id, user=request.user)
     time_entry.delete()
-    return JsonResponse({'success': True})
+    return JsonResponse({'success': True}, status=200)
 
 @require_http_methods(["POST"])
 def duplicate_time_entry(request, time_entry_id):
@@ -149,4 +149,4 @@ def duplicate_time_entry(request, time_entry_id):
         end_time=original.end_time,
     )
 
-    return JsonResponse({'success': True})
+    return JsonResponse({'success': True}, status=200)

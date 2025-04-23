@@ -41,8 +41,7 @@
 									<button 
 										type="button" 
 										class="btn btn-danger" 
-										data-project-id="{{ project.id }}" 
-										onclick="deleteProject(this)" 
+										onclick="deleteProject({{ project.id }})" 
 										aria-label="Delete project">
 										Delete 	
 									</button>
@@ -352,8 +351,7 @@
 									<button 
 										type="button" 
 										class="btn btn-danger" 
-										data-category-id="{{ category.id }}" 
-										onclick="deleteCategory(this)" 
+										onclick="deleteCategory({{ category.id }})" 
 										aria-label="Delete category">
 										Delete
 									</button>
