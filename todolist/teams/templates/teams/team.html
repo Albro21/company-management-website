@@ -70,7 +70,7 @@
             <div class="row w-100">
                 <div class="col border-end">Name Surname</div>
                 <div class="col border-end">Email</div>
-                <div class="col border-end">Role</div>
+                <div class="col border-end">Job Title</div>
                 <div class="col border-end">Billable Rate</div>
                 <div class="col">Actions</div>
             </div>
@@ -83,7 +83,7 @@
                         {{ member.user.full_name }} {% if member.user == request.user %}(You){% endif %}
                     </div>
                     <div class="col border-end">{{ member.user.email }}</div>
-                    <div class="col border-end">{{ member.role }}</div>
+                    <div class="col border-end">{{ member.job_title }}</div>
                     <div class="col border-end">{{ member.rate }}</div>
                     <div class="col d-flex gap-3 action-icons">
 
@@ -166,12 +166,12 @@
                                     <label for="member-rate-{{ member.id }}">Rate:</label>
                                     <input type="text" name="member_{{ member.id }}-rate" id="member-rate-{{ member.id }}" placeholder="Rate" class="form-control mb-2" value="{{ member.rate }}" required maxlength="100">
                                     
-                                    <!-- Role -->
-                                    <label for="member-role-{{ member.id }}">Role:</label>
-                                    <select name="member_{{ member.id }}-role" class="form-control mb-3" id="member-role-{{ member.id }}" required>
-                                        <option value="" disabled {% if not member.role %} selected {% endif %}>Select Role</option>
-                                        {% for role in company.roles.all %}
-                                            <option value="{{ role.id }}" {% if member.role and member.role.id == role.id %} selected {% endif %}>{{ role.name }}</option>
+                                    <!-- Job Title -->
+                                    <label for="member-job-title-{{ member.id }}">Job Title:</label>
+                                    <select name="member_{{ member.id }}-job_title" class="form-control mb-3" id="member-job-title-{{ member.id }}" required>
+                                        <option value="" disabled {% if not member.job_title %} selected {% endif %}>Select Job Title</option>
+                                        {% for job_title in company.job_titles.all %}
+                                            <option value="{{ job_title.id }}" {% if member.job_title and member.job_title.id == job_title.id %} selected {% endif %}>{{ job_title.name }}</option>
                                         {% endfor %}
                                     </select>
                                     

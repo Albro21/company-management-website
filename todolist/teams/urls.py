@@ -18,5 +18,5 @@ urlpatterns = [
     path('join-request/<int:request_id>/accept/', views.accept_join_request, name='accept_join_request'),
     path('join-request/<int:request_id>/decline/', views.decline_join_request, name='decline_join_request'),
     
-    path('role/<int:role_id>/delete/', views.delete_role, name='delete_role'),
+    path('job-title/<int:job_title_id>/delete/', views.delete_job_title, name='delete_job_title'),
 ]

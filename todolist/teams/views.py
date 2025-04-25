@@ -13,8 +13,8 @@ import json
 from main.forms import ProjectForm, TaskForm
 from main.models import Project, Task
 from timetracker.models import TimeEntry
-from .forms import CompanyForm, RoleForm, MemberForm
-from .models import Company, Member, JoinRequest, Role
+from .forms import CompanyForm, JobTitleForm, MemberForm
+from .models import Company, Member, JoinRequest, JobTitle
 
 
 def get_date_range_from_filter(filter_option, all_time_first_entry):
@@ -399,7 +399,7 @@ def settings(request):
     company = request.user.company
 
     company_form = CompanyForm(instance=company, prefix='company')
-    role_form = RoleForm(prefix='role')
+    job_title_form = JobTitleForm(prefix='job_title')
 
     if request.method == 'POST':
         form_type = request.POST.get('form_type')
@@ -411,13 +411,13 @@ def settings(request):
                 messages.success(request, 'Company updated successfully.')
                 return redirect('teams:settings')
 
-        elif form_type == 'role':
-            role_form = RoleForm(request.POST, prefix='role')
-            if role_form.is_valid():
-                new_role = role_form.save(commit=False)
-                new_role.company = company
-                new_role.save()
-                messages.success(request, 'Role added successfully.')
+        elif form_type == 'job_title':
+            job_title_form = JobTitleForm(request.POST, prefix='job_title')
+            if job_title_form.is_valid():
+                new_job_title = job_title_form.save(commit=False)
+                new_job_title.company = company
+                new_job_title.save()
+                messages.success(request, 'Job title added successfully.')
                 return redirect('teams:settings')
             else:
                 messages.error(request, 'Please correct the errors below.')
@@ -425,20 +425,20 @@ def settings(request):
     context = {
         'company': company,
         'company_form': company_form,
-        'role_form': role_form,
+        'job_title_form': job_title_form,
     }
 
     return render(request, 'teams/settings.html', context)
 
 @require_http_methods(["DELETE"])
 @login_required
-def delete_role(request, role_id):
+def delete_job_title(request, job_title_id):
     try:
-        role = get_object_or_404(Role, id=role_id, company=request.user.company)
-        role.delete()
+        job_title = get_object_or_404(JobTitle, id=job_title_id, company=request.user.company)
+        job_title.delete()
         return JsonResponse({"success": True}, status=200)
     except ObjectDoesNotExist:
-        return JsonResponse({"success": False, "error": "Role not found"}, status=404)
+        return JsonResponse({"success": False, "error": "Job title not found"}, status=404)
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=500)
 

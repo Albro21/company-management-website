@@ -45,8 +45,8 @@ class Company(models.Model):
         return self.name
 
 
-class Role(models.Model):
-    company = models.ForeignKey("teams.Company", on_delete=models.CASCADE, related_name="roles")
+class JobTitle(models.Model):
+    company = models.ForeignKey("teams.Company", on_delete=models.CASCADE, related_name="job_titles")
     name = models.CharField(max_length=100)
 
     class Meta:
@@ -59,7 +59,7 @@ class Role(models.Model):
 class Member(models.Model):
     company = models.ForeignKey("teams.Company", on_delete=models.CASCADE, related_name="members")
     user = models.OneToOneField("users.CustomUser", on_delete=models.CASCADE, related_name="member")
-    role = models.ForeignKey("teams.Role", on_delete=models.SET_NULL, null=True, blank=True)
+    job_title = models.ForeignKey("teams.JobTitle", on_delete=models.SET_NULL, null=True, blank=True, related_name="members")
     rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     
     @property
@@ -85,7 +85,7 @@ class Member(models.Model):
         return dict(result)
     
     def __str__(self):
-        return f"{self.user.username} ({self.role})"
+        return f"{self.user.username} ({self.job_title})"
 
 
 class JoinRequest(models.Model):

@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from .models import Company, Role, Member
+from .models import Company, JobTitle, Member
 
 class CompanyForm(ModelForm):
     class Meta:
@@ -14,13 +14,13 @@ class CompanyForm(ModelForm):
     )
 
 
-class RoleForm(forms.ModelForm):
+class JobTitleForm(forms.ModelForm):
     class Meta:
-        model = Role
+        model = JobTitle
         fields = ['name']
 
 
 class MemberForm(forms.ModelForm):
     class Meta:
         model = Member
-        fields = ['role', 'rate']
+        fields = ['rate', 'job_title']

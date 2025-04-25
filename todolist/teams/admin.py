@@ -1,12 +1,12 @@
 from django.contrib import admin
-from .models import Company, Role, Member
+from .models import Company, JobTitle, Member
 
 class MemberInline(admin.TabularInline):
     model = Member
     extra = 1
     
-class RoleInline(admin.TabularInline):
-    model = Role
+class JobTitleInline(admin.TabularInline):
+    model = JobTitle
     extra = 1
 
 @admin.register(Company)
@@ -16,10 +16,9 @@ class CompanyAdmin(admin.ModelAdmin):
     list_filter = ('company_type', 'industry', 'created_at')
     prepopulated_fields = {'slug': ('name',)}
     readonly_fields = ('created_at',)
-    inlines = [RoleInline, MemberInline]
+    inlines = [JobTitleInline, MemberInline]
 
 @admin.register(Member)
 class MemberAdmin(admin.ModelAdmin):
-    list_display = ('user', 'role')
-    search_fields = ('user__username', 'role')
-    list_filter = ('role',)
+    list_display = ('user', 'job_title')
+    search_fields = ('user__username', 'job_title')
