@@ -57,14 +57,27 @@ class JobTitle(models.Model):
 
 
 class Member(models.Model):
+    class Role(models.TextChoices):
+        EMPLOYER = 'employer', 'Employer'
+        EMPLOYEE = 'employee', 'Employee'
+    
     company = models.ForeignKey("teams.Company", on_delete=models.CASCADE, related_name="members")
     user = models.OneToOneField("users.CustomUser", on_delete=models.CASCADE, related_name="member")
-    job_title = models.ForeignKey("teams.JobTitle", on_delete=models.SET_NULL, null=True, blank=True, related_name="members")
     rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
+    job_title = models.ForeignKey("teams.JobTitle", on_delete=models.SET_NULL, null=True, blank=True, related_name="members")
+    role = models.CharField(max_length=20, choices=Role.choices, default=Role.EMPLOYEE)
     
     @property
     def is_active(self):
         return self.user.time_entries.filter(end_time__isnull=True).exists()
+    
+    @property
+    def is_employer(self):
+        return self.role == self.Role.EMPLOYER
+    
+    @property
+    def is_employee(self):
+        return self.role == self.Role.EMPLOYEE
     
     def hours_spent_by_projects(self, target_date, projects):
         if projects is None:

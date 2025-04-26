@@ -15,6 +15,7 @@ from main.models import Project, Task
 from timetracker.models import TimeEntry
 from .forms import CompanyForm, JobTitleForm, MemberForm
 from .models import Company, Member, JoinRequest, JobTitle
+from .decorators import employer_required
 
 
 def get_date_range_from_filter(filter_option, all_time_first_entry):
@@ -314,22 +315,23 @@ def team(request):
     if not request.user.company:
         return render(request, 'teams/no_company.html')
 
-    task_form = TaskForm(prefix="task")
-    project_form = ProjectForm(prefix="project")
-
     if request.method == 'POST':
-        if request.POST.get('form_type'):
+        if request.POST.get('form_type') and request.user.member.is_employer:
             return process_forms(request)
         else:
             return process_company_charts(request)
 
-    context = {
-        'company': request.user.company,
-        'task_form': task_form,
-        'project_form': project_form,
-    }
-
-    return render(request, 'teams/team.html', context)
+    if request.user.member.is_employer:
+        task_form = TaskForm(prefix="task")
+        project_form = ProjectForm(prefix="project")
+        context = {
+            'company': request.user.company,
+            'task_form': task_form,
+            'project_form': project_form,
+        }
+        return render(request, 'teams/team.html', context)
+    
+    return render(request, 'teams/team.html', {'company': request.user.company})
 
 @login_required
 def create_company(request):
@@ -377,6 +379,7 @@ def create_join_request(request):
 
 @require_http_methods(["POST"])
 @login_required
+@employer_required
 def accept_join_request(request, request_id):
     join_request = JoinRequest.objects.get(id=request_id)
     Member.objects.create(
@@ -389,12 +392,14 @@ def accept_join_request(request, request_id):
 
 @require_http_methods(["POST"])
 @login_required
+@employer_required
 def decline_join_request(request, request_id):
     join_request = JoinRequest.objects.get(id=request_id)
     join_request.delete()
     return redirect('teams:team')
 
 @login_required
+@employer_required
 def settings(request):
     company = request.user.company
 
@@ -432,6 +437,7 @@ def settings(request):
 
 @require_http_methods(["DELETE"])
 @login_required
+@employer_required
 def delete_job_title(request, job_title_id):
     try:
         job_title = get_object_or_404(JobTitle, id=job_title_id, company=request.user.company)
@@ -443,6 +449,7 @@ def delete_job_title(request, job_title_id):
         return JsonResponse({"success": False, "error": str(e)}, status=500)
 
 @login_required
+@employer_required
 def member_analytics(request, member_id):
     
     member = get_object_or_404(Member, id=member_id, company=request.user.company)
@@ -465,6 +472,7 @@ def member_analytics(request, member_id):
         return render(request, 'teams/member_analytics.html', context)
 
 @login_required
+@employer_required
 def project_weekly_report(request, project_id):
     project = get_object_or_404(Project, id=project_id)
     
@@ -534,6 +542,7 @@ def leave_company(request):
 
 @require_http_methods(["POST"])
 @login_required
+@employer_required
 def kick_member(request, member_id):
     member = get_object_or_404(Member, id=member_id)
     user = member.user
