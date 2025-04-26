@@ -65,14 +65,14 @@ def index(request):
 @require_http_methods(["POST"])
 @login_required
 def complete_task(request, task_id):
-    task = get_object_or_404(Task, id=task_id)
+    task = get_object_or_404(Task, id=task_id, user=request.user)
     task.complete()
     return JsonResponse({'success': True}, status=200)
 
 @require_http_methods(["POST"])
 @login_required
 def edit_task(request, task_id):
-    task = get_object_or_404(Task, id=task_id)
+    task = get_object_or_404(Task, id=task_id, user=request.user)
 
     try:
         data = json.loads(request.body)
@@ -119,14 +119,14 @@ def archive(request):
 @require_http_methods(["DELETE"])
 @login_required
 def delete_project(request, project_id):
-    project = get_object_or_404(Project, id=project_id)
+    project = get_object_or_404(Project, id=project_id, created_by=request.user)
     project.delete()
     return JsonResponse({'success': True}, status=200)
 
 @require_http_methods(["POST"])
 @login_required
 def edit_project(request, project_id):
-    project = get_object_or_404(Project, id=project_id)
+    project = get_object_or_404(Project, id=project_id, created_by=request.user)
 
     try:
         data = json.loads(request.body)
@@ -144,7 +144,7 @@ def edit_project(request, project_id):
 @require_http_methods(["POST"])
 @login_required
 def edit_category(request, category_id):
-    category = get_object_or_404(Category, id=category_id)
+    category = get_object_or_404(Category, id=category_id, user=request.user)
 
     try:
         data = json.loads(request.body)
@@ -162,13 +162,13 @@ def edit_category(request, category_id):
 @require_http_methods(["DELETE"])
 @login_required
 def delete_category(request, category_id):
-    category = get_object_or_404(Category, id=category_id)
+    category = get_object_or_404(Category, id=category_id, user=request.user)
     category.delete()
     return JsonResponse({'success': True}, status=200)
 
 @login_required
 def project_detail(request, project_id):
-    project = get_object_or_404(Project, pk=project_id)
+    project = get_object_or_404(Project, pk=project_id, created_by=request.user)
     tasks = project.tasks.all()
     
     tasks = filter_tasks(tasks, request)
