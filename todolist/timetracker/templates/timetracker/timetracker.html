@@ -53,18 +53,18 @@
 	</form>
 
 	<!-- Time entries -->
-	<div class="d-flex flex-column my-5 gap-4">
+	<div class="d-flex flex-column my-4 gap-4">
 		{% for date, name_groups in grouped_time_entries.items %}
 			<div>
 				<div class="time-entry-header">
 					<div class="row w-100 py-2">
-						<div class="fs-6 col-7 border-end">
+						<div class="fs-6 col-7">
 							{{ date }}
 						</div>
-						<div class="col-2 text-center border-end">
+						<div class="col-2 text-center">
 							Time Range
 						</div>
-						<div class="fs-6 col-2 text-center border-end">
+						<div class="fs-6 col-2 text-center">
 							Total: {{ name_groups.date_total_duration }}
 						</div>
 						<div class="col-1 text-center">
@@ -79,8 +79,7 @@
 
 								<!-- Time entry grouper -->
 								<div 
-									class="time-entry d-flex pointer"
-									style="background-color: #f8f8f8;"
+									class="d-flex pointer grouper"
 									role="button"
 									data-bs-toggle="collapse"
 									data-bs-target="#time-entry-collapse-{{ first_entry.id }}"
@@ -90,7 +89,7 @@
 									<div class="project-color" {% if first_entry.project.color %}style="background-color: {{ first_entry.project.color }}"{% endif %}></div>
 									
 									<div class="row py-2 w-100 m-0">
-										<div class="col-7 d-flex align-items-center border-end">
+										<div class="col-7 d-flex align-items-center ">
 											<span class="badge text-bg-primary">{{ group_data.time_entries|length }}</span>
 											<!-- Name -->
 											<span class="time-entry-title mx-2">{{ first_entry.name }}</span>
@@ -101,12 +100,12 @@
 										</div>
 						
 										<!-- Start time and End time -->
-										<div class="col-2 text-center border-end">
+										<div class="col-2 text-center ">
 											{{ last_entry.start_time|time:"H:i" }} - {{ first_entry.end_time|time:"H:i" }}
 										</div>
 						
 										<!-- Duration -->
-										<div class="col-2 text-center border-end">
+										<div class="col-2 text-center ">
 											{{ group_data.total_duration }}
 										</div>
 										<div class="col-1 action-icons d-flex justify-content-center">
@@ -121,7 +120,7 @@
 
 										<!-- Time Entry -->
 										<div 
-											class="time-entry d-flex" 
+											class="time-entry d-flex pointer" 
 											data-time-entry-parent="time-entry-collapse-{{ first_entry.id }}" 
 											data-time-entry-grouper="time-entry-grouper-{{ first_entry.id }}" 
 											data-offcanvas="edit-time-entry-{{ time_entry.id }}" 
@@ -131,7 +130,7 @@
 											<div class="project-color" {% if time_entry.project.color %}style=" background-color: {{ time_entry.project.color }}"{% endif %}></div>
 											
 											<div class="row py-2 w-100 m-0">
-												<div class="col-7 d-flex align-items-center border-end">
+												<div class="col-7 d-flex align-items-center ">
 													<!-- Name -->
 													<span class="time-entry-title mx-2">{{ time_entry.name }}</span>
 													<!-- Project -->
@@ -141,12 +140,12 @@
 												</div>
 												
 												<!-- Start time and End time -->
-												<div class="col-2 text-center border-end">
+												<div class="col-2 text-center ">
 													{{ time_entry.start_time|time:"H:i" }} - {{ time_entry.end_time|time:"H:i" }}
 												</div>
 												
 												<!-- Duration -->
-												<div class="col-2 text-center border-end">
+												<div class="col-2 text-center ">
 													{{ time_entry.duration_formatted }}
 												</div>
 
@@ -169,10 +168,10 @@
 										<!-- Edit Time Entry Offcanvas -->
 										<div class="offcanvas offcanvas-end" tabindex="-1" id="edit-time-entry-{{ time_entry.id }}">
 											<div class="offcanvas-header">
-												<h5 class="offcanvas-title" id="offcanvasRightLabel">Edit Time Entry</h5>
+												<h4 class="offcanvas-title text-center">Edit Time Entry</h4>
 												<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 											</div>
-											<div class="offcanvas-body">
+											<div class="offcanvas-body pt-0">
 												<form method="post" class="d-flex flex-column gap-2 time-entry-form" data-time-entry-id="{{ time_entry.id }}">
 													{% csrf_token %}
 													
@@ -227,7 +226,7 @@
 													
 													<!-- Date -->
 													<div class="row align-items-center px-3">
-														<label class="col-3 p-0" for="date-{{ time_entry.id }}">To: </label>
+														<label class="col-3 p-0" for="date-{{ time_entry.id }}">Date: </label>
 														<input type="date" class="form-control col" name="date" id="date-{{ time_entry.id }}" value="{{ time_entry.end_time|date:'Y-m-d' }}">
 													</div>
 													
