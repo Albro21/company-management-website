@@ -14,6 +14,16 @@ body {
     background-color: #ffffff;
 }
 
+/* Hide scrollbar for Webkit browsers like Chrome, Safari */
+html::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for Firefox */
+html {
+    scrollbar-width: none;
+}
+
 *, *:before, *:after {
     box-sizing: border-box;
 }
