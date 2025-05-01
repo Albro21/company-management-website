@@ -1,4 +1,4 @@
-<div class="task-item"
+<div class="task-item list-item pointer bg-2"
     style="display: flex;"
     data-bs-toggle="collapse"
     data-bs-target="#task-collapse-{{ task.id }}"
@@ -68,9 +68,10 @@
 
             </div>
         </div>
-        
         {% if task.text %}
-            <p class="m-0 collapse task-description px-3 pb-2" id="task-collapse-{{ task.id }}">{{ task.text }}</p>
+            <div class="bg-2 collapse" id="task-collapse-{{ task.id }}">
+                <p class="m-0 task-description px-3 pb-2">{{ task.text }}</p>
+            </div>
         {% endif %}
     </div>
 </div>

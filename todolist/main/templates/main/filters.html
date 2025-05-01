@@ -6,31 +6,31 @@
         <!-- Today -->
         <a 
             href="?filter=today" 
-            class="btn btn-outline-light filter-button {% if request.GET.filter == 'today' %}active{% endif %}">
+            class="btn btn-outline-light {% if request.GET.filter == 'today' %}active{% endif %}">
             Today
         </a>
         <!-- Tommorrow -->
         <a 
             href="?filter=tomorrow" 
-            class="btn btn-outline-light filter-button {% if request.GET.filter == 'tomorrow' %}active{% endif %}">
+            class="btn btn-outline-light {% if request.GET.filter == 'tomorrow' %}active{% endif %}">
             Tomorrow
         </a>
         <!-- This week -->
         <a 
             href="?filter=this_week" 
-            class="btn btn-outline-light filter-button {% if request.GET.filter == 'this_week' %}active{% endif %}">
+            class="btn btn-outline-light {% if request.GET.filter == 'this_week' %}active{% endif %}">
             This week
         </a>
         <!-- Next week -->
         <a 
             href="?filter=next_week" 
-            class="btn btn-outline-light filter-button {% if request.GET.filter == 'next_week' %}active{% endif %}">
+            class="btn btn-outline-light {% if request.GET.filter == 'next_week' %}active{% endif %}">
             Next week
         </a>
         <!-- All time -->
         <a 
             href="?filter=all_time" 
-            class="btn btn-outline-light filter-button {% if request.GET.filter == 'all_time' or not request.GET.filter %}active{% endif %}">
+            class="btn btn-outline-light {% if request.GET.filter == 'all_time' or not request.GET.filter %}active{% endif %}">
             All time
         </a>
     </div>

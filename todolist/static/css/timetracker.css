@@ -22,10 +22,6 @@
     padding-left: 5px;
 }
 
-.project-color {
-    width: 5px;
-}
-
 .time-entry-title {
     font-weight: bold;
 }
@@ -34,64 +30,8 @@
     font-size: smaller;
 }
 
-#main-content {
-    background-color: #19181d;
-    color: white;
-}
-
 .grouper {
     background-color: #26242a;
     color: #cecece;
     margin-top: 2px;
-}
-
-.action-icons i {
-    color: #eee;
-}
-
-#tracker-form {
-    background-color: #26242a;
-    color: white;
-}
-
-.form-control, .form-select {
-    background-color: #2e2f37 !important;
-    color: #bbb !important;
-    border-color: #222 !important;
-}
-
-.form-control:hover, .form-select:hover {
-    box-shadow: 0 0 5px 2px rgba(0, 123, 255, 0.5);
-    border-color: #007bff !important;
-}
-
-.form-control::placeholder {
-    color: #bbb;
-    opacity: 1;
-}
-
-.form-select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-    background-size: 15px 15px;
-}
-
-.offcanvas {
-    background-color: #19181d;
-    color: #bbb;
-}
-
-.offcanvas label {
-    font-weight: bold;
-}
-
-.btn-close {
-    filter: brightness(0) invert(1);
-}
-
-input[type="date"]::-webkit-calendar-picker-indicator,
-input[type="time"]::-webkit-calendar-picker-indicator {
-    filter: invert(1);
-    opacity: 0.8;
 }

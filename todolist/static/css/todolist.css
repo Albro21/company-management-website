@@ -1,9 +1,3 @@
-#main-content {
-    background-color: #19181d;
-    color: white;
-    min-height: 100vh;
-}
-
 .task-group-header {
     display: flex;
     font-weight: bold;
@@ -14,18 +8,12 @@
 }
 
 .task-item {
-    background-color: #26242a;
-    color: #cecece;
+    background-color: var(--bg-2);
     margin-top: 2px;
 }
 
 .task-item:hover {
     transform: scale(1.009);
-    transition: transform 0.1s linear;
-}
-
-.project-color {
-    width: 5px;
 }
 
 .task-description {

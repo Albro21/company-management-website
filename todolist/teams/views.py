@@ -455,7 +455,19 @@ def member_analytics(request, member_id):
     member = get_object_or_404(Member, id=member_id, company=request.user.company)
     
     if request.method == 'POST':
-        return process_member_charts(request, member)
+        if request.POST.get('form_type') == 'edit_task':
+            print(request.POST)
+            task_id = request.POST.get('task_id')
+            task = get_object_or_404(Task, id=task_id, user=request.user)
+            form = TaskForm(request.POST, instance=task)
+            if form.is_valid():
+                print("Form is valid")
+                form.save()
+                return redirect('teams:member_analytics', member_id=member_id)
+            else:
+                print(form.errors)
+        else:
+            return process_member_charts(request, member)
     else:
         
         assigned_tasks = Task.objects.filter(
@@ -466,7 +478,8 @@ def member_analytics(request, member_id):
         
         context = {
             'member': member,
-            'assigned_tasks': assigned_tasks
+            'assigned_tasks': assigned_tasks,
+            'form': TaskForm()
         }
 
         return render(request, 'teams/member_analytics.html', context)
