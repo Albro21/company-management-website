@@ -1,116 +1,85 @@
-<form 
-    class="list-item w-100 container p-3 flex-column" 
-    id="edit-task-{{ task.id }}" 
-    style="display: none;">
-
-    {% csrf_token %}
-
-    <!-- Top row -->
-    <div class="d-flex">
-        <!-- Note Title -->
-        <div class="w-100">
-            <input 
-                class="w-100 form-control form-control-sm my-2 {% if form.title.errors %}is-invalid{% endif %}" 
-                type="text" 
-                name="{{ form.title.name }}" 
-                value="{{ task.title }}" 
-                placeholder="Note Title" 
-                aria-label=".form-control-sm">
-            <div class="invalid-feedback">{{ form.title.errors }}</div>
-        </div>
-        <!-- Close button -->
-        <i 
-            class="bi bi-x-lg ms-3" 
-            data-close-id="edit-task-{{ task.id }}"
-            data-open-id="task-{{ task.id }}"
-            onclick="openCloseWindows(this)"
-            style="margin-top: 12px;">
-        </i>
+<div class="offcanvas offcanvas-end" tabindex="-1" id="edit-task-{{ task.id }}">
+    <div class="offcanvas-header">
+        <h4 class="offcanvas-title text-center">Edit Task</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
-
-    <div class="d-flex mb-2 gap-2">
-
-        <!-- Left half -->
-        <div class="d-flex flex-column flex-grow-1 gap-2">
-
-            <!-- Note Text -->
-            <div>
-                <textarea 
-                    class="form-control {% if form.text.errors %}is-invalid{% endif %}" 
-                    name="{{ form.text.name }}"
-                    placeholder="Note Text" 
-                    rows="3">{{ task.text }}</textarea>
-            </div>
-
-            <div class="d-flex flex-wrap justify-content-between gap-2">
-                <div class="d-flex align-items-center gap-2">
-
-                    <!-- Project select -->
-                    <select class="form-control me-2" name="{{ form.project.name }}">
-                        <option value="" {% if not task.project %}selected{% endif %}>Select a project</option>
-                        {% for project in request.user.all_projects %}
-                            <option value="{{ project.id }}" 
-                                {% if task.project and project.id == task.project.id or form.project.value == project.id %}selected{% endif %}>
-                                {{ project.title }}
-                            </option>
-                        {% endfor %}
-                    </select>
-
-                    <!-- High Priority checkbox -->
-                    <input 
-                        class="form-check-input mt-0" 
-                        type="checkbox"
-                        name="{{ form.is_high_priority.name }}" 
-                        id="{{ form.is_high_priority.id_for_label }}" 
-                        {% if task.is_high_priority %}
-                            checked
-                        {% endif %}>	
-                    <label class="form-check-label d-flex" for="{{ form.is_high_priority.id_for_label }}" style="white-space: nowrap;">
-                        Is High Priority
-                    </label>
-                </div>
-
-                <!-- Due Date -->
-                <div class="d-flex">
-                    <input 
-                        class="form-control {% if form.due_date.errors %}is-invalid{% endif %}" 
-                        type="date" 
-                        name="{{ form.due_date.name }}" 
-                        value="{{ task.due_date|date:'Y-m-d' }}">
-                    <div class="invalid-feedback">{{ form.due_date.errors }}</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Right half -->
-        <div class="d-flex flex-column custom-scroll">
+    <div class="offcanvas-body pt-0">
+        <form method="post" class="d-flex flex-column gap-2 time-entry-form">
+            {% csrf_token %}
             
-            <!-- Category list -->
-            <div class="d-flex flex-column">
-                {% for category in request.user.categories.all %}
-                    <div class="form-check">
-                        <input 
-                            class="form-check-input mx-2" 
-                            type="checkbox" 
-                            name="{{ form.categories.name }}"
-                            id="category-{{ category.id }}"  
-                            value="{{ category.id }}"
-                            {% if category in task.categories.all %}checked{% endif %}>
-                        <label class="form-check-label" style="white-space: nowrap;" for="category-{{ category.id }}">
-                            {{ category.title }}
-                        </label>
-                    </div>
-                {% endfor %}
+            <!-- Title -->
+            <div class="d-flex flex-column align-items-center">
+                <label for="{{ form.title.id_for_label }}">Title</label>
+                <input type="text" name="{{ form.title.name }}" id="{{ form.title.id_for_label }}" class="form-control" placeholder="Title" required maxlength="200" value="{{ task.title }}">
             </div>
-        </div>
-    </div>
 
-    <!-- Submit button -->
-    <button 
-        class="btn btn-warning w-100" 
-        type="submit" 
-        data-task-id="{{ task.id }}"
-        onclick="updateTask(this)">
-        Add note
-    </button>
-</form>
+            <!-- Description -->
+            <div class="d-flex flex-column align-items-center">
+                <label for="{{ form.text.id_for_label }}">Description</label>
+                <textarea name="{{ form.text.name }}" id="{{ form.text.id_for_label }}" class="form-control no-scrollbar" placeholder="Description" rows="5">{{ task.text }}</textarea>
+            </div>
+            
+            <!-- Project -->
+            <div class="d-flex flex-column align-items-center">
+                <label for="{{ form.project.id_for_label }}">Project</label>
+                <select class="form-select" id="{{ form.project.id_for_label }}" name="{{ form.project.name }}">
+                    <option value="" {% if not task.project %}selected{% endif %}>Select a project</option>
+                    {% for project in request.user.all_projects %}
+                        <option value="{{ project.id }}" 
+                            {% if task.project and project.id == task.project.id or form.project.value == project.id %}selected{% endif %}>
+                            {{ project.title }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Categories -->
+            <div class="d-flex flex-column">
+                <label class="text-center" for="{{ form.categories.id_for_label }}">Categories</label>
+                <div class="d-flex flex-column">
+                    {% for category in request.user.categories.all %}
+                        <div class="form-check">
+                            <input 
+                                class="form-check-input" 
+                                type="checkbox" 
+                                name="{{ form.categories.name }}"
+                                id="{{ form.categories.id_for_label }}"  
+                                value="{{ category.id }}"
+                                {% if category in task.categories.all %}checked{% endif %}>
+                            <label class="form-check-label" style="white-space: nowrap;" for="{{ form.categories.id_for_label }}">
+                                {{ category.title }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Due Date -->
+            <div class="d-flex flex-column align-items-center">
+                <label for="{{ form.due_date.id_for_label }}">Due Date</label>
+                <input type="date" class="form-control" name="{{ form.due_date.name }}" id="{{ form.due_date.id_for_label }}" value="{{ task.due_date|date:'Y-m-d' }}">
+            </div>
+
+            <!-- High Priority checkbox -->
+            <div class="d-flex justify-content-center gap-2">
+                <input 
+                    class="form-check-input" 
+                    type="checkbox"
+                    name="{{ form.is_high_priority.name }}" 
+                    id="{{ form.is_high_priority.id_for_label }}" 
+                    {% if task.is_high_priority %}
+                        checked
+                    {% endif %}>	
+                <label class="form-check-label d-flex" for="{{ form.is_high_priority.id_for_label }}" style="white-space: nowrap;">
+                    Is High Priority
+                </label>
+            </div>
+
+            <input type="hidden" name="task_id" value="{{ task.id }}">
+            <input type="hidden" name="form_type" value="edit_task">
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary px-3">Save</button>
+        </form>                                
+    </div>
+</div>

@@ -4,7 +4,9 @@
 
 {% block title %}To do list{% endblock title %}
 
-{% block styles %}{% endblock styles %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/todolist.css' %}">
+{% endblock styles %}
 
 {% block content %}
 	<audio id="completion-sound" src="{% static 'sounds/completion_sound.mp3' %}" preload="auto"></audio>
@@ -18,42 +20,68 @@
 			<!-- Category filters -->
 			{% for category in request.user.categories.all %}
 				<span 
-					class="badge shadow-sm text-black pointer category-filter align-self-center"
-					data-category-id="{{ category.id }}"
-					data-category-color="{{ category.color }}"
-					style="border: 3px solid {{ category.color }};">
+					class="badge shadow-sm pointer category-filter align-self-center"
+					style="border: 3px solid {{ category.color }}; background-color: #19181d;"
+					onclick="filterByCategory({{ category.id }}, '{{ category.color }}')"
+					id="category-filter-{{ category.id }}"
+				>
 					{{ category.title }} 
 				</span>
 			{% endfor %}
 
 			<!-- High priority filter -->
-			<i class="bi bi-flag" style="font-size: 20px;" id="high-priority-filter"></i>
+			<i class="bi bi-flag" style="font-size: 20px;" id="high-priority-filter" onclick="FilterByHighPriority()"></i>
 		</div>
 
 		<!-- Tasks -->
-		<div class="d-flex flex-column justify-content-center" id="tasks">
+		<div class="d-flex flex-column" id="tasks">
 			{% regroup tasks by is_completed as tasks_by_completion %}
 			{% for completed_group in tasks_by_completion %}
 				{% if completed_group.grouper %}
-					<h2 class="mb-3 mt-4 mt-md-5 text-center">
+					<h2 class="mb-3 mt-4 mt-md-5 d-flex align-items-center justify-content-center">
 						Completed tasks
+
+						<!-- Task Creation Button -->
+						<button class="ms-3 btn btn-primary rounded-3 shadow-lg d-flex justify-content-center align-items-center"
+							style="width: 30px; height: 30px;"
+							data-bs-toggle="offcanvas" 
+							data-bs-target="#taskCreationCanvas">
+							<i class="bi bi-plus-lg" style="font-size: 20px; font-weight: bold;"></i>
+						</button>
 					</h2>
 				{% else %}
-					<h2 class="mb-2 mb-sm-3 mb-md-0 mt-2 mt-sm-4 text-center">
+					<h2 class="mb-2 mb-sm-3 mb-md-0 mt-2 mt-sm-4 d-flex align-items-center justify-content-center">
 						Pending tasks
+
+						<!-- Task Creation Button -->
+						<button class="ms-3 btn btn-primary rounded-3 shadow-lg d-flex justify-content-center align-items-center"
+							style="width: 30px; height: 30px;"
+							data-bs-toggle="offcanvas" 
+							data-bs-target="#taskCreationCanvas">
+							<i class="bi bi-plus-lg" style="font-size: 20px; font-weight: bold;"></i>
+						</button>
 					</h2>
 				{% endif %}
 				{% regroup completed_group.list by due_date as tasks_by_date %}
-				<div class="d-flex flex-column gap-3 gap-sm-4">
+				<div class="d-flex flex-column gap-4">
 					{% if not completed_group.grouper %}
 						{% for task_group in tasks_by_date %}
-							<div class="task-group d-flex flex-column justify-content-center">
-								<h5 class="ms-1 ms-sm-3 mb-1 mb-sm-2 date-header">
-									{{ task_group.grouper|date:"l, d.m" }}
-								</h5>
-
+							<div class="task-group d-flex flex-column">
+								<!-- Task group header -->
+								<div class="task-group-header">
+									<div class="row w-100 py-2">
+										<div class="fs-6 col-9">{{ task_group.grouper|date:"l, d.m" }}</div>
+										<div class="col-1 text-center">Project</div>
+										<div class="col-1 text-center" style="white-space: nowrap;">Due Date</div>
+										<div class="col-1 text-center">Actions</div>
+									</div>
+								</div>
+		
 								{% for task in task_group.list %}
+									<!-- Task item -->
 									{% include "main/task_item.html" %}
+		
+									<!-- Edit Task Offcanvas -->
 									{% include "main/task_editing_form.html" %}
 								{% endfor %}
 							</div>
@@ -62,7 +90,10 @@
 						<div class="task-group d-flex flex-column justify-content-center">
 							{% for task_group in tasks_by_date %}
 								{% for task in task_group.list %}
+									<!-- Task item -->
 									{% include "main/task_item.html" %}
+		
+									<!-- Edit Task Offcanvas -->
 									{% include "main/task_editing_form.html" %}
 								{% endfor %}
 							{% endfor %}
@@ -72,140 +103,101 @@
 			{% endfor %}
 		</div>
 
-		<!-- Task creation form -->
-		<form 
-			class="mt-3 list-item w-100 container p-3 flex-column" 
-			id="task-creation-form" style="display: none;" 
-			method="POST" 
-			action="?{% for key, value in request.GET.items %}{{ key }}={{ value }}&{% endfor %}">
-
-			{% csrf_token %}
-
-			<!-- Top row -->
-			<div class="d-flex">
-				<!-- Note Title -->
-				<div class="w-100">
-					<input 
-						class="w-100 form-control form-control-sm my-2 {% if form.title.errors %}is-invalid{% endif %}" 
-						type="text" 
-						name="{{ form.title.name }}" 
-						value="{{ form.title.value|default:'' }}" 
-						placeholder="Note Title" 
-						aria-label=".form-control-sm">
-					<div class="invalid-feedback">{{ form.title.errors }}</div>
-				</div>
-				<!-- Close button -->
-				<i 
-					class="bi bi-x-lg ms-3" 
-					data-close-id="task-creation-form" 
-					onclick="closeWindow(this)"
-					style="margin-top: 12px;">
-				</i>
+		<!-- Task Creation Button -->
+		<button class="btn btn-primary rounded-3 shadow-lg position-fixed d-flex justify-content-center align-items-center"
+			style="bottom: 30px; right: 30px; width: 100px; height: 100px; z-index: 1000;"
+			data-bs-toggle="offcanvas" 
+			data-bs-target="#taskCreationCanvas">
+			<i class="bi bi-plus-lg" style="font-size: 60px;"></i>
+		</button>
+		
+		<!-- Task Creation Offcanvas -->
+		<div class="offcanvas offcanvas-end" tabindex="-1" id="taskCreationCanvas">
+			<div class="offcanvas-header">
+				<h4 class="offcanvas-title text-center">Create Task</h4>
+				<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 			</div>
-
-			<div class="d-flex mb-2 gap-2">
-
-				<!-- Left half -->
-				<div class="d-flex flex-column flex-grow-1 gap-2">
-
-					<!-- Note Text -->
-					<div>
-						<textarea 
-							class="form-control {% if form.text.errors %}is-invalid{% endif %}" 
-							name="{{ form.text.name }}"
-							placeholder="Note Text" 
-							rows="3">{{ form.text.value|default:'' }}</textarea>
-					</div>
-
-					<div class="d-flex flex-wrap justify-content-between gap-2">
-						<div class="d-flex align-items-center gap-2">
-
-							<!-- Project select -->
-							<select class="form-control me-2" name="{{ form.project.name }}">
-								<option value="">Select a project</option>
-								{% for project in request.user.all_projects %}
-									<option value="{{ project.id }}" {% if form.project.value == project.id %}selected{% endif %}>{{ project.title }}</option>
-								{% endfor %}
-							</select>
-
-							<!-- High Priority checkbox -->
-							<input 
-								class="form-check-input mt-0" 
-								type="radio"
-								name="{{ form.is_high_priority.name }}" 
-								id="{{ form.is_high_priority.id_for_label }}" 
-								{% if form.is_high_priority.value %}
-									checked
-								{% endif %}>
-							<label class="form-check-label d-flex" for="{{ form.is_high_priority.id_for_label }}" style="white-space: nowrap;">
-								Is High Priority
-							</label>
-						</div>
-
-						<!-- Due Date -->
-						<div class="d-flex">
-							<input 
-								class="form-control {% if form.due_date.errors %}is-invalid{% endif %}" 
-								type="date" 
-								name="{{ form.due_date.name }}" 
-								{% if form.due_date.value %}
-									value="{{ form.due_date.value }}"
-								{% endif %}>
-							<div class="invalid-feedback">{{ form.due_date.errors }}</div>
-						</div>
-					</div>
-				</div>
-
-				<!-- Right half -->
-				<div class="d-flex flex-column custom-scroll">
+			<div class="offcanvas-body pt-0">
+				<form method="post" class="d-flex flex-column gap-2 time-entry-form">
+					{% csrf_token %}
 					
-					<!-- Category list -->
-					{% for category in request.user.categories.all %}
-						<div style="display: inline-flex; justify-content: left;">
-							<label class="form-check-label" style="white-space: nowrap;" for="category-{{ category.id }}">{{ category.title }}</label>
-							<input 
-								class="form-check-input mx-2" 
-								type="checkbox" 
-								name="{{ form.categories.name }}"
-								id="category-{{ category.id }}"  
-								value="{{ category.id }}"
-								{% if category.id in form.categories.value %}checked{% endif %}>
+					<!-- Title -->
+					<div class="d-flex flex-column align-items-center">
+						<label for="{{ form.title.id_for_label }}">Title</label>
+						<input type="text" name="{{ form.title.name }}" id="{{ form.title.id_for_label }}" class="form-control" placeholder="Title" required maxlength="200">
+					</div>
+
+					<!-- Description -->
+					<div class="d-flex flex-column align-items-center">
+						<label for="{{ form.text.id_for_label }}">Description</label>
+						<textarea name="{{ form.text.name }}" id="{{ form.text.id_for_label }}" class="form-control no-scrollbar" placeholder="Description" rows="5"></textarea>
+					</div>
+					
+					<!-- Project -->
+					<div class="d-flex flex-column align-items-center">
+						<label for="{{ form.project.id_for_label }}">Project</label>
+						<select class="form-select" id="{{ form.project.id_for_label }}" name="{{ form.project.name }}">
+							<option value="" selected>Select a project</option>
+							{% for project in request.user.all_projects %}
+								<option value="{{ project.id }}">
+									{{ project.title }}
+								</option>
+							{% endfor %}
+						</select>
+					</div>
+
+					<!-- Categories -->
+					<div class="d-flex flex-column">
+						<label class="text-center" for="{{ form.categories.id_for_label }}">Categories</label>
+						<div class="d-flex flex-column">
+							{% for category in request.user.categories.all %}
+								<div class="form-check">
+									<input 
+										class="form-check-input" 
+										type="checkbox" 
+										name="{{ form.categories.name }}"
+										id="{{ form.categories.id_for_label }}"  
+										value="{{ category.id }}"
+									>
+									<label class="form-check-label" style="white-space: nowrap;" for="{{ form.categories.id_for_label }}">
+										{{ category.title }}
+									</label>
+								</div>
+							{% endfor %}
 						</div>
-					{% endfor %}
-				</div>
-			</div>
+					</div>
 
-			<!-- Add note (submit) button -->
-			<button class="btn btn-warning w-100" type="submit">Add note</button>
-		</form>
+					<!-- Due Date -->
+					<div class="d-flex flex-column align-items-center">
+						<label for="{{ form.due_date.id_for_label }}">Due Date</label>
+						<input type="date" class="form-control" name="{{ form.due_date.name }}" id="{{ form.due_date.id_for_label }}">
+					</div>
 
-		{% if form.errors %}
-			<script>
-				document.addEventListener("DOMContentLoaded", function() {
-					openWindow(document.getElementById("btn_add"));
-					document.getElementById("task-creation-form").scrollIntoView({ behavior: "smooth" });
-				});
-			</script>
-		{% endif %}
+					<!-- High Priority checkbox -->
+					<div class="d-flex justify-content-center gap-2">
+						<input 
+							class="form-check-input" 
+							type="checkbox"
+							name="{{ form.is_high_priority.name }}" 
+							id="{{ form.is_high_priority.id_for_label }}" 
+						>	
+						<label class="form-check-label d-flex" for="{{ form.is_high_priority.id_for_label }}" style="white-space: nowrap;">
+							Is High Priority
+						</label>
+					</div>
 
-		<!-- Add note button -->
-		<div class="plus_add_button_inner mb-5">
-			<div id="btn_add" data-open-id="task-creation-form" onclick="openWindow(this)">
-				<button type="button" aria-hidden="false" data-supports-active-task="true" class="plus_add_button">
-					<span class="icon_add" aria-hidden="true">
-						<svg width="13" height="13">
-							<path fill="currentColor" fill-rule="evenodd" d="M6 6V.5a.5.5 0 0 1 1 0V6h5.5a.5.5 0 1 1 0 1H7v5.5a.5.5 0 1 1-1 0V7H.5a.5.5 0 0 1 0-1H6z"></path>
-						</svg>
-					</span>
-					<div class="penis">Add note</div>
-				</button>
+					<input type="hidden" name="form_type" value="create_task">
+
+					<!-- Submit Button -->
+					<button type="submit" class="btn btn-primary px-3">Save</button>
+				</form>                                
 			</div>
 		</div>
-
 	</div>
 {% endblock content %}
 
 {% block scripts %}
 	<script src="{% static 'js/script.js' %}"></script>
+	<script src="{% static 'js/task_item.js' %}"></script>
 	<script src="{% static 'js/filters.js' %}"></script>
 {% endblock scripts %}

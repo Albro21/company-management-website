@@ -48,12 +48,20 @@ def index(request):
     form = TaskForm(request.POST or None)
     
     if request.method == 'POST':
-        if form.is_valid():
-            task = form.save(commit=False)
-            task.user = user
-            task.save()
-            form.save_m2m()
-            return redirect('index')
+        if request.POST.get('form_type') == 'edit_task':
+            task_id = request.POST.get('task_id')
+            task = get_object_or_404(Task, id=task_id, user=request.user)
+            form = TaskForm(request.POST, instance=task)
+            if form.is_valid():
+                form.save()
+                return redirect('index')
+        elif request.POST.get('form_type') == 'create_task':
+            if form.is_valid():
+                task = form.save(commit=False)
+                task.user = user
+                task.save()
+                form.save_m2m()
+                return redirect('index')
 
     context = {
         'tasks': tasks,

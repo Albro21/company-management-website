@@ -163,19 +163,12 @@ h1, h2, h3, h4, h5, h6 {
     gap: 4px;
 }
 
-#filter-buttons {
-    background-color: #ffffff;
-}
-
 .category-filter {
     outline: 1px solid black;
     background-color: white;
 }
 
 @media screen and (max-width: 576px) {
-    #filter-buttons {
-        width: 100%;
-    }
 
     .filter-button {
         font-size: 10px;
