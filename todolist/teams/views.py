@@ -456,16 +456,12 @@ def member_analytics(request, member_id):
     
     if request.method == 'POST':
         if request.POST.get('form_type') == 'edit_task':
-            print(request.POST)
             task_id = request.POST.get('task_id')
             task = get_object_or_404(Task, id=task_id, user=request.user)
             form = TaskForm(request.POST, instance=task)
             if form.is_valid():
-                print("Form is valid")
                 form.save()
                 return redirect('teams:member_analytics', member_id=member_id)
-            else:
-                print(form.errors)
         else:
             return process_member_charts(request, member)
     else:

@@ -97,32 +97,18 @@ def edit_task(request, task_id):
 
 @login_required
 def archive(request):
-    user = request.user
+    return render(request, 'main/archive.html')
 
-    project_form = ProjectForm(request.POST or None, prefix='project')
-    category_form = CategoryForm(request.POST or None, prefix='category')
-
-    if request.method == 'POST':
-        if 'submit_project' in request.POST and project_form.is_valid():
-            project = project_form.save(commit=False)
-            project.created_by = user
-            project.save()
-            project_form.save_m2m()
-            return redirect('archive')
-
-        if 'submit_category' in request.POST and category_form.is_valid():
-            category = category_form.save(commit=False)
-            category.user = user
-            category.save()
-            category_form.save_m2m()
-            return redirect('archive')
-
-    context = {
-        'project_form': project_form,
-        'category_form': category_form,
-    }
-
-    return render(request, 'main/archive.html', context)
+@require_http_methods(["POST"])
+@login_required
+def create_project(request):
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
+    
+    project = Project.objects.create(**data, created_by=request.user)
+    return JsonResponse({'success': True, 'id': project.id}, status=201)
 
 @require_http_methods(["DELETE"])
 @login_required
@@ -131,7 +117,7 @@ def delete_project(request, project_id):
     project.delete()
     return JsonResponse({'success': True}, status=200)
 
-@require_http_methods(["POST"])
+@require_http_methods(["PATCH"])
 @login_required
 def edit_project(request, project_id):
     project = get_object_or_404(Project, id=project_id, created_by=request.user)
@@ -151,6 +137,24 @@ def edit_project(request, project_id):
 
 @require_http_methods(["POST"])
 @login_required
+def create_category(request):
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
+    
+    category = Category.objects.create(**data, user=request.user)
+    return JsonResponse({'success': True, 'id': category.id}, status=201)
+
+@require_http_methods(["DELETE"])
+@login_required
+def delete_category(request, category_id):
+    category = get_object_or_404(Category, id=category_id, user=request.user)
+    category.delete()
+    return JsonResponse({'success': True}, status=200)
+
+@require_http_methods(["PATCH"])
+@login_required
 def edit_category(request, category_id):
     category = get_object_or_404(Category, id=category_id, user=request.user)
 
@@ -166,13 +170,6 @@ def edit_category(request, category_id):
         return JsonResponse({'success': True}, status=200)
     else:
         return JsonResponse({'success': False, 'error': f'Form contains errors: {form.errors}'}, status=400)
-
-@require_http_methods(["DELETE"])
-@login_required
-def delete_category(request, category_id):
-    category = get_object_or_404(Category, id=category_id, user=request.user)
-    category.delete()
-    return JsonResponse({'success': True}, status=200)
 
 @login_required
 def project_detail(request, project_id):
