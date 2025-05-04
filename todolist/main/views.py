@@ -42,10 +42,10 @@ def filter_tasks(tasks, request):
     return tasks
 
 @login_required
-def index(request):
+def todolist(request):
     tasks = request.user.tasks.order_by('is_completed', 'due_date')
     tasks = filter_tasks(tasks, request)
-    return render(request, 'main/index.html', {'tasks': tasks})
+    return render(request, 'main/todolist.html', {'tasks': tasks})
 
 @require_http_methods(["POST"])
 @login_required
