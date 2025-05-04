@@ -47,36 +47,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-function closeWindow(button){
-    const elementId = button.getAttribute('data-close-id');
-    document.getElementById(elementId).style.display = 'none';
-}
-
-function openWindow(button){
-    const elementId = button.getAttribute('data-open-id');
-    document.getElementById(elementId).style.display = 'flex';
-}
-
-function openCloseWindows(button){
-    const openId = button.getAttribute('data-open-id');
-    const closeId = button.getAttribute('data-close-id');
-    document.getElementById(closeId).style.display = 'none';
-    document.getElementById(openId).style.display = 'flex';
-}
-
-// Hides empty task groups if all tasks in the group are hidden or if there are no tasks
-window.hideEmptyTaskGroups = function() {
-    document.querySelectorAll(".task-group").forEach(group => {
-        const tasks = group.querySelectorAll(".task");
-        
-        //   Check if there are no tasks   or   if all tasks are hidden
-        const isEmpty = tasks.length === 0 || [...tasks].every(task => task.style.display === "none");
-
-        // Toggle visibility of the task group
-        group.classList.replace(isEmpty ? "d-flex" : "d-none", isEmpty ? "d-none" : "d-flex");
-    });
-}
-
 // Displays image after upload
 function previewImage(event) {
     const file = event.target.files[0];
