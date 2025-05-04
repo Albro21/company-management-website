@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let StackedBarChart = new Chart(stackedBarCTX, {
         type: "bar",
         data: {
-            labels: [], 
+            labels: [],
             datasets: [{
                 label: "Completed Tasks",
                 data: [],
@@ -28,17 +28,22 @@ document.addEventListener("DOMContentLoaded", function () {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { display: true },
+                legend: {
+                    display: true,
+                    labels: {
+                        color: "white"
+                    }
+                },
                 tooltip: {
                     callbacks: {
-                        label: function(context) {
+                        label: function (context) {
                             const value = context.parsed.y;
                             const totalSeconds = Math.round(value * 3600);
-                
+    
                             const hours = Math.floor(totalSeconds / 3600);
                             const minutes = Math.floor((totalSeconds % 3600) / 60);
                             const seconds = totalSeconds % 60;
-                
+    
                             return `${context.dataset.label}: ${hours}h ${minutes}m ${seconds}s`;
                         }
                     }
@@ -46,14 +51,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 datalabels: {
                     anchor: 'end',
                     align: 'top',
-                    display: function(context) {
+                    color: 'white',
+                    display: function (context) {
                         return context.dataset.data[context.dataIndex] !== 0;
                     },
                     formatter: function (value, context) {
                         const chart = context.chart;
                         const index = context.dataIndex;
                         const datasets = chart.data.datasets;
-        
+    
                         let total = 0;
                         datasets.forEach(dataset => {
                             const v = dataset.data[index];
@@ -61,10 +67,10 @@ document.addEventListener("DOMContentLoaded", function () {
                                 total += v;
                             }
                         });
-        
+    
                         const isTopDataset = context.datasetIndex === datasets.length - 1
                             || datasets.slice(context.datasetIndex + 1).every(ds => !ds.data[index]);
-        
+    
                         return isTopDataset ? `${Math.floor(total)}h ${Math.round((total - Math.floor(total)) * 60)}m` : '';
                     }
                 }
@@ -72,20 +78,33 @@ document.addEventListener("DOMContentLoaded", function () {
             scales: {
                 x: {
                     stacked: true,
-                    grid: { display: false }
+                    grid: {
+                        color: '#333'
+                    },
+                    ticks: {
+                        color: "white"
+                    }
                 },
                 y: {
                     stacked: true,
                     beginAtZero: true,
+                    grid: {
+                        color: '#333'
+                    },
                     ticks: {
+                        color: "white",
                         precision: 2,
-                        callback: function(value) {
+                        callback: function (value) {
                             return value + 'h';
-                        },
+                        }
+                    },
+                    title: {
+                        display: true,
+                        color: "white"
                     }
                 }
             }
-        }        
+        }
     });
 
     let DonutChart = new Chart(donutCTX, {
@@ -95,40 +114,43 @@ document.addEventListener("DOMContentLoaded", function () {
             datasets: [{
                 data: [],
                 backgroundColor: [],
-                borderWidth: 1
-            }]
+                borderColor: "#000",
+            }],
         },
         options: {
             responsive: true,
             plugins: {
                 legend: {
                     position: 'top',
+                    labels: {
+                        color: 'white'
+                    }
                 },
                 tooltip: {
                     callbacks: {
-                        label: function(tooltipItem) {
+                        label: function (tooltipItem) {
                             const value = tooltipItem.raw;
                             const totalSeconds = Math.round(value * 3600);
-    
                             const hours = Math.floor(totalSeconds / 3600);
                             const minutes = Math.floor((totalSeconds % 3600) / 60);
                             const seconds = totalSeconds % 60;
-    
-                            // Return formatted tooltip label with hours, minutes, seconds
                             return tooltipItem.label + ': ' + hours + 'h ' + minutes + 'm ' + seconds + 's';
                         }
-                    }
+                    },
+                    bodyColor: 'white',
+                    titleColor: 'white'
                 },
                 datalabels: {
                     color: '#fff',
                     font: {
-                        weight: 'bold',
+                        weight: 'bold'
                     },
-                    formatter: function(value, context) {
+                    anchor: 'center',
+                    align: 'center',
+                    formatter: function (value, context) {
                         const chart = context.chart;
                         const index = context.dataIndex;
                         const datasets = chart.data.datasets;
-                
                         let total = 0;
                         datasets.forEach(dataset => {
                             const v = dataset.data[index];
@@ -136,13 +158,11 @@ document.addEventListener("DOMContentLoaded", function () {
                                 total += v;
                             }
                         });
-                
                         const hours = Math.floor(total);
                         const minutes = Math.floor((total - hours) * 60);
-                
                         return `${hours}h ${minutes}m`;
                     }
-                }                
+                }
             }
         }
     });
@@ -161,16 +181,35 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function updateBarChart(bar_chart_data) {
-        StackedBarChart.data.labels = bar_chart_data.labels;
-        StackedBarChart.data.datasets = bar_chart_data.datasets;
+        labels = bar_chart_data.labels;
+        datasets = bar_chart_data.datasets;
+
+        StackedBarChart.data.labels = labels;
+        StackedBarChart.data.datasets = datasets;
+
+        let maxStacked = 0;
+        for (let i = 0; i < labels.length; i++) {
+            let stackedTotal = 0;
+            datasets.forEach(dataset => {
+                stackedTotal += dataset.data[i] || 0;
+            });
+            if (stackedTotal > maxStacked) {
+                maxStacked = stackedTotal;
+            }
+        }
+        StackedBarChart.options.scales.y.max = Math.ceil(maxStacked * 1.1);
+
         StackedBarChart.update();
     }
 
     function updateDonutChart(donut_chart_data) {
         DonutChart.data.labels = donut_chart_data.labels;
         DonutChart.data.datasets = donut_chart_data.datasets;
+        DonutChart.data.datasets.forEach(dataset => {
+            dataset.borderColor = 'rgb(25, 24, 29)';
+        });
         DonutChart.update();
-    }    
+    }  
 
     const timeRangeButtons = document.querySelectorAll('input[name="timeRange"]');
     timeRangeButtons.forEach(button => {

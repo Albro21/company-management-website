@@ -201,7 +201,7 @@
                         
                         <!-- Job Title -->
                         <label for="id_job_title">Job Title:</label>
-                        <select name="job_title" class="form-control mb-3" id="id_job_title" required>
+                        <select name="job_title" class="form-control mb-2" id="id_job_title" required>
                             <option value="" disabled {% if not member.job_title %} selected {% endif %}>Select Job Title</option>
                             {% for job_title in company.job_titles.all %}
                                 <option value="{{ job_title.id }}" {% if member.job_title and member.job_title.id == job_title.id %} selected {% endif %}>{{ job_title.name }}</option>
@@ -249,7 +249,7 @@
             <h4 class="offcanvas-title text-center">Create Project</h4>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-        <div class="offcanvas-body pt-0">
+        <div class="offcanvas-body">
             <form method="post" class="d-flex flex-column gap-2" id="create-project-form">
                 {% csrf_token %}
                 <!-- Title -->

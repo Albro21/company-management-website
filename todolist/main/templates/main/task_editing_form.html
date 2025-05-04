@@ -3,7 +3,7 @@
         <h4 class="offcanvas-title text-center">Edit Task</h4>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
-    <div class="offcanvas-body pt-0">
+    <div class="offcanvas-body">
         <form method="post" class="d-flex flex-column gap-2 edit-task-form" data-id="{{ task.id }}">
             {% csrf_token %}
             

@@ -151,6 +151,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     opacity: 0.8;
 }
 
+.offcanvas-body {
+    padding-top: 0;
+}
+
 @media screen and (min-width: 1200px) {
     #main-content {
         margin-left: 250px

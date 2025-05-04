@@ -151,7 +151,7 @@ def process_company_charts(request):
     donut_chart_data = process_company_donut_chart(company, start_date, end_date)
     
     time_entries = TimeEntry.objects.filter(
-        task__project__in=company.projects.all(),
+        project__in=company.projects.all(),
         start_time__date__gte=start_date,
         start_time__date__lte=end_date
     )
