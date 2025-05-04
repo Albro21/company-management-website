@@ -1,3 +1,10 @@
+# Standard libs
+import calendar
+from collections import defaultdict
+from datetime import date, datetime, timedelta
+import json
+
+# Django
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
@@ -5,11 +12,8 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods
 
-import calendar
-from collections import defaultdict
-from datetime import date, datetime, timedelta
-import json
-
+# Local apps
+from common.decorators import parse_json_body
 from main.forms import ProjectForm, TaskForm
 from main.models import Project, Task
 from timetracker.models import TimeEntry
@@ -54,44 +58,6 @@ def seconds_to_hms(seconds):
     minutes = int((seconds % 3600) // 60)
     seconds = int(seconds % 60)
     return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-
-def process_forms(request):
-    form_type = request.POST.get('form_type')
-    
-    if form_type == 'update_member':
-            member_id = request.POST.get('member_id')
-            member = Member.objects.get(id=member_id)
-            member_update_form = MemberForm(request.POST, instance=member, prefix=f"member_{member_id}")
-            if member_update_form.is_valid():
-                member_update_form.save()
-                return redirect("teams:team")
-
-    elif form_type == 'update_project':
-        project_id = request.POST.get('project_id')
-        project = Project.objects.get(id=project_id)
-        project_update_form = ProjectForm(request.POST, instance=project, prefix=f"project_{project_id}")
-        if project_update_form.is_valid():
-            project_update_form.save()
-            return redirect("teams:team")
-
-    elif form_type == 'create_task':
-        member_id = request.POST.get('member_id')
-        user = Member.objects.get(id=member_id).user
-        task_create_form = TaskForm(request.POST, prefix="task")
-        if task_create_form.is_valid():
-            task = task_create_form.save(commit=False)
-            task.user = user
-            task.save()
-            return redirect("teams:team")
-
-    elif form_type == 'create_project':
-        project_create_form = ProjectForm(request.POST, prefix="project")
-        if project_create_form.is_valid():
-            project = project_create_form.save(commit=False)
-            project.created_by = request.user
-            project.company = request.user.company
-            project.save()
-            return redirect("teams:team")
 
 def process_company_bar_chart(company, start_date, end_date):
     date_labels = []
@@ -316,10 +282,7 @@ def team(request):
         return render(request, 'teams/no_company.html')
 
     if request.method == 'POST':
-        if request.POST.get('form_type') and request.user.member.is_employer:
-            return process_forms(request)
-        else:
-            return process_company_charts(request)
+        return process_company_charts(request)
 
     if request.user.member.is_employer:
         task_form = TaskForm(prefix="task")
@@ -558,3 +521,40 @@ def kick_member(request, member_id):
     user.leave_company()
     messages.success(request, f"{user.full_name} was kicked from the company.")
     return redirect("teams:team")
+
+@require_http_methods(["POST"])
+@login_required
+@employer_required
+@parse_json_body
+def assign_task(request, member_id):
+    member = get_object_or_404(Member, id=member_id)
+    
+    data = request.json_data
+    category_ids = data.pop('categories', [])
+    
+    form = TaskForm(data)
+    if form.is_valid():
+        task = form.save(commit=False)
+        task.user = member.user
+        task.save()
+        
+        if category_ids:
+            task.categories.set(category_ids)
+        
+        return JsonResponse({'success': True, 'id': task.id}, status=201)
+    else:
+        return JsonResponse({'success': False, 'error': f'Form contains errors: {form.errors.as_json()}'}, status=400)
+
+@require_http_methods(["PATCH"])
+@login_required
+@employer_required
+@parse_json_body
+def edit_member(request, member_id):
+    member = get_object_or_404(Member, id=member_id)
+    form = MemberForm(request.json_data, instance=member)
+
+    if form.is_valid():
+        form.save()
+        return JsonResponse({'success': True}, status=200)
+    else:
+        return JsonResponse({'success': False, 'error': f'Form contains errors: {form.errors.as_json()}'}, status=400)

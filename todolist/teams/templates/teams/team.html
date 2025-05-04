@@ -79,12 +79,14 @@
             <div class="col text-center">
                 Job Title
             </div>
-            <div class="col text-center">
-                Billable Rate
-            </div>
-            <div class="col text-center">
-                Actions
-            </div>
+            {% if request.user.member.is_employer %}
+                <div class="col text-center">
+                    Billable Rate
+                </div>
+                <div class="col text-center">
+                    Actions
+                </div>
+            {% endif %}
         </div>
         {% for member in company.members.all %}
             <div class="row py-2 w-100 list-item bg-2">
@@ -130,54 +132,55 @@
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div class="offcanvas-body">
-                    <form method="post" class="d-flex flex-column gap-2">
+                    <form method="post" class="d-flex flex-column gap-2 assign-task-form" data-member-id="{{ member.id }}">
                         {% csrf_token %}
-                        <!-- Title -->
-                        <input 
-                            type="text"
-                            name="task-title"
-                            class="form-control"
-                            value="{{ task_form.title.value|default_if_none:'' }}"
-                            placeholder="Task Title"
-                            required 
-                            maxlength="100"
-                        >
                         
-                        <!-- Text -->
-                        <textarea 
-                            name="task-text"
-                            class="form-control"
-                            rows="4"
-                            placeholder="Task Description">{{ task_form.text.value|default_if_none:'' }}</textarea>
+                        <!-- Title -->
+                        <div class="d-flex flex-column align-items-center">
+                            <label for="id_title">Title</label>
+                            <input type="text" name="title" id="id_title" class="form-control" placeholder="Title" required maxlength="200">
+                        </div>
 
+                        <!-- Description -->
+                        <div class="d-flex flex-column align-items-center">
+                            <label for="id_text">Description</label>
+                            <textarea name="text" id="id_text" class="form-control no-scrollbar" placeholder="Description" rows="5"></textarea>
+                        </div>
+                        
                         <!-- Project -->
-                        <select name="task-project" class="form-select" required>
-                            <option value="" disabled selected>Select Project</option>
-                            {% for project in company.projects.all %}
-                                <option value="{{ project.id }}">{{ project.title }}</option>
-                            {% endfor %}
-                        </select>
+                        <div class="d-flex flex-column align-items-center">
+                            <label for="id_project">Project</label>
+                            <select class="form-select" id="id_project" name="project" required>
+                                <option value="" selected>Select a project</option>
+                                {% for project in request.user.company_projects.all %}
+                                    <option value="{{ project.id }}">
+                                        {{ project.title }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
 
                         <!-- Due Date -->
-                        <div class="d-flex flex-column">
-                            <label for="task-due_date" class="form-label mb-0" style="white-space: nowrap;">Due Date:</label>
-                            <input type="date" name="task-due_date" id="task-due_date" class="form-control" value="{{ task_form.due_date.value|default_if_none:'' }}" required>
+                        <div class="d-flex flex-column align-items-center">
+                            <label for="id_due_date">Due Date</label>
+                            <input type="date" class="form-control" name="due_date" id="id_due_date" required>
                         </div>
 
-                        <!-- High Priority -->
-                        <div class="form-check d-flex justify-content-center gap-2">
-                            <input type="checkbox" name="task-is_high_priority" id="task-is_high_priority" class="form-check-input" {% if task_form.is_high_priority.value %} checked {% endif %}>
-                            <label for="task-is_high_priority" class="form-check-label">High Priority</label>
+                        <!-- High Priority checkbox -->
+                        <div class="d-flex justify-content-center gap-2">
+                            <input 
+                                class="form-check-input" 
+                                type="checkbox"
+                                name="is_high_priority" 
+                                id="id_is_high_priority" 
+                            >	
+                            <label class="form-check-label d-flex" for="id_is_high_priority" style="white-space: nowrap;">
+                                High Priority
+                            </label>
                         </div>
-
-                        <!-- Form Type -->
-                        <input type="hidden" name="form_type" value="create_task">
-
-                        <!-- Member ID -->
-                        <input type="hidden" name="member_id" value="{{ member.id }}">
 
                         <!-- Submit Button -->
-                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="submit" class="btn btn-primary px-3">Save</button>
                     </form>                                
                 </div>
             </div>
@@ -189,27 +192,29 @@
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div class="offcanvas-body d-flex flex-column justify-content-between">
-                    <form method="post" class="d-flex flex-column">
+                    <form method="post" class="d-flex flex-column edit-member-form" data-member-id="{{ member.id }}">
                         {% csrf_token %}
                         
                         <!-- Rate -->
-                        <label for="member-rate-{{ member.id }}">Rate:</label>
-                        <input type="text" name="member_{{ member.id }}-rate" id="member-rate-{{ member.id }}" placeholder="Rate" class="form-control mb-2" value="{{ member.rate }}" required maxlength="100">
+                        <label for="id_rate">Rate:</label>
+                        <input type="text" name="rate" id="id_rate" placeholder="Rate" class="form-control mb-2" value="{{ member.rate }}" required maxlength="100">
                         
                         <!-- Job Title -->
-                        <label for="member-job-title-{{ member.id }}">Job Title:</label>
-                        <select name="member_{{ member.id }}-job_title" class="form-control mb-3" id="member-job-title-{{ member.id }}" required>
+                        <label for="id_job_title">Job Title:</label>
+                        <select name="job_title" class="form-control mb-3" id="id_job_title" required>
                             <option value="" disabled {% if not member.job_title %} selected {% endif %}>Select Job Title</option>
                             {% for job_title in company.job_titles.all %}
                                 <option value="{{ job_title.id }}" {% if member.job_title and member.job_title.id == job_title.id %} selected {% endif %}>{{ job_title.name }}</option>
                             {% endfor %}
                         </select>
                         
-                        <!-- Form Type -->
-                        <input type="hidden" name="form_type" value="update_member">
-
-                        <!-- Member ID -->
-                        <input type="hidden" name="member_id" value="{{ member.id }}">
+                        <!-- Role -->
+                        <label for="id_role">Role:</label>
+                        <select name="role" class="form-control mb-3" id="id_role" required>
+                            {% for value, display in member.Role.choices %}
+                                <option value="{{ value }}" {% if member.role == value %}selected{% endif %}>{{ display }}</option>
+                            {% endfor %}
+                        </select>
 
                         <!-- Submit Button -->
                         <button type="submit" class="btn btn-primary">Save</button>
@@ -224,42 +229,63 @@
 	</div>
 
     <!-- Projects -->
-    <h3 class="mb-2 d-flex align-items-center justify-content-center gap-3">
+    <h3 class="mb-2 d-flex align-items-center justify-content-center">
         Projects
+        
         {% if request.user.member.is_employer %}
-            <div class="btn-group dropend">
-                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    Add New Project
-                </button>
-                <div class="dropdown-menu p-3 bg-2" style="min-width: 300px; color: #ccc;">
-                    <form method="post" class="d-flex flex-column gap-2">
-                        {% csrf_token %}
-
-                        <!-- Title -->
-                        <input type="text" name="project-title" class="form-control" placeholder="Project title" required maxlength="50">
-
-                        <!-- Client -->
-                        <input type="text" name="project-client" class="form-control" placeholder="Client" maxlength="50">
-
-                        <!-- Description -->
-                        <textarea name="project-description" class="form-control" rows="4" placeholder="Project description"></textarea>
-
-                        <!-- Color -->
-                        <div class="d-flex align-items-center gap-2">
-                            <label for="{{ project_form.color.id_for_label }}">Color:</label>
-                            <input type="color" name="project-color" id="{{ project_form.color.id_for_label }}" class="form-control form-control-color w-100" value="{{ project_form.color.value }}">
-                        </div>
-
-                        <!-- Form Type -->
-                        <input type="hidden" name="form_type" value="create_project">
-
-                        <!-- Submit Button -->
-                        <button type="submit" class="btn btn-primary">Create Project</button>
-                    </form>                        
-                </div>
-            </div>
+            <!-- Project Creation Button -->
+            <button class="ms-3 btn btn-primary rounded-3 shadow-lg d-flex justify-content-center align-items-center"
+                style="width: 30px; height: 30px;"
+                data-bs-toggle="offcanvas" 
+                data-bs-target="#projectCreationOffcanvas">
+                <i class="bi bi-plus-lg" style="font-size: 20px; font-weight: bold;"></i>
+            </button>
         {% endif %}
     </h3>
+
+    <!-- Project Creation Offcanvas -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="projectCreationOffcanvas">
+        <div class="offcanvas-header">
+            <h4 class="offcanvas-title text-center">Create Project</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body pt-0">
+            <form method="post" class="d-flex flex-column gap-2" id="create-project-form">
+                {% csrf_token %}
+                <!-- Title -->
+                <input type="text" name="title" class="form-control" placeholder="Project title" required maxlength="50" value="{{ project.title|default_if_none:'' }}">
+
+                <!-- Client -->
+                <input type="text" name="client" class="form-control" placeholder="Client" maxlength="50" value="{{ project.client|default_if_none:'' }}">
+
+                <!-- Description -->
+                <textarea name="description" class="form-control" rows="4" placeholder="Project description">{{ project.description|default_if_none:"" }}</textarea>
+
+                <!-- Status -->
+                <div class="d-flex align-items-center gap-2">
+                    <label>Status: </label>
+                    <select class="form-select" name="status">
+                        <option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
+                        <option value="archived" {% if project.status == 'archived' %}selected{% endif %}>Archived</option>
+                        <option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
+                    </select>
+                </div>
+
+                <!-- Color -->
+                <div class="d-flex align-items-center gap-2">
+                    <label>Color:</label>
+                    <input type="color" name="color" class="form-control form-control-color w-100" value="{{ project.color|default:'#FFFF00' }}">
+                </div>
+
+                <!-- Company -->
+                <input type="hidden" name="company" value="{{ company.id }}">
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>                                 
+        </div>
+    </div>
+
     <div class="d-flex flex-column align-items-center mb-5" id="projects">
         <div class="p-0 w-100 d-flex">
             <div style="width: 5px;"></div>
@@ -334,21 +360,21 @@
                         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                     </div>
                     <div class="offcanvas-body">
-                        <form method="post" class="d-flex flex-column gap-2">
+                        <form method="post" class="d-flex flex-column gap-2 edit-project-form" data-id="{{ project.id }}">
                             {% csrf_token %}
                             <!-- Title -->
-                            <input type="text" name="project_{{ project.id }}-title" class="form-control" placeholder="Project title" required maxlength="50" value="{{ project.title|default_if_none:'' }}">
+                            <input type="text" name="title" class="form-control" placeholder="Project title" required maxlength="50" value="{{ project.title|default_if_none:'' }}">
 
                             <!-- Client -->
-                            <input type="text" name="project_{{ project.id }}-client" class="form-control" placeholder="Client" maxlength="50" value="{{ project.client|default_if_none:'' }}">
+                            <input type="text" name="client" class="form-control" placeholder="Client" maxlength="50" value="{{ project.client|default_if_none:'' }}">
 
                             <!-- Description -->
-                            <textarea name="project_{{ project.id }}-description" class="form-control" rows="4" placeholder="Project description">{{ project.description|default_if_none:"" }}</textarea>
+                            <textarea name="description" class="form-control" rows="4" placeholder="Project description">{{ project.description|default_if_none:"" }}</textarea>
 
                             <!-- Status -->
                             <div class="d-flex align-items-center gap-2">
                                 <label>Status: </label>
-                                <select class="form-select" name="project_{{ project.id }}-status">
+                                <select class="form-select" name="status">
                                     <option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
                                     <option value="archived" {% if project.status == 'archived' %}selected{% endif %}>Archived</option>
                                     <option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
@@ -358,13 +384,8 @@
                             <!-- Color -->
                             <div class="d-flex align-items-center gap-2">
                                 <label>Color:</label>
-                                <input type="color" name="project_{{ project.id }}-color" class="form-control form-control-color w-100" value="{{ project.color|default:'#FFFF00' }}">
+                                <input type="color" name="color" class="form-control form-control-color w-100" value="{{ project.color|default:'#FFFF00' }}">
                             </div>
-
-                            <input type="hidden" name="project_id" value="{{ project.id }}">
-
-                            <!-- Form Type -->
-                            <input type="hidden" name="form_type" value="update_project">
 
                             <!-- Submit Button -->
                             <button type="submit" class="btn btn-primary">Save</button>
@@ -436,6 +457,7 @@
 {% block scripts %}
     <script src="{% static 'js/script.js' %}"></script>
     <script src="{% static 'js/team.js' %}"></script>
+    <script src="{% static 'js/project.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 

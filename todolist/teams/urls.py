@@ -5,7 +5,10 @@ app_name = 'teams'
 
 urlpatterns = [
     path('team/', views.team, name='team'),
+    
     path('member/<int:member_id>/analytics/', views.member_analytics, name='member_analytics'),
+    path('member/<int:member_id>/assign-task/', views.assign_task, name='assign_task'),
+    path('member/<int:member_id>/edit/', views.edit_member, name='edit_member'),
     
     path('project-weekly-report/<int:project_id>/', views.project_weekly_report, name='project_weekly_report'),
     

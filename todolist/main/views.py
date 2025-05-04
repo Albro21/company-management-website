@@ -95,7 +95,12 @@ def archive(request):
 @login_required
 @parse_json_body
 def create_project(request):
-    project = Project.objects.create(**request.json_data, created_by=request.user)
+    data = request.json_data
+    
+    if 'company' in data:
+        data['company'] = request.user.company
+    
+    project = Project.objects.create(**data, created_by=request.user)
     return JsonResponse({'success': True, 'id': project.id}, status=201)
 
 @require_http_methods(["DELETE"])

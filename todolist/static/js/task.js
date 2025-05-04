@@ -1,4 +1,20 @@
-// Complete task on click
+// Change checkmark icon on hover
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".checkmark").forEach(icon => {
+        icon.addEventListener("mouseenter", function () {
+            if (this.classList.contains("bi-circle")) {
+                this.classList.replace("bi-circle", "bi-check-circle");
+            }
+        });
+        icon.addEventListener("mouseleave", function () {
+            if (this.classList.contains("bi-check-circle")) {
+                this.classList.replace("bi-check-circle", "bi-circle");
+            }
+        });
+    });
+});
+
+// Complete task
 async function completeTask(taskId) {
 	const url = `/task/${taskId}/complete/`;
 	const success = await sendRequest(url, 'POST');
@@ -19,44 +35,6 @@ async function completeTask(taskId) {
 	}
 }
 
-// Change checkmark icon on hover
-document.addEventListener("DOMContentLoaded", function () {
-	document.querySelectorAll(".checkmark").forEach(icon => {
-		icon.addEventListener("mouseenter", function () {
-			if (this.classList.contains("bi-circle")) {
-				this.classList.replace("bi-circle", "bi-check-circle");
-			}
-		});
-		icon.addEventListener("mouseleave", function () {
-			if (this.classList.contains("bi-check-circle")) {
-				this.classList.replace("bi-check-circle", "bi-circle");
-			}
-		});
-	});
-});
-
-// Create task on form submission
-document.getElementById('create-task-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const url = '/task/create/';
-    const formData = new FormData(e.target);
-    formData.delete('csrfmiddlewaretoken');
-
-    const categories = [];
-    formData.getAll('categories').forEach(value => {
-        categories.push(value);
-    });
-
-    const requestBody = Object.fromEntries(formData.entries());
-    requestBody.categories = categories;
-
-    const success = await sendRequest(url, 'POST', JSON.stringify(requestBody));
-    if (success) {
-        window.location.reload();
-    }
-});
-
 // Edit task
 async function editTask(taskId, formData) {
     const url = `/task/${taskId}/edit/`;
@@ -64,17 +42,17 @@ async function editTask(taskId, formData) {
     formData.getAll('categories').forEach(value => {
         categories.push(value);
     });
-
+    
     const requestBody = Object.fromEntries(formData.entries());
     requestBody.categories = categories;
-
+    
     const success = await sendRequest(url, 'PATCH', JSON.stringify(requestBody));
     if (success) {
         window.location.reload();
     }
 }
 
-// Edit task forms submission listeners
+// Edit Task forms submission listeners
 document.querySelectorAll('.edit-task-form').forEach(form => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -85,3 +63,28 @@ document.querySelectorAll('.edit-task-form').forEach(form => {
         await editTask(id, formData);
     });
 });
+
+// Create Task
+const createTaskForm = document.getElementById('create-task-form');
+if (createTaskForm) {
+    createTaskForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+    
+        const url = '/task/create/';
+        const formData = new FormData(e.target);
+        formData.delete('csrfmiddlewaretoken');
+    
+        const categories = [];
+        formData.getAll('categories').forEach(value => {
+            categories.push(value);
+        });
+    
+        const requestBody = Object.fromEntries(formData.entries());
+        requestBody.categories = categories;
+    
+        const success = await sendRequest(url, 'POST', JSON.stringify(requestBody));
+        if (success) {
+            window.location.reload();
+        }
+    });
+}

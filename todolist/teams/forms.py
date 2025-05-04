@@ -23,4 +23,4 @@ class JobTitleForm(forms.ModelForm):
 class MemberForm(forms.ModelForm):
     class Meta:
         model = Member
-        fields = ['rate', 'job_title']
+        fields = ['rate', 'job_title', 'role']

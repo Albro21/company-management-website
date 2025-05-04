@@ -93,7 +93,7 @@ DATABASES = {
 }
 
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/todolist'
 LOGOUT_REDIRECT_URL = 'login' 
 
 # Password validation

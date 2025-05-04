@@ -182,18 +182,6 @@ document.addEventListener("DOMContentLoaded", function () {
     fetchChartData("week");
 });
 
-async function deleteProject(projectId) {
-    const url = `/project/${projectId}/delete/`;
-
-    const success = await sendRequest(url, 'DELETE');
-
-    if (success) {
-        bootstrap.Modal.getInstance(document.getElementById(`delete-project-modal-${projectId}`)).hide();
-        document.getElementById(`project-${projectId}`).remove();
-        Array.from(document.getElementsByClassName('tooltip')).forEach(function (tooltip) { tooltip.remove(); });
-    }
-}
-
 let currentStartDate = new Date();
 currentStartDate.setDate(currentStartDate.getDate() - (currentStartDate.getDay() === 0 ? 6 : currentStartDate.getDay() - 1));
 
@@ -256,3 +244,46 @@ function updateUrlWithDates(projectId, startDate) {
 
     linkElement.href = url.toString();
 }
+
+async function assignTask(memberId, formData) {
+    const url = `/teams/member/${memberId}/assign-task/`;
+    const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
+    const success = await sendRequest(url, 'POST', requestBody);
+
+    if (success) {
+        window.location.reload();
+    }
+}
+
+document.querySelectorAll('.assign-task-form').forEach(form => {
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const memberId = form.dataset.memberId;
+        const formData = new FormData(form);
+        
+        await assignTask(memberId, formData);
+    });
+});
+
+async function editMember(memberId, formData) {
+    const url = `/teams/member/${memberId}/edit/`;
+    const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
+    const success = await sendRequest(url, 'PATCH', requestBody);
+
+    if (success) {
+        window.location.reload();
+    }
+}
+
+document.querySelectorAll('.edit-member-form').forEach(form => {
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const memberId = form.dataset.memberId;
+        const formData = new FormData(form);
+        
+        await editMember(memberId, formData);
+    });
+});
+
