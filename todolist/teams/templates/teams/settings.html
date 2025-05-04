@@ -7,14 +7,12 @@
 {% endblock styles %}
 
 {% block content %}
-    <form class="card w-100 mb-4" method="post" enctype="multipart/form-data">
+    <form class="w-100 mb-4 bg-2 rounded p-4 d-flex flex-column gap-3" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="card-header">
-            <h2 class="text-center">Company Settings</h2>
-        </div>
-        <div class="card-body d-flex flex-column p-4 gap-3">
-            <div class="d-flex gap-2">
-                <div class="d-flex flex-column gap-2 w-100">
+        <h2 class="text-center">Company Settings</h2>
+        <div class="d-flex flex-column gap-3">
+            <div class="d-flex gap-3">
+                <div class="d-flex flex-column gap-3 w-100">
                     <!-- Company Name Field -->
                     <div class="form-group">
                         <input type="text" name="company-name" id="name" class="form-control" placeholder="Company Name" required value="{{ company_form.name.value|default_if_none:'' }}">
@@ -42,7 +40,7 @@
         
                 <!-- Logo Field -->
                 <div class="form-group">
-                    <label for="logo" class="border d-flex justify-content-center align-items-center" style="max-height: 200px; max-width: 200px; min-height: 200px; min-width: 200px;">
+                    <label for="logo" class="d-flex justify-content-center align-items-center bg-3 img-sett" style="max-height: 200px; max-width: 200px; min-height: 200px; min-width: 200px;">
                         <img
                             id="image_preview"
                             src="{% if company_form.instance.logo %}{{ company_form.instance.logo.url }}{% else %}{% static 'images/logo_placeholder.jpg' %}{% endif %}"
@@ -183,34 +181,58 @@
         </div>
     {% endif %}
 
-    <div class="d-flex gap-4">
-        <div class="card" style="min-width: 300px;">
-            <div class="card-header d-flex gap-3 justify-content-between">
-                <h2>Job Titles</h2>
-                <div class="btn-group dropend">
-                    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        Add Job Title
-                    </button>
-                    <div class="dropdown-menu p-3" style="min-width: 300px;">
-                        <form method="post" class="d-flex flex-column gap-2">
-                            {% csrf_token %}
-                            <input type="text" name="job_title-name" placeholder="Job title name" class="form-control" required maxlength="100">
-                            <input type="hidden" name="form_type" value="job_title">
-                            <button type="submit" class="btn btn-primary">Add</button>
-                        </form>                        
-                    </div>
+    <div class="row">
+
+        <div class="col-3 d-flex flex-column align-items-center mb-5">
+
+            <!-- Job Title Creation Offcanvas -->
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="jobTitleCreationOffcanvas">
+                <div class="offcanvas-header">
+                    <h4 class="offcanvas-title text-center">Create Job Title</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body pt-0">
+                    <form method="post" class="d-flex flex-column gap-2" id="create-job-title-form">
+                        {% csrf_token %}
+                        <!-- Name -->
+                        <input type="text" name="name" class="form-control" placeholder="Job Title" required maxlength="100">
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </form>                                 
                 </div>
             </div>
-            <div class="card-body d-flex flex-column">
-                {% if company.job_titles.count == 0 %}<h5 class="text-center text-muted">No job titles yet</h5>{% endif %}
-                {% for job_title in company.job_titles.all %}
-                    <div class="d-flex action-icons" id="job-title-{{ job_title.id }}">
-                        <div class="border-end w-100 pe-3">{{ job_title.name }}</div>
-                        <i class="bi bi-trash ps-3" data-bs-toggle="tooltip" title="Delete" onclick="deleteJobTitle({{ job_title.id }})"></i>
-                    </div>
-                {% endfor %}
+            
+            <!-- Table Header -->
+            <div class="row p-2 w-100 fw-bold">
+                <div class="col-8 d-flex gap-2">
+                    Job Title
+                    
+                    <!-- Job Title Creation Button -->
+                    <button class="btn btn-primary rounded-3 shadow-lg d-flex justify-content-center align-items-center"
+                    style="width: 24px; height: 24px; border-radius: 5px !important;"
+                    data-bs-toggle="offcanvas" 
+                    data-bs-target="#jobTitleCreationOffcanvas">
+                    <i class="bi bi-plus-lg" style="font-size: 14px; font-weight: bold;"></i>
+                </button>
+                </div>
+                <div class="col-4 text-center">Actions</div>
             </div>
+
+            {% if company.job_titles.count == 0 %}<h5 class="text-center text-muted">No job titles yet</h5>{% endif %}
+            {% for job_title in company.job_titles.all %}
+                <div class="list-item row p-2 w-100 bg-2" id="job-title-{{ job_title.id }}">
+                    <div class="col-8">{{ job_title.name }}</div>
+                    <!-- Action icons -->
+                    <div class="col-4 d-flex gap-3 action-icons justify-content-center">
+                        <!-- Delete Job Title Button -->
+                        <i class="bi bi-trash" data-bs-toggle="tooltip" title="Delete" onclick="deleteJobTitle({{ job_title.id }})"></i>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
+
+        <!-- Leave Company Button -->
         <form action="{% url 'teams:leave_company' %}" method="post">
             {% csrf_token %}
             <button type="submit" class="btn btn-danger">Leave Company</button>

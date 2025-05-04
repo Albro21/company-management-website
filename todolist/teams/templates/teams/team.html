@@ -263,8 +263,8 @@
 
                 <!-- Status -->
                 <div class="d-flex align-items-center gap-2">
-                    <label>Status: </label>
-                    <select class="form-select" name="status">
+                    <label for="id_status">Status: </label>
+                    <select class="form-select" name="status" id="id_status">
                         <option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
                         <option value="archived" {% if project.status == 'archived' %}selected{% endif %}>Archived</option>
                         <option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
@@ -273,8 +273,8 @@
 
                 <!-- Color -->
                 <div class="d-flex align-items-center gap-2">
-                    <label>Color:</label>
-                    <input type="color" name="color" class="form-control form-control-color w-100" value="{{ project.color|default:'#FFFF00' }}">
+                    <label for="id_color">Color:</label>
+                    <input type="color" name="color" id="id_color" class="form-control form-control-color w-100" value="{{ project.color|default:'#FFFF00' }}">
                 </div>
 
                 <!-- Company -->
@@ -287,6 +287,8 @@
     </div>
 
     <div class="d-flex flex-column align-items-center mb-5" id="projects">
+        
+        <!-- Table Header -->
         <div class="p-0 w-100 d-flex">
             <div style="width: 5px;"></div>
             <div class="row p-2 w-100 flex-grow-1">
@@ -373,8 +375,8 @@
 
                             <!-- Status -->
                             <div class="d-flex align-items-center gap-2">
-                                <label>Status: </label>
-                                <select class="form-select" name="status">
+                                <label for="id_status">Status: </label>
+                                <select class="form-select" name="status" id="id_status">
                                     <option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
                                     <option value="archived" {% if project.status == 'archived' %}selected{% endif %}>Archived</option>
                                     <option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
@@ -383,8 +385,8 @@
 
                             <!-- Color -->
                             <div class="d-flex align-items-center gap-2">
-                                <label>Color:</label>
-                                <input type="color" name="color" class="form-control form-control-color w-100" value="{{ project.color|default:'#FFFF00' }}">
+                                <label for="id_color">Color:</label>
+                                <input type="color" name="color" id="id_color" class="form-control form-control-color w-100" value="{{ project.color|default:'#FFFF00' }}">
                             </div>
 
                             <!-- Submit Button -->

@@ -13,14 +13,14 @@
         <div class="col-4 d-flex flex-column gap-4">
 
             <!-- Profile card -->
-            <div class="card d-flex flex-column justify-content-center p-4 gap-4" id="profile-card">
+            <div class="d-flex flex-column justify-content-center p-4 gap-4 bg-2 rounded" id="profile-card">
                 <img src="{{ request.user.profile_picture.url }}" alt="Profile Picture" id="profile-picture">
                 <h3 class="text-center">{{ request.user.full_name }}</h3>
-                <a href="{% url 'settings' %}" class="btn btn-outline-secondary">Edit Profile</a>
+                <a href="{% url 'settings' %}" class="btn btn-outline-light">Edit Profile</a>
             </div>
             
             <!-- Donut chart -->
-            <div class="card p-4" id="donut-chart">
+            <div class="p-4 bg-2 rounded" id="donut-chart">
                 <h5 class="text-center mb-3">Completed tasks by project</h5>
                 <canvas id="myDonutChart" width="400" height="400"></canvas>
             </div>
@@ -30,15 +30,15 @@
         <div class="col-8 d-flex flex-column gap-4">
             
             <!-- Chart -->
-            <div class="card px-3" id="completed-tasks-chart">
+            <div class="px-3 bg-2 rounded" id="completed-tasks-chart">
                 {% include 'completed_tasks_chart.html' %}
             </div>
             
             <!-- Statistics -->
             <div class="d-flex gap-4" id="statistics">
-                <h5 class="col card p-3 text-center" id="completed-tasks">Completed: {{ completed_tasks }}</h5>
-                <h5 class="col card p-3 text-center" id="overdue-tasks">Overdue: {{ overdue_tasks }}</h5>
-                <h5 class="col card p-3 text-center" id="remaining-tasks">Remaining: {{ remaining_tasks }}</h5>
+                <h5 class="col bg-2 rounded p-3 text-center" id="completed-tasks">Completed: {{ completed_tasks }}</h5>
+                <h5 class="col bg-2 rounded p-3 text-center" id="overdue-tasks">Overdue: {{ overdue_tasks }}</h5>
+                <h5 class="col bg-2 rounded p-3 text-center" id="remaining-tasks">Remaining: {{ remaining_tasks }}</h5>
             </div>
         </div>
     </div>

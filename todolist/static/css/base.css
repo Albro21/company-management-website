@@ -120,9 +120,9 @@ html {
     border-color: #222 !important;
 }
 
-.form-control:hover, .form-select:hover {
+.form-control:hover, .form-select:hover, .img-sett:hover {
     box-shadow: 0 0 5px 2px rgba(0, 123, 255, 0.5);
-    border-color: #007bff !important;
+    border: 1px solid #007bff !important;
 }
 
 .form-control::placeholder {

@@ -42,8 +42,8 @@
 
 						<!-- Status -->
 						<div class="d-flex align-items-center gap-2">
-							<label>Status: </label>
-							<select class="form-select" name="status">
+							<label for="id_status">Status: </label>
+							<select class="form-select" name="status" id="id_status">
 								<option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
 								<option value="archived" {% if project.status == 'archived' %}selected{% endif %}>Archived</option>
 								<option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
@@ -52,8 +52,8 @@
 
 						<!-- Color -->
 						<div class="d-flex align-items-center gap-2">
-							<label>Color:</label>
-							<input type="color" name="color" class="form-control form-control-color w-100" value="{{ project.color|default:'#FFFF00' }}">
+							<label for="id_color">Color:</label>
+							<input type="color" name="color" id="id_color" class="form-control form-control-color w-100" value="{{ project.color|default:'#FFFF00' }}">
 						</div>
 
 						<!-- Submit Button -->
@@ -154,8 +154,8 @@
 
 								<!-- Status -->
 								<div class="d-flex align-items-center gap-2">
-									<label>Status: </label>
-									<select class="form-select" name="status">
+									<label for="id_status">Status: </label>
+									<select class="form-select" name="status" id="id_status">
 										<option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
 										<option value="archived" {% if project.status == 'archived' %}selected{% endif %}>Archived</option>
 										<option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
@@ -164,8 +164,8 @@
 
 								<!-- Color -->
 								<div class="d-flex align-items-center gap-2">
-									<label>Color:</label>
-									<input type="color" name="color" class="form-control form-control-color w-100" value="{{ project.color|default:'#FFFF00' }}">
+									<label for="id_color">Color:</label>
+									<input type="color" name="color" id="id_color" class="form-control form-control-color w-100" value="{{ project.color|default:'#FFFF00' }}">
 								</div>
 
 								<!-- Submit Button -->
@@ -261,8 +261,8 @@
 
 						<!-- Color -->
 						<div class="d-flex align-items-center gap-2">
-							<label>Color:</label>
-							<input type="color" name="color" class="form-control form-control-color w-100" value="{{ category.color|default:'#FFFF00' }}">
+							<label for="id_color">Color:</label>
+							<input type="color" name="color" id="id_color" class="form-control form-control-color w-100" value="{{ category.color|default:'#FFFF00' }}">
 						</div>
 
 						<!-- Submit Button -->
@@ -355,8 +355,8 @@
 
 								<!-- Color -->
 								<div class="d-flex align-items-center gap-2">
-									<label>Color:</label>
-									<input type="color" name="color" class="form-control form-control-color w-100" value="{{ category.color|default:'#FFFF00' }}">
+									<label for="id_color">Color:</label>
+									<input type="color" name="color" id="id_color" class="form-control form-control-color w-100" value="{{ category.color|default:'#FFFF00' }}">
 								</div>
 
 								<!-- Submit Button -->

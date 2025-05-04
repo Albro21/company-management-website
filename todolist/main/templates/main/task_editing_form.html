@@ -35,7 +35,7 @@
 
             <!-- Categories -->
             <div class="d-flex flex-column">
-                <label class="text-center" for="id_categories">Categories</label>
+                <span class="text-center fw-bold">Categories</span>
                 <div class="d-flex flex-column">
                     {% for category in request.user.categories.all %}
                         <div class="form-check">

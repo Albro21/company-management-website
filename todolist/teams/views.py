@@ -398,6 +398,14 @@ def settings(request):
 
     return render(request, 'teams/settings.html', context)
 
+@require_http_methods(["POST"])
+@login_required
+@employer_required
+@parse_json_body
+def create_job_title(request):
+    job_title = JobTitle.objects.create(**request.json_data, company=request.user.company)
+    return JsonResponse({'success': True, 'id': job_title.id}, status=201)
+
 @require_http_methods(["DELETE"])
 @login_required
 @employer_required
