@@ -4,29 +4,29 @@
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body pt-0">
-        <form method="post" class="d-flex flex-column gap-2 time-entry-form">
+        <form method="post" class="d-flex flex-column gap-2 edit-task-form" data-id="{{ task.id }}">
             {% csrf_token %}
             
             <!-- Title -->
             <div class="d-flex flex-column align-items-center">
-                <label for="{{ form.title.id_for_label }}">Title</label>
-                <input type="text" name="{{ form.title.name }}" id="{{ form.title.id_for_label }}" class="form-control" placeholder="Title" required maxlength="200" value="{{ task.title }}">
+                <label for="id_title">Title</label>
+                <input type="text" name="title" id="id_title" class="form-control" placeholder="Title" required maxlength="200" value="{{ task.title }}">
             </div>
 
             <!-- Description -->
             <div class="d-flex flex-column align-items-center">
-                <label for="{{ form.text.id_for_label }}">Description</label>
-                <textarea name="{{ form.text.name }}" id="{{ form.text.id_for_label }}" class="form-control no-scrollbar" placeholder="Description" rows="5">{{ task.text }}</textarea>
+                <label for="id_text">Description</label>
+                <textarea name="text" id="id_text" class="form-control no-scrollbar" placeholder="Description" rows="5">{{ task.text }}</textarea>
             </div>
             
             <!-- Project -->
             <div class="d-flex flex-column align-items-center">
-                <label for="{{ form.project.id_for_label }}">Project</label>
-                <select class="form-select" id="{{ form.project.id_for_label }}" name="{{ form.project.name }}">
+                <label for="id_project">Project</label>
+                <select class="form-select" id="id_project" name="project">
                     <option value="" {% if not task.project %}selected{% endif %}>Select a project</option>
                     {% for project in request.user.all_projects %}
                         <option value="{{ project.id }}" 
-                            {% if task.project and project.id == task.project.id or form.project.value == project.id %}selected{% endif %}>
+                            {% if task.project and project.id == task.project.id %}selected{% endif %}>
                             {{ project.title }}
                         </option>
                     {% endfor %}
@@ -35,18 +35,18 @@
 
             <!-- Categories -->
             <div class="d-flex flex-column">
-                <label class="text-center" for="{{ form.categories.id_for_label }}">Categories</label>
+                <label class="text-center" for="id_categories">Categories</label>
                 <div class="d-flex flex-column">
                     {% for category in request.user.categories.all %}
                         <div class="form-check">
                             <input 
                                 class="form-check-input" 
                                 type="checkbox" 
-                                name="{{ form.categories.name }}"
-                                id="{{ form.categories.id_for_label }}"  
+                                name="categories"
+                                id="category-{{ category.id }}"  
                                 value="{{ category.id }}"
                                 {% if category in task.categories.all %}checked{% endif %}>
-                            <label class="form-check-label" style="white-space: nowrap;" for="{{ form.categories.id_for_label }}">
+                            <label class="form-check-label" style="white-space: nowrap;" for="category-{{ category.id }}">
                                 {{ category.title }}
                             </label>
                         </div>
@@ -56,8 +56,8 @@
 
             <!-- Due Date -->
             <div class="d-flex flex-column align-items-center">
-                <label for="{{ form.due_date.id_for_label }}">Due Date</label>
-                <input type="date" class="form-control" name="{{ form.due_date.name }}" id="{{ form.due_date.id_for_label }}" value="{{ task.due_date|date:'Y-m-d' }}">
+                <label for="id_due_date">Due Date</label>
+                <input type="date" class="form-control" name="due_date" id="id_due_date" value="{{ task.due_date|date:'Y-m-d' }}" required>
             </div>
 
             <!-- High Priority checkbox -->
@@ -65,18 +65,15 @@
                 <input 
                     class="form-check-input" 
                     type="checkbox"
-                    name="{{ form.is_high_priority.name }}" 
-                    id="{{ form.is_high_priority.id_for_label }}" 
+                    name="is_high_priority" 
+                    id="id_is_high_priority" 
                     {% if task.is_high_priority %}
                         checked
                     {% endif %}>	
-                <label class="form-check-label d-flex" for="{{ form.is_high_priority.id_for_label }}" style="white-space: nowrap;">
+                <label class="form-check-label d-flex" for="id_is_high_priority" style="white-space: nowrap;">
                     Is High Priority
                 </label>
             </div>
-
-            <input type="hidden" name="task_id" value="{{ task.id }}">
-            <input type="hidden" name="form_type" value="edit_task">
 
             <!-- Submit Button -->
             <button type="submit" class="btn btn-primary px-3">Save</button>
