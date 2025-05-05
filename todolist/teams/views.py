@@ -525,9 +525,13 @@ def leave_company(request):
 @employer_required
 def kick_member(request, member_id):
     member = get_object_or_404(Member, id=member_id)
-    user = member.user
-    user.leave_company()
-    messages.success(request, f"{user.full_name} was kicked from the company.")
+    
+    if request.user == member.user:
+        messages.error(request, "You cannot kick yourself.")
+        return redirect("teams:team")
+
+    member.user.leave_company()
+    messages.success(request, f"{member.user.full_name} was kicked from the company.")
     return redirect("teams:team")
 
 @require_http_methods(["POST"])
