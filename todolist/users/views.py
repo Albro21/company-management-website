@@ -1,6 +1,7 @@
 # Standard libs
 import calendar
 from datetime import date, timedelta
+import pytz
 import json
 
 # Django
@@ -14,6 +15,7 @@ from django.views.decorators.http import require_http_methods
 
 # Local apps
 from .forms import ProfileForm
+from common.decorators import parse_json_body
 
 
 @login_required
@@ -142,3 +144,14 @@ def switch_theme(request):
     user = request.user
     user.switch_theme()
     return JsonResponse({'success': True, 'theme': user.theme})
+
+@require_http_methods(["PATCH"])
+@parse_json_body
+def set_timezone(request):
+    if request.user.is_authenticated:
+        tz = request.json_data.get("timezone")
+        if tz in pytz.common_timezones:
+            request.user.timezone = tz
+            request.user.save()
+            return JsonResponse({"success": True})
+    return JsonResponse({"success": False, "error": "User not authenticated"}, status=400)

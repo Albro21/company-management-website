@@ -1,12 +1,13 @@
-window.csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+// Helper function for sending requests to the server
 window.sendRequest = async function(url, method, requestBody = null) {
     try {
         const options = {
             method: method,
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': window.csrfToken,
+                'X-CSRFToken': csrfToken,
             },
             body: requestBody,
         };
@@ -27,6 +28,7 @@ window.sendRequest = async function(url, method, requestBody = null) {
     }
 };
 
+// Change text color based on background
 document.addEventListener("DOMContentLoaded", function() {
     const elements = document.querySelectorAll('.change-text-color');
     elements.forEach(function(element) {
@@ -60,4 +62,3 @@ function previewImage(event) {
         reader.readAsDataURL(file);
     }
 }
-

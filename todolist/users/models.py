@@ -1,6 +1,12 @@
+# Standard libs
+import pytz
+
+# Django
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+
+TIMEZONE_CHOICES = [(tz, tz) for tz in pytz.common_timezones]
 
 class CustomUser(AbstractUser):
     THEMES = [
@@ -11,6 +17,7 @@ class CustomUser(AbstractUser):
     profile_picture = models.ImageField(upload_to='profile_pics/', default='profile_pics/default.jpg')
     company = models.ForeignKey('teams.Company', related_name="company", on_delete=models.SET_NULL, null=True, blank=True)
     theme = models.CharField(max_length=20, default='light', choices=THEMES)
+    timezone = models.CharField(max_length=32, choices=TIMEZONE_CHOICES, default='UTC')
     
     @property
     def full_name(self):

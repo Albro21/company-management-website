@@ -5,7 +5,7 @@
     --text-color: white;
 }
 
-body {
+body, .offcanvas {
     color: white;
 }
 

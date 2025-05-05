@@ -167,6 +167,14 @@
 		const textColor = "{% if request.user.theme == 'dark' %}white{% else %}black{% endif %}";
 		const gridColor = "{% if request.user.theme == 'dark' %}#333{% else %}#ccc{% endif %}";
 	</script>
+	<script>
+		// Set user timezone
+		const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+		const serverTimezone = "{{ request.user.timezone }}";
+		if (userTimeZone !== serverTimezone) {
+			sendRequest('/set-timezone/', 'PATCH', JSON.stringify({ timezone: userTimeZone }));
+		}
+	</script>
 	<script src="{% static 'js/utils.js' %}"></script>
 	{% block scripts %}{% endblock scripts %}
 </body>
