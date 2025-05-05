@@ -1,13 +1,18 @@
+# Standard libs
 import calendar
 from datetime import date, timedelta
+import json
+
+# Django
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-import json
+from django.views.decorators.http import require_http_methods
 
+# Local apps
 from .forms import ProfileForm
 
 
@@ -130,3 +135,10 @@ def filter_chart(request):
         return JsonResponse({"success": True, "labels": chart_labels, "data": chart_data}, status=200)
 
     return JsonResponse({"success": False, "error": "Invalid request"}, status=400)
+
+@require_http_methods(["PATCH"])
+@login_required
+def switch_theme(request):
+    user = request.user
+    user.switch_theme()
+    return JsonResponse({'success': True, 'theme': user.theme})

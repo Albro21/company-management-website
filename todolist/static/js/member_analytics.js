@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 legend: {
                     display: true,
                     labels: {
-                        color: "white"
+                        color: textColor
                     }
                 },
                 tooltip: {
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 datalabels: {
                     anchor: 'end',
                     align: 'top',
-                    color: 'white',
+                    color: textColor,
                     display: function (context) {
                         return context.dataset.data[context.dataIndex] !== 0;
                     },
@@ -79,20 +79,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 x: {
                     stacked: true,
                     grid: {
-                        color: '#333'
+                        color: gridColor
                     },
                     ticks: {
-                        color: "white"
+                        color: textColor
                     }
                 },
                 y: {
                     stacked: true,
                     beginAtZero: true,
                     grid: {
-                        color: '#333'
+                        color: gridColor
                     },
                     ticks: {
-                        color: "white",
+                        color: textColor,
                         precision: 2,
                         callback: function (value) {
                             return value + 'h';
@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     },
                     title: {
                         display: true,
-                        color: "white"
+                        color: textColor
                     }
                 }
             }
@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 legend: {
                     position: 'top',
                     labels: {
-                        color: 'white'
+                        color: textColor
                     }
                 },
                 tooltip: {
@@ -137,11 +137,9 @@ document.addEventListener("DOMContentLoaded", function () {
                             return tooltipItem.label + ': ' + hours + 'h ' + minutes + 'm ' + seconds + 's';
                         }
                     },
-                    bodyColor: 'white',
-                    titleColor: 'white'
+                    titleColor: textColor
                 },
                 datalabels: {
-                    color: '#fff',
                     font: {
                         weight: 'bold'
                     },

@@ -5,7 +5,6 @@
 {% block title %}To do list{% endblock title %}
 
 {% block styles %}
-<link rel="stylesheet" href="{% static 'css/todolist.css' %}">
 {% endblock styles %}
 
 {% block content %}
@@ -20,8 +19,8 @@
 			<!-- Category filters -->
 			{% for category in request.user.categories.all %}
 				<span 
-					class="badge shadow-sm pointer category-filter align-self-center"
-					style="border: 3px solid {{ category.color }}; background-color: #19181d;"
+					class="badge shadow-sm pointer align-self-center bg-1"
+					style="border: 3px solid {{ category.color }};"
 					onclick="filterByCategory({{ category.id }}, '{{ category.color }}')"
 					id="category-filter-{{ category.id }}"
 				>
@@ -68,7 +67,7 @@
 						{% for task_group in tasks_by_date %}
 							<div class="task-group d-flex flex-column">
 								<!-- Task group header -->
-								<div class="task-group-header">
+								<div class="d-flex justify-content-center fw-bold" style="padding-left: 5px;">
 									<div class="row w-100 py-2">
 										<div class="fs-6 col-9">{{ task_group.grouper|date:"l, d.m" }}</div>
 										<div class="col-1 text-center">Project</div>

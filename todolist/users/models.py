@@ -3,8 +3,14 @@ from django.db import models
 
 
 class CustomUser(AbstractUser):
+    THEMES = [
+        ('dark', 'Dark'),
+        ('light', 'Light')
+    ]
+    
     profile_picture = models.ImageField(upload_to='profile_pics/', default='profile_pics/default.jpg')
     company = models.ForeignKey('teams.Company', related_name="company", on_delete=models.SET_NULL, null=True, blank=True)
+    theme = models.CharField(max_length=20, default='light', choices=THEMES)
     
     @property
     def full_name(self):
@@ -33,4 +39,11 @@ class CustomUser(AbstractUser):
     def leave_company(self):
         self.member.delete()
         self.company = None
+        self.save()
+    
+    def switch_theme(self):
+        if self.theme == 'dark':
+            self.theme = 'light'
+        else:
+            self.theme = 'dark'
         self.save()

@@ -9,3 +9,12 @@ document.getElementById('profile_picture_input').addEventListener('change', func
         reader.readAsDataURL(file);
     }
 });
+
+document.getElementById('theme-switch').addEventListener('change', async function () {
+    const url = '/switch-theme/';
+    const success = await sendRequest(url, 'PATCH');
+
+    if (success) {
+        window.location.reload();
+    }
+});

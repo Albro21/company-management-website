@@ -422,23 +422,68 @@
     
             <!-- This week -->
             <input type="radio" class="btn-check" name="timeRange" id="week" autocomplete="off" checked>
-            <label class="btn btn-outline-light" for="week">This week</label>
+            <label 
+                class="
+                btn
+                {% if request.user.theme == 'dark' %}
+                    btn-outline-light
+                {% else %}
+                    btn-outline-dark
+                {% endif %}"
+                for="week">
+            This week</label>
     
             <!-- Last week -->
             <input type="radio" class="btn-check" name="timeRange" id="lastWeek" autocomplete="off">
-            <label class="btn btn-outline-light" for="lastWeek">Last week</label>
+            <label 
+                class="
+                btn
+                {% if request.user.theme == 'dark' %}
+                    btn-outline-light
+                {% else %}
+                    btn-outline-dark
+                {% endif %}"
+                for="lastWeek"
+            >Last week</label>
     
             <!-- This month -->
             <input type="radio" class="btn-check" name="timeRange" id="month" autocomplete="off">
-            <label class="btn btn-outline-light" for="month">This month</label>
+            <label 
+                class="
+                btn
+                {% if request.user.theme == 'dark' %}
+                    btn-outline-light
+                {% else %}
+                    btn-outline-dark
+                {% endif %}"
+                for="month"
+            >This month</label>
     
             <!-- Last month -->
             <input type="radio" class="btn-check" name="timeRange" id="lastMonth" autocomplete="off">
-            <label class="btn btn-outline-light" for="lastMonth">Last month</label>
+            <label 
+                class="
+                btn
+                {% if request.user.theme == 'dark' %}
+                    btn-outline-light
+                {% else %}
+                    btn-outline-dark
+                {% endif %}"
+                for="lastMonth"
+            >Last month</label>
     
             <!-- All time -->
             <input type="radio" class="btn-check" name="timeRange" id="allTime" autocomplete="off">
-            <label class="btn btn-outline-light" for="allTime">All time</label>
+            <label 
+                class="
+                btn
+                {% if request.user.theme == 'dark' %}
+                    btn-outline-light
+                {% else %}
+                    btn-outline-dark
+                {% endif %}"
+                for="allTime"
+            >All time</label>
         </div>
         
         <div class="d-flex gap-3" style="height: 350px;">

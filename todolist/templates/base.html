@@ -12,6 +12,12 @@
 		integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 	<link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+	{% if request.user.theme == "dark" %}
+		<link rel="stylesheet" href="{% static 'css/dark_theme.css' %}">
+	{% else %}
+		<link rel="stylesheet" href="{% static 'css/light_theme.css' %}">
+	{% endif %}
 	{% block styles %}{% endblock styles %}
 </head>
 
@@ -157,6 +163,10 @@
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
 		integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
 		crossorigin="anonymous"></script>
+	<script>
+		const textColor = "{% if request.user.theme == 'dark' %}white{% else %}black{% endif %}";
+		const gridColor = "{% if request.user.theme == 'dark' %}#333{% else %}#ccc{% endif %}";
+	</script>
 	<script src="{% static 'js/utils.js' %}"></script>
 	{% block scripts %}{% endblock scripts %}
 </body>
