@@ -11,6 +11,7 @@ urlpatterns = [
     path('member/<int:member_id>/edit/', views.edit_member, name='edit_member'),
     
     path('project-weekly-report/<int:project_id>/', views.project_weekly_report, name='project_weekly_report'),
+    path('project-monthly-report/<int:project_id>/', views.project_monthly_report, name='project_monthly_report'),
     
     path('company/create/', views.create_company, name='create_company'),
     path('company/settings/', views.settings, name='settings'),

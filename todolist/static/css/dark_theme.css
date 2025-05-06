@@ -5,8 +5,12 @@
     --text-color: white;
 }
 
-body, .offcanvas {
+body, .offcanvas, .dropdown-item, .dropdown-item:hover {
     color: white;
+}
+
+.dropdown-item:hover {
+    background-color: var(--bg-3);
 }
 
 .btn-close {

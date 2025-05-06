@@ -219,69 +219,6 @@ document.addEventListener("DOMContentLoaded", function () {
     fetchChartData("week");
 });
 
-let currentStartDate = new Date();
-currentStartDate.setDate(currentStartDate.getDate() - (currentStartDate.getDay() === 0 ? 6 : currentStartDate.getDay() - 1));
-
-function formatDate(date) {
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
-
-function updateDisplay(projectId, startDate) {
-    const endDate = new Date(startDate);
-    const displayElement = document.getElementById('date-display-' + projectId);
-    const today = new Date();
-    const startOfCurrentWeek = new Date(today);
-    startOfCurrentWeek.setDate(today.getDate() - (today.getDay() === 0 ? 6 : today.getDay() - 1)); // Start of this week
-
-    const startOfPreviousWeek = new Date(startOfCurrentWeek);
-    startOfPreviousWeek.setDate(startOfPreviousWeek.getDate() - 7);
-
-    if (startDate.getDate() === startOfCurrentWeek.getDate()) {
-        displayElement.textContent = "This week";
-    } else if (startDate.getDate() === startOfPreviousWeek.getDate()) {
-        displayElement.textContent = "Last week";
-    } else {
-        endDate.setDate(startDate.getDate() + 6);
-        displayElement.textContent = formatDate(startDate) + ' - ' + formatDate(endDate);
-    }
-}
-
-function previousWeek(projectId) {
-    currentStartDate.setDate(currentStartDate.getDate() - 7);
-    updateDisplay(projectId, currentStartDate);
-    updateUrlWithDates(projectId, currentStartDate);
-}
-
-function nextWeek(projectId) {
-    const today = new Date();
-    const startOfCurrentWeek = new Date(today);
-    startOfCurrentWeek.setDate(today.getDate() - (today.getDay() === 0 ? 6 : today.getDay() - 1));
-
-    const nextStartDate = new Date(currentStartDate);
-    nextStartDate.setDate(currentStartDate.getDate() + 7);
-
-    if (nextStartDate > startOfCurrentWeek) {
-        return;
-    }
-
-    currentStartDate.setDate(currentStartDate.getDate() + 7);
-    updateDisplay(projectId, currentStartDate);
-    updateUrlWithDates(projectId, currentStartDate);
-}
-
-function updateUrlWithDates(projectId, startDate) {
-    const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 6);
-
-    const linkElement = document.getElementById(`generate-report-button-${projectId}`);
-
-    const url = new URL(linkElement.href);
-    url.searchParams.set('start_date', formatDate(startDate));
-    url.searchParams.set('end_date', formatDate(endDate));
-
-    linkElement.href = url.toString();
-}
-
 async function assignTask(memberId, formData) {
     const url = `/teams/member/${memberId}/assign-task/`;
     const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));

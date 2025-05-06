@@ -33,27 +33,25 @@
                         <h5 class="offcanvas-title" id="offcanvasRightLabel">Join requests</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                     </div>
-                    <div class="offcanvas-body">
+                    <div class="offcanvas-body d-flex flex-column gap-3">
                         {% if company.join_requests %}
                             {% for join_request in company.join_requests.all %}
-                                <div class="card mb-3" id="join-request-{{ join_request.id }}">
-                                    <div class="card-body d-flex">
-                                        <div class="d-flex flex-column w-100">
-                                            <h5 class="card-title">{{ join_request.user.full_name }}</h5>
-                                            {{ join_request.user.email }} 
-                                            <br>
-                                            @{{ join_request.user.username }}
-                                        </div>
-                                        <div class="d-flex flex-column gap-2" style="min-width: 100px;">
-                                            <form action="{% url 'teams:accept_join_request' join_request.id %}" method="post">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn btn-primary">Accept</button>
-                                            </form>
-                                            <form action="{% url 'teams:decline_join_request' join_request.id %}" method="post">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn btn-danger">Decline</button>
-                                            </form>
-                                        </div>
+                                <div class="bg-2 py-3 px-1 row rounded mx-0" id="join-request-{{ join_request.id }}">
+                                    <div class="col-8 d-flex flex-column">
+                                        <h5 class="card-title">{{ join_request.user.full_name }}</h5>
+                                        {{ join_request.user.email }} 
+                                        <br>
+                                        @{{ join_request.user.username }}
+                                    </div>
+                                    <div class="col-4 d-flex flex-column gap-2">
+                                        <form action="{% url 'teams:accept_join_request' join_request.id %}" method="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-primary w-100">Accept</button>
+                                        </form>
+                                        <form action="{% url 'teams:decline_join_request' join_request.id %}" method="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger w-100">Decline</button>
+                                        </form>
                                     </div>
                                 </div>
                             {% endfor %}
@@ -298,9 +296,9 @@
             <div class="row p-2 w-100 flex-grow-1">
                 <div class="col">Project Name</div>
                 <div class="col text-center">Client</div>
+                <div class="col text-center">Status</div>
                 <div class="col text-center">Tracked</div>
                 {% if request.user.member.is_employer %}
-                    <div class="col text-center">Total</div>
                     <div class="col text-center">Actions</div>
                 {% endif %}
             </div>
@@ -317,10 +315,9 @@
                     <div class="row p-2 w-100 flex-grow-1">
                         <div class="col">{{ project.title }}</div>
                         <div class="col text-center">{% if project.client %}{{ project.client }}{% else %}N/A{% endif %}</div>
+                        <div class="col text-center">{{ project.get_status_display }}</div>
                         <div class="col text-center">{{ project.total_tracked_time }}</div>
                         {% if request.user.member.is_employer %}
-                            <div class="col text-center">0.00 USD</div>
-
                             <!-- Action icons -->
                             <div class="col d-flex gap-3 action-icons justify-content-center">
 
@@ -401,18 +398,29 @@
 
                 <!-- Generate Report Offcanvas -->
                 <div class="offcanvas offcanvas-end" tabindex="-1" id="generate-report-{{ project.id }}">
-                    <div class="offcanvas-header border-bottom">
+                    <div class="offcanvas-header ">
                         <h5 class="offcanvas-title" id="offcanvasRightLabel">Generate report for {{ project.title }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                     </div>
                     <div class="offcanvas-body d-flex flex-column gap-3">
+                        
+                        <!-- Weekly -->
                         <h4 class="text-center">Weekly</h4>
                         <div class="btn-group w-100">
-                            <button class="btn btn-dark w-100 bg-3" id="date-display-{{ project.id }}">This week</button>
+                            <button class="btn btn-dark w-100 bg-3" id="weekly-date-display-{{ project.id }}">This week</button>
                             <button class="btn btn-dark bg-3" onclick="previousWeek({{ project.id }})"><i class="bi bi-chevron-left"></i></button>
                             <button class="btn btn-dark bg-3" onclick="nextWeek({{ project.id }})"><i class="bi bi-chevron-right"></i></button>
                         </div>  
-                        <a href="{% url 'teams:project_weekly_report' project.id %}" id="generate-report-button-{{ project.id }}" class="btn btn-primary w-100" target="_blank">Generate weekly report</a>                    
+                        <a href="{% url 'teams:project_weekly_report' project.id %}" id="generate-weekly-report-button-{{ project.id }}" class="btn btn-primary w-100" target="_blank">Generate weekly report</a>                    
+                        
+                        <!-- Monthly -->
+                        <h4 class="text-center">Monthly</h4>
+                        <div class="btn-group w-100">
+                            <button class="btn btn-dark w-100 bg-3" id="monthly-date-display-{{ project.id }}">This month</button>
+                            <button class="btn btn-dark bg-3" onclick="previousMonth({{ project.id }})"><i class="bi bi-chevron-left"></i></button>
+                            <button class="btn btn-dark bg-3" onclick="nextMonth({{ project.id }})"><i class="bi bi-chevron-right"></i></button>
+                        </div>  
+                        <a href="{% url 'teams:project_monthly_report' project.id %}" id="generate-monthly-report-button-{{ project.id }}" class="btn btn-primary w-100" target="_blank">Generate monthly report</a>                    
                     </div>
                 </div>
             {% endfor %}
@@ -508,6 +516,7 @@
 {% block scripts %}
     <script src="{% static 'js/script.js' %}"></script>
     <script src="{% static 'js/team.js' %}"></script>
+    <script src="{% static 'js/reports.js' %}"></script>
     <script src="{% static 'js/project.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
