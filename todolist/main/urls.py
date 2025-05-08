@@ -1,7 +1,12 @@
+from django.shortcuts import redirect
 from django.urls import path
+
 from . import views
 
+
 urlpatterns = [
+    path('', lambda request: redirect('todolist', permanent=True)),
+    
     path('todolist', views.todolist, name='todolist'),
     path('archive/', views.archive, name='archive'),
     

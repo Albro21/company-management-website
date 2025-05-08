@@ -219,7 +219,7 @@
                 <div class="col-4 text-center">Actions</div>
             </div>
 
-            {% if company.job_titles.count == 0 %}<h5 class="text-center text-muted">No job titles yet</h5>{% endif %}
+            {% if company.job_titles.count == 0 %}<h5 class="text-center">No job titles yet</h5>{% endif %}
             {% for job_title in company.job_titles.all %}
                 <div class="list-item row p-2 w-100 bg-2" id="job-title-{{ job_title.id }}">
                     <div class="col-8">{{ job_title.name }}</div>

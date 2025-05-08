@@ -98,7 +98,10 @@
 							<a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
 							<a class="dropdown-item" href="{% url 'settings' %}">Settings</a>
 							<hr class="dropdown-divider">
-							<a class="dropdown-item" href="{% url 'login' %}" onclick="logoutUser()">Sign out</a>
+							<form class="dropdown-item" method="post" action="{% url 'logout' %}">
+								{% csrf_token %}
+								<button type="submit" style="background: none; border: none; color: white;">Sign out</button>
+							</form>
 						</div>
 					</div>
 				</div>
@@ -143,7 +146,10 @@
 						<a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
 						<a class="dropdown-item" href="{% url 'settings' %}">Settings</a>
 						<hr class="dropdown-divider">
-						<a class="dropdown-item" href="{% url 'login' %}" onclick="logoutUser()">Sign out</a>
+						<form class="dropdown-item" method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" style="background: none; border: none; color: white;">Sign out</button>
+                        </form>
 					</div>
 				</div>
 			</div>
@@ -167,6 +173,7 @@
 		const textColor = "{% if request.user.theme == 'dark' %}white{% else %}black{% endif %}";
 		const gridColor = "{% if request.user.theme == 'dark' %}#333{% else %}#ccc{% endif %}";
 	</script>
+	<script src="{% static 'js/utils.js' %}"></script>
 	<script>
 		// Set user timezone
 		const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -175,7 +182,6 @@
 			sendRequest('/set-timezone/', 'PATCH', JSON.stringify({ timezone: userTimeZone }));
 		}
 	</script>
-	<script src="{% static 'js/utils.js' %}"></script>
 	{% block scripts %}{% endblock scripts %}
 </body>
 

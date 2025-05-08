@@ -289,24 +289,22 @@
     </div>
 
     <div class="d-flex flex-column align-items-center mb-5" id="projects">
-        
-        <!-- Table Header -->
-        <div class="p-0 w-100 d-flex">
-            <div style="width: 5px;"></div>
-            <div class="row p-2 w-100 flex-grow-1">
-                <div class="col">Project Name</div>
-                <div class="col text-center">Client</div>
-                <div class="col text-center">Status</div>
-                <div class="col text-center">Tracked</div>
-                {% if request.user.member.is_employer %}
-                    <div class="col text-center">Actions</div>
-                {% endif %}
-            </div>
-        </div>
-        
         {% if company.projects.count == 0 %}
-            <h5 class="text-center text-muted p-3 border-start border-bottom">No projects yet</h5>
+            <h5 class="text-center p-3">No projects yet</h5>
         {% else %}
+            <!-- Table Header -->
+            <div class="p-0 w-100 d-flex">
+                <div style="width: 5px;"></div>
+                <div class="row p-2 w-100 flex-grow-1">
+                    <div class="col">Project Name</div>
+                    <div class="col text-center">Client</div>
+                    <div class="col text-center">Status</div>
+                    <div class="col text-center">Tracked</div>
+                    {% if request.user.member.is_employer %}
+                        <div class="col text-center">Actions</div>
+                    {% endif %}
+                </div>
+            </div>
             {% for project in company.projects.all %}
                 <div class="list-item d-flex w-100 bg-2" id="project-{{ project.id }}">
                     <!-- Project Color -->

@@ -307,7 +307,8 @@ def create_company(request):
             request.user.join_company(company)
             Member.objects.create(
                 company=company,
-                user=request.user
+                user=request.user,
+                role=Member.Role.EMPLOYER
             )
             return redirect('teams:team') 
         
