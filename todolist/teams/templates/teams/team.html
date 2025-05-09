@@ -38,7 +38,7 @@
                             {% for join_request in company.join_requests.all %}
                                 <div class="bg-2 py-3 px-1 row rounded mx-0" id="join-request-{{ join_request.id }}">
                                     <div class="col-8 d-flex flex-column">
-                                        <h5 class="card-title">{{ join_request.user.full_name }}</h5>
+                                        <h5>{{ join_request.user.full_name }}</h5>
                                         {{ join_request.user.email }} 
                                         <br>
                                         @{{ join_request.user.username }}

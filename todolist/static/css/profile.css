@@ -8,7 +8,3 @@
 #profile-card, #completed-tasks-chart {
     height: 430px;
 }
-
-.card {
-    box-shadow: 0 0 3px 3px #adb5bd75;
-}
