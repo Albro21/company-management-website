@@ -1,7 +1,8 @@
-from django.db import models
-from django.utils.text import slugify
-
 from collections import defaultdict
+
+from django.db import models
+from django.utils import timezone
+from django.utils.text import slugify
 
 
 class Company(models.Model):
@@ -31,6 +32,10 @@ class Company(models.Model):
     address = models.CharField(max_length=255, blank=True)
     city = models.CharField(max_length=255, blank=True)
     country = models.CharField(max_length=100, blank=True)
+    
+    @property
+    def pending_vacation_requests(self):
+        return self.vacation_requests.filter(status="pending")
 
     class Meta:
         ordering = ['name']
@@ -66,6 +71,8 @@ class Member(models.Model):
     rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     job_title = models.ForeignKey("teams.JobTitle", on_delete=models.SET_NULL, null=True, blank=True, related_name="members")
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.EMPLOYEE)
+    annual_vacation_days = models.PositiveIntegerField(default=20)
+    used_vacation_days = models.PositiveIntegerField(default=0)
     
     @property
     def is_active(self):
@@ -78,6 +85,10 @@ class Member(models.Model):
     @property
     def is_employee(self):
         return self.role == self.Role.EMPLOYEE
+    
+    @property
+    def remaining_vacation_days(self):
+        return self.annual_vacation_days - self.used_vacation_days
     
     def hours_spent_by_projects(self, target_date, projects):
         if projects is None:
@@ -99,6 +110,31 @@ class Member(models.Model):
     
     def __str__(self):
         return f"{self.user.username} ({self.job_title})"
+
+
+class VacationRequest(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('declined', 'Declined'),
+    ]
+    
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='vacation_requests')
+    member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='vacation_requests')
+    start_date = models.DateField()
+    end_date = models.DateField()
+    reason = models.TextField(max_length=255)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    requested_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ['-requested_at']
+    
+    def number_of_days(self):
+        return (self.end_date - self.start_date).days + 1
+
+    def __str__(self):
+        return f"{self.member.user.username} - {self.start_date} to {self.end_date} ({self.get_status_display()})"
 
 
 class JoinRequest(models.Model):

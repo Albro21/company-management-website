@@ -261,3 +261,44 @@ document.querySelectorAll('.edit-member-form').forEach(form => {
     });
 });
 
+async function requestVacation(memberId, formData) {
+    const errorElement = document.getElementById(`request-vacation-errors-${memberId}`);
+
+    const url = `/teams/vacation-request/create/`;
+    const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
+    const data = await sendRequest(url, 'POST', requestBody);
+
+    if (data.success) {
+        window.location.reload();
+    } else {
+        errorElement.textContent = data.error;
+    }
+}
+
+document.querySelectorAll('.request-vacation-form').forEach(form => {
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const memberId = form.dataset.memberId;
+        const formData = new FormData(form);
+        
+        await requestVacation(memberId, formData);
+    });
+});
+
+async function acceptVacationRequest(vacationRequestId) {
+    const url = `/teams/vacation-request/${vacationRequestId}/accept/`;
+    const data = await sendRequest(url, 'PATCH');
+    if (data.success) {
+        document.getElementById(`vacation-request-${vacationRequestId}`).remove();
+    }
+}
+
+async function declineVacationRequest(vacationRequestId) {
+    const url = `/teams/vacation-request/${vacationRequestId}/decline/`;
+    const data = await sendRequest(url, 'PATCH');
+    if (data.success) {
+        element = document.getElementById(`vacation-request-${vacationRequestId}`);
+        element.remove();
+    }
+}

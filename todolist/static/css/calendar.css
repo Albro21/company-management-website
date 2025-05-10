@@ -1,0 +1,20 @@
+.tooltip-inner {
+    min-width: 350px !important;
+}
+
+.fc-scrollgrid, .fc-theme-standard td, .fc-theme-standard th {
+    border-color: #666 !important;
+}
+
+#calendar .fc-day-today {
+    background-color: var(--bg-3) !important;
+}
+
+#calendar a {
+    color: white !important;
+    text-decoration: none !important;
+}
+
+#calendar .fc-day-today a {
+    color: #0275d8 !important;
+}

@@ -8,6 +8,7 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.serializers.json import DjangoJSONEncoder
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods
@@ -17,8 +18,8 @@ from common.decorators import parse_json_body
 from main.forms import ProjectForm, TaskForm
 from main.models import Project, Task
 from timetracker.models import TimeEntry
-from .forms import CompanyForm, JobTitleForm, MemberForm
-from .models import Company, Member, JoinRequest, JobTitle
+from .forms import CompanyForm, JobTitleForm, MemberForm, VacationRequestForm
+from .models import Company, Member, JoinRequest, JobTitle, VacationRequest
 from .decorators import employer_required
 
 
@@ -294,6 +295,31 @@ def team(request):
         return render(request, 'teams/team.html', context)
     
     return render(request, 'teams/team.html', {'company': request.user.company})
+
+@login_required
+def calendar(request):
+    vacations = VacationRequest.objects.filter(company=request.user.member.company, status='approved')
+
+    events = []
+    for vacation in vacations:
+        events.append({
+            'title': f"Vacation – {vacation.member.user.get_full_name() or vacation.member.user.username}",
+            'start': str(vacation.start_date),
+            'end': str(vacation.end_date + timedelta(days=1)),
+            'extendedProps': {
+                'type': 'Vacation',
+                'member': vacation.member.user.get_full_name(),
+                'start_date': vacation.start_date.strftime('%d/%m/%y'),
+                'end_date': vacation.end_date.strftime('%d/%m/%y'),
+                'days': vacation.number_of_days(),
+                'reason': vacation.reason
+            }
+        })
+
+    context = {
+        'events_json': json.dumps(events, cls=DjangoJSONEncoder)
+    }
+    return render(request, 'teams/calendar.html', context)
 
 @login_required
 def create_company(request):
@@ -577,8 +603,6 @@ def project_monthly_report(request, project_id):
 
     return render(request, 'teams/project_monthly_report.html', context)
 
-
-
 @require_http_methods(["POST"])
 @login_required
 def leave_company(request):
@@ -636,3 +660,58 @@ def edit_member(request, member_id):
         return JsonResponse({'success': True}, status=200)
     else:
         return JsonResponse({'success': False, 'error': f'Form contains errors: {form.errors.as_json()}'}, status=400)
+
+@require_http_methods(["POST"])
+@login_required
+@parse_json_body
+def create_vacation_request(request):
+    data = request.json_data
+    
+    start_date = datetime.strptime(data['start_date'], '%Y-%m-%d').date()
+    end_date = datetime.strptime(data['end_date'], '%Y-%m-%d').date()
+    days_requested = (end_date - start_date).days + 1
+    
+    if start_date > end_date:
+        return JsonResponse({'success': False, 'error': 'Start date must be before end date.'}, status=400)
+    
+    if request.user.member.remaining_vacation_days < days_requested:
+        return JsonResponse({'success': False, 'error': 'Your vacation exceeds your remaining annual vacation days.'}, status=400)
+
+    vacation_request_form = VacationRequestForm(data=data)
+    if vacation_request_form.is_valid():
+        vacation_request = vacation_request_form.save(commit=False)
+        vacation_request.company = request.user.company
+        vacation_request.member = request.user.member
+        
+        if request.user.member.is_employer:
+            vacation_request.status = "approved"
+        else:
+            vacation_request.status = "pending"
+        
+        vacation_request.save()
+        
+        request.user.member.used_vacation_days += vacation_request.number_of_days()
+        request.user.member.save()
+        
+        return JsonResponse({'success': True, 'id': vacation_request.id}, status=201)
+    else:
+        return JsonResponse({'success': False, 'errors': vacation_request_form.errors}, status=400)
+
+@require_http_methods(["PATCH"])
+@login_required
+@employer_required
+def accept_vacation_request(request, request_id):
+    vacation_request = VacationRequest.objects.get(id=request_id)
+    vacation_request.status = "approved"
+    vacation_request.save()
+    return JsonResponse({'success': True, 'id': vacation_request.id}, status=200)
+
+@require_http_methods(["PATCH"])
+@login_required
+@employer_required
+def decline_vacation_request(request, request_id):
+    vacation_request = VacationRequest.objects.get(id=request_id)
+    vacation_request.member.used_vacation_days -= vacation_request.number_of_days()
+    vacation_request.member.save()
+    vacation_request.delete()
+    return JsonResponse({'success': True, 'id': vacation_request.id}, status=200)

@@ -6,6 +6,8 @@ app_name = 'teams'
 urlpatterns = [
     path('team/', views.team, name='team'),
     
+    path('calendar/', views.calendar, name='calendar'),
+    
     path('member/<int:member_id>/analytics/', views.member_analytics, name='member_analytics'),
     path('member/<int:member_id>/assign-task/', views.assign_task, name='assign_task'),
     path('member/<int:member_id>/edit/', views.edit_member, name='edit_member'),
@@ -21,6 +23,10 @@ urlpatterns = [
     path('join-request/create/', views.create_join_request, name='create_join_request'),
     path('join-request/<int:request_id>/accept/', views.accept_join_request, name='accept_join_request'),
     path('join-request/<int:request_id>/decline/', views.decline_join_request, name='decline_join_request'),
+    
+    path('vacation-request/create/', views.create_vacation_request, name='create_vacation_request'),
+    path('vacation-request/<int:request_id>/accept/', views.accept_vacation_request, name='accept_vacation_request'),
+    path('vacation-request/<int:request_id>/decline/', views.decline_vacation_request, name='decline_vacation_request'),
     
     path('job-title/create/', views.create_job_title, name='create_job_title'),
     path('job-title/<int:job_title_id>/delete/', views.delete_job_title, name='delete_job_title'),

@@ -61,6 +61,9 @@
 					<a href="{% url 'teams:team' %}" class="nav-link">
 						<i class="bi bi-people me-2"></i>Team
 					</a>
+					<a href="{% url 'profile' %}" class="nav-link py-2 px-4 rounded">
+						<i class="bi bi-person me-2"></i>Profile
+					</a>
 					<a href="{% url 'profile' %}" class="nav-link">
 						<i class="bi bi-person me-2"></i>Profile
 					</a>
@@ -126,6 +129,9 @@
 				<a href="{% url 'teams:team' %}" class="nav-link py-2 px-4 rounded">
 					<i class="bi bi-people me-2"></i>Team
 				</a>
+				<a href="{% url 'teams:calendar' %}" class="nav-link py-2 px-4 rounded">
+					<i class="bi bi-calendar me-2"></i>Calendar
+				</a>
 				<a href="{% url 'profile' %}" class="nav-link py-2 px-4 rounded">
 					<i class="bi bi-person me-2"></i>Profile
 				</a>
@@ -184,5 +190,4 @@
 	</script>
 	{% block scripts %}{% endblock scripts %}
 </body>
-
 </html>

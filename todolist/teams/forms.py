@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from .models import Company, JobTitle, Member
+from .models import Company, JobTitle, Member, VacationRequest
 
 class CompanyForm(ModelForm):
     class Meta:
@@ -23,4 +23,10 @@ class JobTitleForm(forms.ModelForm):
 class MemberForm(forms.ModelForm):
     class Meta:
         model = Member
-        fields = ['rate', 'job_title', 'role']
+        fields = ['rate', 'job_title', 'role', 'annual_vacation_days']
+
+
+class VacationRequestForm(forms.ModelForm):
+    class Meta:
+        model = VacationRequest
+        fields = ['start_date', 'end_date', 'reason']

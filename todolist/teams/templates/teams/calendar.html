@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Calendar{% endblock title %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/calendar.css' %}">
+{% endblock styles %}
+
+{% block content %}
+    <div class="bg-2 rounded p-4">
+        <div id='calendar'></div>
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
+    <script>const eventsJson = {{ events_json|safe }}</script>
+    <script src="{% static 'js/calendar.js' %}"></script>
+{% endblock scripts %}

@@ -7,11 +7,24 @@
 {% endblock styles %}
 
 {% block content %}
-    <div class="d-flex flex-column justify-content-center align-items-center mb-5 p-3 bg-2 rounded">
-        <img src="{{ member.user.profile_picture.url }}" width="150px" height="150px" class="rounded-circle">
-        <h3>
-            {{ member.user.full_name }}
-        </h3>
+    <div class="row mb-5">
+        <div class="col-3 d-flex flex-column justify-content-center align-items-center p-3 bg-2 rounded">
+            <img src="{{ member.user.profile_picture.url }}" width="150px" height="150px" class="rounded-circle">
+            <h3>
+                {{ member.user.full_name }}
+            </h3>
+        </div>
+        <div class="col-3 d-flex flex-column gap-3">
+            <div class="bg-2 rounded h-100 d-flex align-items-center justify-content-center">
+                Annual vacation days: {{ member.annual_vacation_days }}
+            </div>
+            <div class="bg-2 rounded h-100 d-flex align-items-center justify-content-center">
+                Used vacation days: {{ member.used_vacation_days }}
+            </div>
+            <div class="bg-2 rounded h-100 d-flex align-items-center justify-content-center">
+                Remaining vacation days: {{ member.remaining_vacation_days }}
+            </div>
+        </div>
     </div>
 
     <div class="d-flex flex-column gap-3 mb-5">
