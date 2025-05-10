@@ -17,9 +17,9 @@ document.addEventListener("DOMContentLoaded", function () {
 // Complete task
 async function completeTask(taskId) {
 	const url = `/task/${taskId}/complete/`;
-	const success = await sendRequest(url, 'POST');
+	const data = await sendRequest(url, 'POST');
 
-	if (success) {
+	if (data.success) {
 		const sound = document.getElementById("completion-sound");
 		sound.currentTime = 0;
 		await sound.play();
@@ -46,8 +46,8 @@ async function editTask(taskId, formData) {
     const requestBody = Object.fromEntries(formData.entries());
     requestBody.categories = categories;
     
-    const success = await sendRequest(url, 'PATCH', JSON.stringify(requestBody));
-    if (success) {
+    const data = await sendRequest(url, 'PATCH', JSON.stringify(requestBody));
+    if (data.success) {
         window.location.reload();
     }
 }
@@ -82,8 +82,8 @@ if (createTaskForm) {
         const requestBody = Object.fromEntries(formData.entries());
         requestBody.categories = categories;
     
-        const success = await sendRequest(url, 'POST', JSON.stringify(requestBody));
-        if (success) {
+        const data = await sendRequest(url, 'POST', JSON.stringify(requestBody));
+        if (data.success) {
             window.location.reload();
         }
     });

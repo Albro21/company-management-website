@@ -1,8 +1,8 @@
 // Delete Project
 async function deleteProject(projectId) {
     const url = `/project/${projectId}/delete/`;
-    const success = await sendRequest(url, 'DELETE');
-    if (success) {
+    const data = await sendRequest(url, 'DELETE');
+    if (data.success) {
         window.location.reload();
     }
 }
@@ -11,8 +11,8 @@ async function deleteProject(projectId) {
 async function editProject(projectId, formData) {
     const url = `/project/${projectId}/edit/`;
     const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
-    const success = await sendRequest(url, 'PATCH', requestBody);
-    if (success) {
+    const data = await sendRequest(url, 'PATCH', requestBody);
+    if (data.success) {
         window.location.reload();
     }
 }
@@ -40,8 +40,8 @@ if (createProjectForm) {
         formData.delete('csrfmiddlewaretoken');
         const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
 
-        const success = await sendRequest(url, 'POST', requestBody);
-        if (success) {
+        const data = await sendRequest(url, 'POST', requestBody);
+        if (data.success) {
             window.location.reload();
         }
     });

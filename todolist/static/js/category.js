@@ -1,8 +1,8 @@
 // Delete Category
 async function deleteCategory(categoryId) {
     const url = `/category/${categoryId}/delete/`;
-    const success = await sendRequest(url, 'DELETE');
-    if (success) {
+    const data = await sendRequest(url, 'DELETE');
+    if (data.success) {
         window.location.reload();
     }
 }
@@ -11,8 +11,8 @@ async function deleteCategory(categoryId) {
 async function editCategory(categoryId, formData) {
     const url = `/category/${categoryId}/edit/`;
     const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
-    const success = await sendRequest(url, 'PATCH', requestBody);
-    if (success) {
+    const data = await sendRequest(url, 'PATCH', requestBody);
+    if (data.success) {
         window.location.reload();
     }
 }
@@ -40,8 +40,8 @@ if (createCategoryForm) {
         formData.delete('csrfmiddlewaretoken');
         const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
 
-        const success = await sendRequest(url, 'POST', requestBody);
-        if (success) {
+        const data = await sendRequest(url, 'POST', requestBody);
+        if (data.success) {
             window.location.reload();
         }
     });

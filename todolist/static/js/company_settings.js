@@ -1,8 +1,8 @@
 // Delete Job Title
 async function deleteJobTitle(jobTitleId) {
     const url = `/teams/job-title/${jobTitleId}/delete/`;
-    const success = await sendRequest(url, "DELETE"); 
-    if (success) {
+    const data = await sendRequest(url, "DELETE"); 
+    if (data.success) {
         document.getElementById(`job-title-${jobTitleId}`).remove();
     }
 };
@@ -18,8 +18,8 @@ if (createJobTitleForm) {
         formData.delete('csrfmiddlewaretoken');
         const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
     
-        const success = await sendRequest(url, 'POST', requestBody);
-        if (success) {
+        const data = await sendRequest(url, 'POST', requestBody);
+        if (data.success) {
             window.location.reload();
         }
     });

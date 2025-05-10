@@ -12,9 +12,9 @@ document.getElementById('profile_picture_input').addEventListener('change', func
 
 document.getElementById('theme-switch').addEventListener('change', async function () {
     const url = '/switch-theme/';
-    const success = await sendRequest(url, 'PATCH');
+    const data = await sendRequest(url, 'PATCH');
 
-    if (success) {
+    if (data.success) {
         window.location.reload();
     }
 });

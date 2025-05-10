@@ -222,9 +222,9 @@ document.addEventListener("DOMContentLoaded", function () {
 async function assignTask(memberId, formData) {
     const url = `/teams/member/${memberId}/assign-task/`;
     const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
-    const success = await sendRequest(url, 'POST', requestBody);
+    const data = await sendRequest(url, 'POST', requestBody);
 
-    if (success) {
+    if (data.success) {
         window.location.reload();
     }
 }
@@ -243,9 +243,9 @@ document.querySelectorAll('.assign-task-form').forEach(form => {
 async function editMember(memberId, formData) {
     const url = `/teams/member/${memberId}/edit/`;
     const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
-    const success = await sendRequest(url, 'PATCH', requestBody);
+    const data = await sendRequest(url, 'PATCH', requestBody);
 
-    if (success) {
+    if (data.success) {
         window.location.reload();
     }
 }

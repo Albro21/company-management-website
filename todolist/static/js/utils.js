@@ -17,7 +17,6 @@ window.sendRequest = async function(url, method, requestBody = null) {
 
         if (!response.ok || !data.success) {
             console.error(`Server error | Status: ${response.status} | Message: ${data.error}`);
-            return false;
         }
 
         return data;

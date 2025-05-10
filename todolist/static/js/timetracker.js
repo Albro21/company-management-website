@@ -68,9 +68,9 @@ document.querySelector('#tracker-form').addEventListener('submit', async functio
         const url = `/timetracker/start/`;
         const requestBody = JSON.stringify({ task_id: taskId, name: name, project_id: projectId });
 
-        const success = await sendRequest(url, "POST", requestBody);
+        const data = await sendRequest(url, "POST", requestBody);
 
-        if (success) {
+        if (data.success) {
             startTimer();
             timerButton.textContent = "Stop";
             timerButton.style.backgroundColor = "#ff0000";
@@ -81,8 +81,8 @@ document.querySelector('#tracker-form').addEventListener('submit', async functio
         }
     } else {
         const url = `/timetracker/stop/`;
-        const success = await sendRequest(url, "POST");
-        if (success) {
+        const data = await sendRequest(url, "POST");
+        if (data.success) {
             window.location.reload();
         }
     }
@@ -109,9 +109,9 @@ window.onload = function () {
 async function deleteTimeEntry(timeEntryId) {
     const url = `/timetracker/time-entry/${timeEntryId}/delete/`;
 
-    const success = await sendRequest(url, 'DELETE');
+    const data = await sendRequest(url, 'DELETE');
 
-    if (success) {
+    if (data.success) {
         const timeEntry = document.getElementById(`time-entry-${timeEntryId}`);
         
         timeEntry.remove();
@@ -168,8 +168,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 async function duplicateTimeEntry(timeEntryId) {
     const url = `/timetracker/time-entry/${timeEntryId}/duplicate/`;
-    const success = await sendRequest(url, 'POST');
-    if (success) {
+    const data = await sendRequest(url, 'POST');
+    if (data.success) {
         window.location.reload();
     }
 };
