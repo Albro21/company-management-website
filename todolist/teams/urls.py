@@ -10,6 +10,7 @@ urlpatterns = [
     path('member/<int:member_id>/analytics/', member.member_analytics, name='member_analytics'),
     path('member/<int:member_id>/assign-task/', member.assign_task, name='assign_task'),
     path('member/<int:member_id>/edit/', member.edit_member, name='edit_member'),
+    path('member/<int:member_id>/', member.member_detail, name='member_detail'),
     
     path('project-weekly-report/<int:project_id>/', reports.project_weekly_report, name='project_weekly_report'),
     path('project-monthly-report/<int:project_id>/', reports.project_monthly_report, name='project_monthly_report'),

@@ -1,0 +1,370 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ member.user.full_name }}{% endblock title %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/member_detail.css' %}">
+{% endblock styles %}
+
+{% block content %}
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+
+            <!-- Information Nav -->
+            <button 
+                class="nav-link active" 
+                id="nav-home-tab" 
+                data-bs-toggle="tab" 
+                data-bs-target="#nav-information" 
+                type="button"
+                role="tab" 
+                aria-controls="nav-information" 
+                aria-selected="true">
+                Information
+            </button>
+            <!-- <button 
+                class="nav-link" 
+                id="nav-profile-tab" 
+                data-bs-toggle="tab" 
+                data-bs-target="#nav-profile" 
+                type="button"
+                role="tab" 
+                aria-controls="nav-profile" 
+                aria-selected="false">
+                Profile
+            </button>
+            <button 
+                class="nav-link" 
+                id="nav-contact-tab" 
+                data-bs-toggle="tab" 
+                data-bs-target="#nav-contact" 
+                type="button"
+                role="tab" 
+                aria-controls="nav-contact" 
+                aria-selected="false">
+                Contact
+            </button> -->
+        </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+
+        <!-- Information Tab -->
+        <div class="tab-pane fade show active" id="nav-information" role="tabpanel" aria-labelledby="nav-information-tab" tabindex="0">
+            <div class="row pt-3">
+                <div class="col-3 d-flex flex-column gap-3">
+
+                    <!-- Profile Card  -->
+                    <div class="bg-2 rounded d-flex flex-column p-3 gap-3 align-items-center">
+                        <img src="{{ member.user.profile_picture.url }}" class="w-75 rounded-circle" alt="Profile Picture">
+                        <h2>{{ member.user.full_name }}</h2>
+                    </div>
+
+                    <!-- Contact Card -->
+                    <div class="bg-2 rounded d-flex flex-column p-3 gap-3">
+                        <h3 class="text-center">Contact</h3>
+                        <div class="d-flex flex-column">
+
+                            <div class="row">
+                                <div class="col-1"><i class="bi bi-at"></i></div>
+                                <div class="col-3">Username:</div>
+                                <div class="col-8">{{ member.user.username }}</div>
+                            </div>
+                            
+                            {% if member.personal_email %}
+                            <div class="row">
+                                <div class="col-1"><i class="bi bi-envelope-at"></i></div>
+                                <div class="col-3">Personal:</div>
+                                <div class="col-8">{{ member.personal_email }}</div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if member.work_email %}
+                            <div class="row">
+                                <div class="col-1"><i class="bi bi-envelope"></i></div>
+                                <div class="col-3">Work:</div>
+                                <div class="col-8">{{ member.work_email }}</div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if member.mobile_phone %}
+                                <div class="row">
+                                    <div class="col-1"><i class="bi bi-phone"></i></div>
+                                    <div class="col-3">Mobile:</div>
+                                    <div class="col-8">{{ member.mobile_phone }}</div>
+                                </div>
+                            {% endif %}
+                            
+                            {% if member.work_phone %}
+                                <div class="row">
+                                    <div class="col-1"><i class="bi bi-telephone"></i></div>
+                                    <div class="col-3">Work:</div>
+                                    <div class="col-8">{{ member.work_phone }}</div>
+                                </div>
+                            {% endif %}
+                            
+                            {% if member.emergency_phone %}
+                                <div class="row">
+                                    <div class="col-1"><i class="bi bi-telephone-plus"></i></div>
+                                    <div class="col-3">Emergency:</div>
+                                    <div class="col-8">{{ member.emergency_phone }}</div>
+                                </div>
+                            {% endif %}
+                            
+                            {% if member.user.address %}
+                                <div class="row">
+                                    <div class="col-1"><i class="bi bi-geo-alt"></i></div>
+                                    <div class="col-3">Address:</div>
+                                    <div class="col-8">{{ member.user.address }}</div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Vacation Card -->
+                    <div class="bg-2 rounded d-flex flex-column p-3 gap-3">
+                        <h3 class="text-center">Vacations</h3>
+                        <div class="d-flex flex-column">
+
+                            <div class="row">
+                                <div class="col-8">Annual vacation Days:</div>
+                                <div class="col-4 text-center">{{ member.annual_vacation_days }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-8">Used vacation Days:</div>
+                                <div class="col-4 text-center">{{ member.used_vacation_days }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-8">Remaining vacation Days:</div>
+                                <div class="col-4 text-center">{{ member.remaining_vacation_days }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-9">
+                    <div class="d-flex flex-column gap-4 bg-2 rounded p-4">
+
+                        <!-- Work Information -->
+                        <div class="border-bottom pb-3">
+                            <h4 class="mb-3">Work information</h4>
+                            <div class="row">
+                                <div class="col d-flex flex-column gap-3">
+                                    <div class="d-flex-flex-column">
+                                        <span class="text-muted">Role:</span><br>
+                                        {{ member.role }}
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Supervisor:</span><br>
+                                        {{ member.supervisor }}
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Rate:</span><br>
+                                        {{ member.rate }}
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Employee ID:</span><br>
+                                        {{ member.employee_id }}
+                                    </div>
+                                </div>
+                                <div class="col d-flex flex-column gap-3">
+                                    <div>
+                                        <span class="text-muted">Employee status:</span><br>
+                                        {{ member.employee_status }}
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Job title:</span><br>
+                                        {{ member.job_title }}
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Department:</span><br>
+                                        {{ member.department }}
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Date of joining:</span><br>
+                                        {{ member.date_of_joining }}
+                                    </div>
+                                </div>
+                                <div class="col d-flex flex-column gap-3">
+                                    <div>
+                                        <span class="text-muted">Contract type:</span><br>
+                                        {{ member.contract_type }}
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Offline location:</span><br>
+                                        {{ member.offline_location }}
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Offline workstation ID:</span><br>
+                                        {{ member.offline_workstation_id }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Personal Information -->
+                        <div class="border-bottom pb-3">
+                            <h4 class="mb-3">Personal information</h4>
+                            <div class="row">
+                                <div class="col d-flex flex-column gap-3">
+                                    <div class="d-flex-flex-column">
+                                        <span class="text-muted">Date of birth:</span><br>
+                                        {{ member.user.date_of_birth }}
+                                    </div>
+                                </div>
+                                <div class="col d-flex flex-column gap-3">
+                                    <div class="d-flex-flex-column">
+                                        <span class="text-muted">Age:</span><br>
+                                        {{ member.user.age }}
+                                    </div>
+                                </div>
+                                <div class="col d-flex flex-column gap-3">
+                                    <div>
+                                        <span class="text-muted">Time zone:</span><br>
+                                        {{ member.user.timezone }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Contact Information -->
+                        <div class="border-bottom pb-3">
+                            <h4 class="mb-3">Contact information</h4>
+                            <div class="row">
+                                <div class="col d-flex flex-column gap-3">
+                                    <div class="d-flex-flex-column">
+                                        <span class="text-muted">Mobile phone:</span><br>
+                                        {{ member.mobile_phone }}
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Personal email:</span><br>
+                                        {{ member.personal_email }}
+                                    </div>
+                                    <div class="d-flex-flex-column">
+                                        <span class="text-muted">Linkedin:</span><br>
+                                        {{ member.linkedin_url }}
+                                    </div>
+                                </div>
+                                <div class="col d-flex flex-column gap-3">
+                                    <div class="d-flex-flex-column">
+                                        <span class="text-muted">Work phone:</span><br>
+                                        {{ member.work_phone }}
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Work email:</span><br>
+                                        {{ member.work_email }}
+                                    </div>
+                                </div>
+                                <div class="col d-flex flex-column gap-3">
+                                    <div class="d-flex-flex-column">
+                                        <span class="text-muted">Emergency phone:</span><br>
+                                        {{ member.emergency_phone }}
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Address:</span><br>
+                                        {{ member.user.address }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Education, Experience and Skills -->
+                        <div class="border-bottom pb-3">
+                            <h4 class="mb-3">Education, Experience and Skills</h4>
+                            <div class="row">
+                                <div class="col d-flex flex-column gap-3">
+                                    <div class="d-flex-flex-column">
+                                        <span class="text-muted">Education:</span><br>
+                                        {{ member.education }}
+                                    </div>
+                                </div>
+                                <div class="col d-flex flex-column gap-3">
+                                    <div class="d-flex-flex-column">
+                                        <span class="text-muted">Experience:</span><br>
+                                        {{ member.experience }}
+                                    </div>
+                                </div>
+                                <div class="col d-flex flex-column gap-3">
+                                    <div class="d-flex-flex-column">
+                                        <span class="text-muted">Skills:</span><br>
+                                        {{ member.skills }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Probation -->
+                        <div class="border-bottom pb-3">
+                            <h4 class="mb-3">Probation</h4>
+                            <div class="row">
+                                <div class="col d-flex flex-column gap-3">
+                                    <div class="d-flex-flex-column">
+                                        <span class="text-muted">Probation start date:</span><br>
+                                        {{ member.probation_start_date }}
+                                    </div>
+                                </div>
+                                <div class="col d-flex flex-column gap-3">
+                                    <div class="d-flex-flex-column">
+                                        <span class="text-muted">Probation end date:</span><br>
+                                        {{ member.probation_end_date }}
+                                    </div>
+                                </div>
+                                <div class="col d-flex flex-column gap-3">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Promotion -->
+                        <div class="border-bottom pb-3">
+                            <h4 class="mb-3">Promotion</h4>
+                            <div class="row">
+                                <div class="col-4 d-flex flex-column gap-3">
+                                    <div class="d-flex-flex-column">
+                                        <span class="text-muted">Last promotion date:</span><br>
+                                        {{ member.last_promotion_date }}
+                                    </div>
+                                </div>
+                                <div class="col-8 d-flex flex-column gap-3">
+                                    <div class="d-flex-flex-column">
+                                        <span class="text-muted">Promotion reason:</span><br>
+                                        {{ member.promotion_reason }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Termination -->
+                        <div class="border-bottom pb-3">
+                            <h4 class="mb-3">Termination</h4>
+                            
+                            {% if member.termination_date %}
+                                <div class="row">
+                                    <div class="col-4 d-flex flex-column gap-3">
+                                        <div class="d-flex-flex-column">
+                                            <span class="text-muted">Termination date:</span><br>
+                                            {{ member.termination_date }}
+                                        </div>
+                                    </div>
+                                    <div class="col-8 d-flex flex-column gap-3">
+                                        <div class="d-flex-flex-column">
+                                            <span class="text-muted">Termination reason:</span><br>
+                                            {{ member.termination_reason }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <span class="text-muted">
+                                    Employee is not terminated
+                                </span>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+{% endblock scripts %}

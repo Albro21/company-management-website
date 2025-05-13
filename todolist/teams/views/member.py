@@ -6,7 +6,7 @@ import json
 
 # Django
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods
 
@@ -223,3 +223,11 @@ def edit_member(request, member_id):
         return JsonResponse({'success': True}, status=200)
     else:
         return JsonResponse({'success': False, 'error': f'Form contains errors: {form.errors.as_json()}'}, status=400)
+
+@login_required
+def member_detail(request, member_id):
+    member = request.user.member
+    if member.id == member_id or member.is_employer:
+        member = get_object_or_404(Member, id=member_id)
+        return render(request, 'teams/member_detail.html', {'member': member})
+    return HttpResponseForbidden("You do not have permission to view this page.")

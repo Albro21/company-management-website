@@ -9,6 +9,10 @@ body, .offcanvas, .dropdown-item, .dropdown-item:hover {
     color: white;
 }
 
+.text-muted {
+    color: #aaa !important;
+}
+
 .dropdown-item:hover {
     background-color: var(--bg-3);
 }

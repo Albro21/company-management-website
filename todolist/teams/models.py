@@ -1,18 +1,16 @@
+# Standard libs
 from collections import defaultdict
+from phonenumber_field.modelfields import PhoneNumberField
 
+# Django
 from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
+from .choices import *
 
 
 class Company(models.Model):
-    COMPANY_TYPES = [
-        ('client', 'Client'),
-        ('contractor', 'Contractor'),
-        ('internal', 'Internal'),
-        ('vendor', 'Vendor'),
-        ('other', 'Other'),
-    ]
+    COMPANY_TYPES = COMPANY_TYPES
     
     # Identity
     name = models.CharField(max_length=100, unique=True)
@@ -32,6 +30,7 @@ class Company(models.Model):
     address = models.CharField(max_length=255, blank=True)
     city = models.CharField(max_length=255, blank=True)
     country = models.CharField(max_length=100, blank=True)
+    zip_code = models.CharField(max_length=10, blank=True)
     
     @property
     def pending_vacation_requests(self):
@@ -62,17 +61,57 @@ class JobTitle(models.Model):
 
 
 class Member(models.Model):
+    EMPLOYEE_STATUSES = EMPLOYEE_STATUSES
+    CONTRACT_TYPES = CONTRACT_TYPES
+    
     class Role(models.TextChoices):
         EMPLOYER = 'employer', 'Employer'
         EMPLOYEE = 'employee', 'Employee'
     
     company = models.ForeignKey("teams.Company", on_delete=models.CASCADE, related_name="members")
     user = models.OneToOneField("users.CustomUser", on_delete=models.CASCADE, related_name="member")
-    rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
-    job_title = models.ForeignKey("teams.JobTitle", on_delete=models.SET_NULL, null=True, blank=True, related_name="members")
+    supervisor = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True, related_name="subordinates")
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.EMPLOYEE)
+    
+    rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.00, blank=True)
+    salary = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, blank=True)
+    
+    employee_id = models.CharField(max_length=20, unique=True, blank=True)
+    employee_status = models.CharField(max_length=50, choices=EMPLOYEE_STATUSES, default='active')
+    
+    job_title = models.ForeignKey("teams.JobTitle", on_delete=models.SET_NULL, blank=True, null=True, related_name="members")   
+    department = models.CharField(max_length=100, blank=True, null=True)
+    
+    mobile_phone = PhoneNumberField(region='GB', blank=True, null=True)
+    work_phone = PhoneNumberField(region='GB', blank=True, null=True)
+    emergency_phone = PhoneNumberField(region='GB', blank=True, null=True)
+    
+    personal_email = models.EmailField(blank=True, null=True)
+    work_email = models.EmailField(blank=True, null=True)
+    
+    date_of_joining = models.DateField(default=timezone.now, blank=True, null=True)
+    contract_type = models.CharField(max_length=50, choices=CONTRACT_TYPES, default='full_time')
+    
+    offline_location = models.CharField(max_length=100, blank=True, null=True)
+    offline_workstation_id = models.CharField(max_length=20, blank=True, null=True)
+    
     annual_vacation_days = models.PositiveIntegerField(default=20)
     used_vacation_days = models.PositiveIntegerField(default=0)
+    
+    probation_start_date = models.DateField(blank=True, null=True)
+    probation_end_date = models.DateField(blank=True, null=True)
+    
+    termination_date = models.DateField(blank=True, null=True)
+    termination_reason = models.TextField(blank=True, null=True)
+    
+    last_promotion_date = models.DateField(blank=True, null=True)
+    promotion_reason = models.TextField(blank=True, null=True)
+    
+    education = models.TextField(blank=True, null=True)
+    experience = models.TextField(blank=True, null=True)
+    skills = models.TextField(blank=True, null=True)
+    
+    linkedin_url = models.URLField(blank=True, null=True)
     
     @property
     def is_active(self):

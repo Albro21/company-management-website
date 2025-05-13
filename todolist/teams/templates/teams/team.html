@@ -164,9 +164,15 @@
                             <i class="bi bi-question-square" data-bs-toggle="tooltip" title="Request Vacation"></i>
                         </a>
                     {% endif %}
+
+                    {% if request.user.member.is_employer or request.user.member == member %}
+                        <!-- Member Details -->
+                        <a href="{% url 'teams:member_detail' member.id %}">
+                            <i class="bi-info-circle" data-bs-toggle="tooltip" title="View Member Details"></i>
+                        </a>
+                    {% endif %}
                 </div>
             </div>
-
             
             {% if request.user.member.is_employer %}
                 <!-- Assign Task Offcanvas -->
