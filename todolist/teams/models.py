@@ -1,5 +1,6 @@
 # Standard libs
 from collections import defaultdict
+import os
 from phonenumber_field.modelfields import PhoneNumberField
 
 # Django
@@ -7,6 +8,11 @@ from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
 from .choices import *
+
+
+def document_upload_path(instance, filename):
+    username = instance.member.user.username
+    return f'documents/{username}/{filename}'
 
 
 class Company(models.Model):
@@ -149,6 +155,30 @@ class Member(models.Model):
     
     def __str__(self):
         return f"{self.user.username} ({self.job_title})"
+
+
+class Document(models.Model):
+    DOCUMENT_TYPES = DOCUMENT_TYPES
+    
+    member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='documents')
+    document_type = models.CharField(max_length=50, choices=DOCUMENT_TYPES, default='other')
+    file = models.FileField(upload_to=document_upload_path)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def document_name(self):
+        return os.path.basename(self.file.name)
+    
+    def __str__(self):
+        return f"{self.member.user.full_name} - {self.document_type}"
+    
+    def delete(self, *args, **kwargs):
+        if self.file:
+            file_path = self.file.path
+            if os.path.exists(file_path):
+                os.remove(file_path)
+
+        super().delete(*args, **kwargs)
 
 
 class VacationRequest(models.Model):

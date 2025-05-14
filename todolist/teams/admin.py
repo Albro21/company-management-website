@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Company, JobTitle, Member, VacationRequest
+from .models import *
 
 class MemberInline(admin.TabularInline):
     model = Member
@@ -8,6 +8,14 @@ class MemberInline(admin.TabularInline):
 class JobTitleInline(admin.TabularInline):
     model = JobTitle
     extra = 1
+
+class DocumentInline(admin.TabularInline):
+    model = Document
+    extra = 0
+
+class VacationRequestInline(admin.StackedInline):
+    model = VacationRequest
+    extra = 0
 
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):
@@ -22,5 +30,7 @@ class CompanyAdmin(admin.ModelAdmin):
 class MemberAdmin(admin.ModelAdmin):
     list_display = ('user', 'job_title')
     search_fields = ('user__username', 'job_title')
+    inlines = [DocumentInline, VacationRequestInline]
 
 admin.site.register(VacationRequest)
+admin.site.register(Document)

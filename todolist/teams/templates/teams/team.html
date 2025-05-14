@@ -167,7 +167,7 @@
 
                     {% if request.user.member.is_employer or request.user.member == member %}
                         <!-- Member Details -->
-                        <a href="{% url 'teams:member_detail' member.id %}">
+                        <a href="{% url 'teams:member_detail' member.id %}?tab=information">
                             <i class="bi-info-circle" data-bs-toggle="tooltip" title="View Member Details"></i>
                         </a>
                     {% endif %}

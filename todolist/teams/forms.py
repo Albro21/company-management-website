@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from .models import Company, JobTitle, Member, VacationRequest
+from .models import *
 
 class CompanyForm(ModelForm):
     class Meta:
@@ -30,3 +30,9 @@ class VacationRequestForm(forms.ModelForm):
     class Meta:
         model = VacationRequest
         fields = ['start_date', 'end_date', 'reason']
+
+
+class DocumentForm(forms.ModelForm):
+    class Meta:
+        model = Document
+        fields = ['document_type', 'file']

@@ -12,46 +12,39 @@
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
 
             <!-- Information Nav -->
-            <button 
-                class="nav-link active" 
-                id="nav-home-tab" 
+            <div 
+                class="nav-link {% if request.GET.tab == 'information' %}active{% endif %}"
+                id="nav-information-tab" 
                 data-bs-toggle="tab" 
                 data-bs-target="#nav-information" 
                 type="button"
                 role="tab" 
                 aria-controls="nav-information" 
-                aria-selected="true">
+                aria-selected="true"
+                onclick="updateTab('information')">
                 Information
-            </button>
-            <!-- <button 
-                class="nav-link" 
-                id="nav-profile-tab" 
+            </div>
+            
+            <!-- Documents Nav -->
+            <div 
+                class="nav-link {% if request.GET.tab == 'documents' %}active{% endif %}" 
+                id="nav-documents-tab" 
                 data-bs-toggle="tab" 
-                data-bs-target="#nav-profile" 
+                data-bs-target="#nav-documents" 
                 type="button"
                 role="tab" 
-                aria-controls="nav-profile" 
-                aria-selected="false">
-                Profile
-            </button>
-            <button 
-                class="nav-link" 
-                id="nav-contact-tab" 
-                data-bs-toggle="tab" 
-                data-bs-target="#nav-contact" 
-                type="button"
-                role="tab" 
-                aria-controls="nav-contact" 
-                aria-selected="false">
-                Contact
-            </button> -->
+                aria-controls="nav-documents" 
+                aria-selected="true"
+                onclick="updateTab('documents')">
+                Documents
+            </div>
         </div>
     </nav>
     <div class="tab-content" id="nav-tabContent">
 
         <!-- Information Tab -->
-        <div class="tab-pane fade show active" id="nav-information" role="tabpanel" aria-labelledby="nav-information-tab" tabindex="0">
-            <div class="row pt-3">
+        <div class="tab-pane fade show {% if request.GET.tab == 'information' %}active{% endif %}" id="nav-information" role="tabpanel" aria-labelledby="nav-information-tab" tabindex="0">
+            <div class="row mt-3">
                 <div class="col-3 d-flex flex-column gap-3">
 
                     <!-- Profile Card  -->
@@ -363,8 +356,150 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Documents Tab -->
+        <div class="tab-pane fade show d-flex flex-column align-items-center {% if request.GET.tab == 'documents' %}active{% endif %}" id="nav-documents" role="tabpanel" aria-labelledby="nav-documents-tab" tabindex="0">
+            
+            <!-- Documents Header -->
+            <h3 class="mb-2 d-flex align-items-center justify-content-center mt-3">
+                Documents
+                {% if request.user.member == member %}
+                    <!-- Document Upload Button -->
+                    <button class="ms-3 btn btn-primary rounded-3 shadow-lg d-flex justify-content-center align-items-center"
+                        style="width: 30px; height: 30px;"
+                        data-bs-toggle="offcanvas" 
+                        data-bs-target="#documentUploadOffcanvas">
+                        <i class="bi bi-plus-lg" style="font-size: 20px; font-weight: bold;"></i>
+                    </button>
+                {% endif %}
+            </h3>
+
+            {% if request.user.member == member %}
+                <!-- Document Upload Offcanvas -->
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="documentUploadOffcanvas">
+                    <div class="offcanvas-header">
+                        <h4 class="offcanvas-title text-center">Upload Document</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <form method="post" class="d-flex flex-column gap-2" id="upload-document-form" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            <!-- Document Type -->
+                            <label for="id_document_type">Document Type:</label>
+                            <select name="document_type" class="form-control mb-2" id="id_document_type" required>
+                                {% for value, display in document_types %}
+                                    <option value="{{ value }}">{{ display }}</option>
+                                {% endfor %}
+                            </select>
+
+                            <!-- File -->
+                            <label for="id_file">File:</label>
+                            <input type="file" name="file" id="id_file" class="form-control mb-2" required>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </form>                                 
+                    </div>
+                </div>
+            {% endif %}
+
+            
+            {% if member.documents.all %}
+                <!-- Table Header -->
+                <div class="row py-2 w-100">
+                    <div class="col">Document Type</div>
+                    <div class="col text-center">Uploadet at</div>
+                    <div class="col text-center">document</div>
+                    <div class="col text-center">Actions</div>
+                </div>
+                <div class="d-flex flex-column align-items-center mb-4 w-100">
+                    {% for document in member.documents.all %}
+                        <div class="row py-2 w-100 list-item bg-2">
+                            <div class="col">
+                                {{ document.get_document_type_display }}
+                            </div>
+
+                            <div class="col text-center">
+                                {{ document.uploaded_at }}
+                            </div>
+
+                            <div class="col text-center">
+                                <a href="{{ document.file.url }}" target="_blank">{{ document.document_name }}</a>
+                            </div>
+
+                            <div class="col d-flex justify-content-center gap-3 action-icons">
+                                {% if request.user.member == member %}
+                                    <!-- Edit Document -->
+                                    <a data-bs-toggle="offcanvas" data-bs-target="#edit-document-{{ document.id }}">
+                                        <i class="bi bi-pencil" data-bs-toggle="tooltip" title="Edit"></i>
+                                    </a>
+
+                                    <!-- Delete Document -->
+                                    <a data-bs-toggle="modal" data-bs-target="#delete-document-modal-{{ document.id }}">
+                                        <i class="bi bi-trash" data-bs-toggle="tooltip" title="Delete"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if request.user.member == member %}
+                            <!-- Edit Document Offcanvas -->
+                            <div class="offcanvas offcanvas-end" tabindex="-1" id="edit-document-{{ document.id }}">
+                                <div class="offcanvas-header">
+                                    <h5 class="offcanvas-title" id="offcanvasRightLabel">Edit Document</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                                </div>
+                                <div class="offcanvas-body d-flex flex-column">
+                                    <form method="POST" class="d-flex flex-column edit-document-form" data-id="{{ document.id }}" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        
+                                        <!-- Document Type -->
+                                        <label for="id_document_type">Document Type:</label>
+                                        <select name="document_type" class="form-control mb-2" id="id_document_type" required>
+                                            {% for value, display in document_types %}
+                                                <option value="{{ value }}" {% if document.document_type == value %}selected{% endif %}>{{ display }}</option>
+                                            {% endfor %}
+                                        </select>
+
+                                        <!-- File -->
+                                        {% if document.file %}
+                                            <p class="mb-1">Current file: <a href="{{ document.file.url }}" target="_blank">{{ document.document_name }}</a></p>
+                                        {% endif %}
+                                        <label for="id_file">Update File:</label>
+                                        <input type="file" name="file" id="id_file" class="form-control mb-2">
+                                        
+                                        <!-- Submit Button -->
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- Delete Project Modal -->
+                            <div class="modal fade" id="delete-document-modal-{{ document.id }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content bg-1">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure you want to delete {{ document.document_name }}?</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="button" class="btn btn-danger" onclick="deleteDocument({{ document.id }})">Delete</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <span class="text-muted">No documents uploaded yet</span>
+            {% endif %}
+        </div>
     </div>
 {% endblock content %}
 
 {% block scripts %}
+    <script src="{% static 'js/member_detail.js' %}"></script>
 {% endblock scripts %}

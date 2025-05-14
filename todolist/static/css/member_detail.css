@@ -3,3 +3,7 @@
     margin-right: 0 !important;
     max-width: 100% !important;
 }
+
+.nav-link, .nav-link:hover {
+    color: var(--text-color);
+}

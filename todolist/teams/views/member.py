@@ -15,8 +15,8 @@ from common.decorators import parse_json_body
 from main.forms import TaskForm
 from main.models import Task
 from timetracker.models import TimeEntry
-from teams.forms import MemberForm
-from teams.models import Member
+from teams.forms import MemberForm, DocumentForm
+from teams.models import Member, Document
 from teams.decorators import employer_required
 
 
@@ -229,5 +229,42 @@ def member_detail(request, member_id):
     member = request.user.member
     if member.id == member_id or member.is_employer:
         member = get_object_or_404(Member, id=member_id)
-        return render(request, 'teams/member_detail.html', {'member': member})
+        selected_tab = request.GET.get('tab', 'information')
+        return render(request, 'teams/member_detail.html', {'member': member, 'selected_tab': selected_tab, 'document_types': Document.DOCUMENT_TYPES})
     return HttpResponseForbidden("You do not have permission to view this page.")
+
+@require_http_methods(["POST"])
+@login_required
+def create_document(request):
+    form = DocumentForm(request.POST, request.FILES)
+    if form.is_valid():
+        document = form.save(commit=False)
+        document.member = request.user.member
+        document.save()
+
+        return JsonResponse({'success': True, 'id': document.id}, status=201)
+    else:
+        return JsonResponse({'success': False, 'errors': f"Form contains errors: {form.errors.as_json()}"}, status=400)
+
+@require_http_methods(["DELETE"])
+@login_required
+def delete_document(request, document_id):
+    document = get_object_or_404(Document, id=document_id, member=request.user.member)
+    document.delete()
+    return JsonResponse({'success': True}, status=200)
+
+@require_http_methods(["POST"])
+@login_required
+def edit_document(request, document_id):
+    document = get_object_or_404(Document, id=document_id, member=request.user.member)
+    
+    if 'file' not in request.FILES:
+        form = DocumentForm(request.POST, instance=document)
+    else:
+        form = DocumentForm(request.POST, request.FILES, instance=document)
+    
+    if form.is_valid():
+        form.save()
+        return JsonResponse({'success': True}, status=200)
+    else:
+        return JsonResponse({'success': False, 'errors': f"Form contains errors: {form.errors.as_json()}"}, status=400)
