@@ -43,7 +43,7 @@
     <div class="tab-content" id="nav-tabContent">
 
         <!-- Information Tab -->
-        <div class="tab-pane fade show {% if request.GET.tab == 'information' %}active{% endif %}" id="nav-information" role="tabpanel" aria-labelledby="nav-information-tab" tabindex="0">
+        <div class="tab-pane fade {% if request.GET.tab == 'information' %}show active{% endif %}" id="nav-information" role="tabpanel" aria-labelledby="nav-information-tab" tabindex="0">
             <div class="row mt-3">
                 <div class="col-3 d-flex flex-column gap-3">
 
@@ -133,6 +133,175 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Edit Employee Button -->
+                    <div class="bg-2 rounded d-flex justify-content-center p-3 hover-card" data-bs-toggle="offcanvas" data-bs-target="#edit-employee-offcanvas">
+                        <h3>Edit Information</h3>
+                    </div>
+
+                    <!-- Edit Employee Offcanvas -->
+                    <div class="offcanvas offcanvas-end" tabindex="-1" id="edit-employee-offcanvas">
+                        <div class="offcanvas-header">
+                            <h5 class="offcanvas-title" id="offcanvasRightLabel">Edit {{ member.user.full_name }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body d-flex flex-column">
+                            <form method="POST" class="d-flex flex-column" id="edit-employee-form" data-id="{{ member.id }}" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                
+                                {% if request.user.member.is_employer %}
+                                    <h3 class="text-center py-2">Work Information</h3>
+
+                                    <!-- Role -->
+                                    <label for="id_role">Role:</label>
+                                    <select name="role" class="form-control mb-3" id="id_role" required>
+                                        {% for value, display in member.Role.choices %}
+                                            <option value="{{ value }}" {% if member.role == value %}selected{% endif %}>{{ display }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    
+                                    <!-- Employee Status -->
+                                    <label for="id_employee_status">Employee Status:</label>
+                                    <select name="employee_status" class="form-control mb-3" id="id_employee_status" required>
+                                        {% for value, display in member.EMPLOYEE_STATUSES  %}
+                                            <option value="{{ value }}" {% if member.employee_status == value %}selected{% endif %}>{{ display }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    
+                                    <!-- Contract Type -->
+                                    <label for="id_contract_type">Contract Type:</label>
+                                    <select name="contract_type" class="form-control mb-3" id="id_contract_type" required>
+                                        {% for value, display in member.CONTRACT_TYPES  %}
+                                            <option value="{{ value }}" {% if member.contract_type == value %}selected{% endif %}>{{ display }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    
+                                    <!-- Supervisor -->
+                                    <label for="id_supervisor">Supervisor:</label>
+                                    <select name="supervisor" class="form-control mb-3" id="id_supervisor">
+                                        {% for supervisor in member.company.members.all %}
+                                            <option value="{{ member.id }}"{% if member.supervisor and member.supervisor.id == supervisor.id and member.id != supervisor.id %}selected{% endif %}>
+                                                {{ supervisor.user.full_name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <!-- Job Title -->
+                                    <label for="id_job_title">Job Title:</label>
+                                    <select name="job_title" class="form-control mb-3" id="id_job_title">
+                                        {% for job_title in member.company.job_titles.all %}
+                                            <option value="{{ job_title.id }}" {% if member.job_title.id == job_title.id %}selected{% endif %}>
+                                                {{ job_title.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    
+                                    <!-- Offline Location -->
+                                    <label for="id_offline_location">Offline Location:</label>
+                                    <input type="text" class="form-control mb-3" id="id_offline_location" name="offline_location" value="{{ member.offline_location|default_if_none:'' }}">
+                                    
+                                    <!-- Offline Workstation ID -->
+                                    <label for="id_offline_workstation_id">Offline Workstation ID:</label>
+                                    <input type="text" class="form-control mb-3" id="id_offline_workstation_id" name="offline_workstation_id" value="{{ member.offline_workstation_id|default_if_none:'' }}">
+                                    
+                                    <!-- Rate -->
+                                    <label for="id_rate">Rate:</label>
+                                    <input type="number" step="0.01" min="0" class="form-control mb-3" id="id_rate" name="rate" value="{{ member.rate|default_if_none:'' }}">
+                                    
+                                    <!-- Salary -->
+                                    <label for="id_salary">Salary:</label>
+                                    <input type="number" step="0.01" min="0" class="form-control mb-3" id="id_salary" name="salary" value="{{ member.salary|default_if_none:'' }}">
+                                    
+                                    <!-- Department -->
+                                    <label for="id_department">Department:</label>
+                                    <input type="text" class="form-control mb-3" id="id_department" name="department" value="{{ member.department|default_if_none:'' }}">
+                                    
+                                    <!-- Employee ID -->
+                                    <label for="id_employee_id">Employee ID:</label>
+                                    <input type="text" class="form-control mb-3" id="id_employee_id" name="employee_id" value="{{ member.employee_id|default_if_none:'' }}">
+                                    
+                                    <!-- Date of Joining -->
+                                    <label for="id_date_of_joining">Date of Joining:</label>
+                                    <input type="date" class="form-control mb-3" id="id_date_of_joining" name="date_of_joining" value="{{ member.date_of_joining|date:'Y-m-d' }}">
+                                    
+                                    <!-- Annual Vacation Days -->
+                                    <label for="id_annual_vacation_days">Annual Vacation Days:</label>
+                                    <input type="number" step="1" min="0" class="form-control mb-3" id="id_annual_vacation_days" name="annual_vacation_days" value="{{ member.annual_vacation_days|default_if_none:'' }}">
+                                {% endif %}
+                                
+                                {% if request.user.member == member %}
+                                    <h3 class="text-center py-3 border-top">Contact Information</h3>
+                                    
+                                    <!-- Mobile Phone -->
+                                    <label for="id_mobile_phone">Mobile Phone:</label>
+                                    <input type="tel" class="form-control mb-3" id="id_mobile_phone" name="mobile_phone" value="{{ member.mobile_phone|default_if_none:'' }}">
+                                    
+                                    <!-- Work Phone -->
+                                    <label for="id_work_phone">Work Phone:</label>
+                                    <input type="tel" class="form-control mb-3" id="id_work_phone" name="work_phone" value="{{ member.work_phone|default_if_none:'' }}">
+                                    
+                                    <!-- Emergency Phone -->
+                                    <label for="id_emergency_phone">Emergency Phone:</label>
+                                    <input type="tel" class="form-control mb-3" id="id_emergency_phone" name="emergency_phone" value="{{ member.emergency_phone|default_if_none:'' }}">
+                                    
+                                    <!-- Personal Email -->
+                                    <label for="id_personal_email">Personal Email:</label>
+                                    <input type="email" class="form-control mb-3" id="id_personal_email" name="personal_email" value="{{ member.personal_email|default_if_none:'' }}">
+                                    
+                                    <!-- Work Email -->
+                                    <label for="id_work_email">Work Email:</label>
+                                    <input type="email" class="form-control mb-3" id="id_work_email" name="work_email" value="{{ member.work_email|default_if_none:'' }}">
+                                    
+                                    <!-- Address -->
+                                    <label for="id_address">Address:</label>
+                                    <input type="text" class="form-control mb-3" id="id_address" name="address" value="{{ member.address|default_if_none:'' }}">
+                                    
+                                    <!-- LinkedIn URL -->
+                                    <label for="id_linkedin_url">LinkedIn URL:</label>
+                                    <input type="text" class="form-control mb-3" id="id_linkedin_url" name="linkedin_url" value="{{ member.linkedin_url|default_if_none:'' }}">
+                                    
+                                    <h3 class="text-center py-3 border-top">Education, Experience and Skills</h3>
+                                    
+                                    <!-- Education -->
+                                    <label for="id_education">Education:</label>
+                                    <textarea name="education" id="id_education" placeholder="Education" class="form-control mb-3">{{ member.education|default_if_none:'' }}</textarea>
+                                    
+                                    <!-- Experience -->
+                                    <label for="id_experience">Experience:</label>
+                                    <textarea name="experience" id="id_experience" placeholder="Experience" class="form-control mb-3">{{ member.experience|default_if_none:'' }}</textarea>
+                                    
+                                    <!-- Skills -->
+                                    <label for="id_skills">Skills:</label>
+                                    <textarea name="skills" id="id_skills" placeholder="Skills" class="form-control mb-3">{{ member.skills|default_if_none:'' }}</textarea>
+                                {% endif %}
+                                
+                                {% if request.user.member.is_employer %}
+                                    <h3 class="text-center py-3 border-top">Probation</h3>
+
+                                    <!-- Probation Start Date -->
+                                    <label for="id_probation_start_date">Probation Start Date:</label>
+                                    <input type="date" class="form-control mb-3" id="id_probation_start_date" name="probation_start_date" value="{{ member.probation_start_date|default_if_none:''|date:'Y-m-d' }}">
+                                    
+                                    <!-- Probation End Date -->
+                                    <label for="id_probation_end_date">Probation End Date:</label>
+                                    <input type="date" class="form-control mb-3" id="id_probation_end_date" name="probation_end_date" value="{{ member.probation_end_date|default_if_none:''|date:'Y-m-d' }}">
+                                    
+                                    <h3 class="text-center py-3 border-top">Promotion</h3>
+                                    
+                                    <!-- Last Promotion Date -->
+                                    <label for="id_last_promotion_date">Last Promotion Date:</label>
+                                    <input type="date" class="form-control mb-3" id="id_last_promotion_date" name="last_promotion_date" value="{{ member.last_promotion_date|default_if_none:''|date:'Y-m-d' }}">
+                                    
+                                    <!-- Promotion Reason -->
+                                    <label for="id_promotion_reason">Promotion Reason:</label>
+                                    <textarea name="promotion_reason" id="id_promotion_reason" placeholder="Promotion Reason" class="form-control mb-3">{{ member.promotion_reason|default_if_none:'' }}</textarea>
+                                {% endif %}
+                                
+                                <!-- Submit Button -->
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="col-9">
@@ -141,55 +310,61 @@
                         <!-- Work Information -->
                         <div class="border-bottom pb-3">
                             <h4 class="mb-3">Work information</h4>
-                            <div class="row">
-                                <div class="col d-flex flex-column gap-3">
-                                    <div class="d-flex-flex-column">
-                                        <span class="text-muted">Role:</span><br>
-                                        {{ member.role }}
-                                    </div>
-                                    <div>
-                                        <span class="text-muted">Supervisor:</span><br>
-                                        {{ member.supervisor }}
-                                    </div>
-                                    <div>
-                                        <span class="text-muted">Rate:</span><br>
-                                        {{ member.rate }}
-                                    </div>
-                                    <div>
+                            <div class="d-flex flex-column gap-3">
+                                <div class="row">
+                                    <div class="col">
                                         <span class="text-muted">Employee ID:</span><br>
-                                        {{ member.employee_id }}
+                                        {{ member.employee_id|default_if_none:'' }}
                                     </div>
-                                </div>
-                                <div class="col d-flex flex-column gap-3">
-                                    <div>
+                                    <div class="col">
                                         <span class="text-muted">Employee status:</span><br>
-                                        {{ member.employee_status }}
+                                        {{ member.get_employee_status_display|default_if_none:'' }}
                                     </div>
-                                    <div>
-                                        <span class="text-muted">Job title:</span><br>
-                                        {{ member.job_title }}
-                                    </div>
-                                    <div>
-                                        <span class="text-muted">Department:</span><br>
-                                        {{ member.department }}
-                                    </div>
-                                    <div>
-                                        <span class="text-muted">Date of joining:</span><br>
-                                        {{ member.date_of_joining }}
+                                    <div class="col">
+                                        <span class="text-muted">Contract type:</span><br>
+                                        {{ member.get_contract_type_display|default_if_none:'' }}
                                     </div>
                                 </div>
-                                <div class="col d-flex flex-column gap-3">
-                                    <div>
-                                        <span class="text-muted">Contract type:</span><br>
-                                        {{ member.contract_type }}
+                                <div class="row">
+                                    <div class="col">
+                                        <span class="text-muted">Role:</span><br>
+                                        {{ member.role|default_if_none:'' }}
                                     </div>
-                                    <div>
+                                    <div class="col">
+                                        <span class="text-muted">Job title:</span><br>
+                                        {{ member.job_title.name|default_if_none:'' }}
+                                    </div>
+                                    <div class="col">
                                         <span class="text-muted">Offline location:</span><br>
-                                        {{ member.offline_location }}
+                                        {{ member.offline_location|default_if_none:'' }}
                                     </div>
-                                    <div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <span class="text-muted">Supervisor:</span><br>
+                                        {{ member.supervisor.user.full_name|default_if_none:'' }}
+                                    </div>
+                                    <div class="col">
+                                        <span class="text-muted">Department:</span><br>
+                                        {{ member.department|default_if_none:'' }}
+                                    </div>
+                                    <div class="col">
                                         <span class="text-muted">Offline workstation ID:</span><br>
-                                        {{ member.offline_workstation_id }}
+                                        {{ member.offline_workstation_id|default_if_none:'' }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <span class="text-muted">Rate:</span><br>
+                                        {{ member.rate|default_if_none:'' }}
+                                    </div>
+                                    <div class="col">
+                                        <span class="text-muted">Salary:</span><br>
+                                        {{ member.salary|default_if_none:'' }}
+                                    </div>
+                                    <div class="col">
+                                        <span class="text-muted">Date of joining:</span><br>
+                                        {{ member.date_of_joining|default_if_none:'' }}
                                     </div>
                                 </div>
                             </div>
@@ -198,23 +373,19 @@
                         <!-- Personal Information -->
                         <div class="border-bottom pb-3">
                             <h4 class="mb-3">Personal information</h4>
-                            <div class="row">
-                                <div class="col d-flex flex-column gap-3">
-                                    <div class="d-flex-flex-column">
+                            <div class="d-flex flex-column gap-3">
+                                <div class="row">
+                                    <div class="col">
                                         <span class="text-muted">Date of birth:</span><br>
-                                        {{ member.user.date_of_birth }}
+                                        {{ member.user.date_of_birth|default_if_none:'' }}
                                     </div>
-                                </div>
-                                <div class="col d-flex flex-column gap-3">
-                                    <div class="d-flex-flex-column">
+                                    <div class="col">
                                         <span class="text-muted">Age:</span><br>
-                                        {{ member.user.age }}
+                                        {{ member.user.age|default_if_none:'' }}
                                     </div>
-                                </div>
-                                <div class="col d-flex flex-column gap-3">
-                                    <div>
+                                    <div class="col">
                                         <span class="text-muted">Time zone:</span><br>
-                                        {{ member.user.timezone }}
+                                        {{ member.user.timezone|default_if_none:'' }}
                                     </div>
                                 </div>
                             </div>
@@ -223,40 +394,42 @@
                         <!-- Contact Information -->
                         <div class="border-bottom pb-3">
                             <h4 class="mb-3">Contact information</h4>
-                            <div class="row">
-                                <div class="col d-flex flex-column gap-3">
-                                    <div class="d-flex-flex-column">
+                            <div class="d-flex flex-column gap-3">
+                                <div class="row">
+                                    <div class="col">
                                         <span class="text-muted">Mobile phone:</span><br>
-                                        {{ member.mobile_phone }}
+                                        {{ member.mobile_phone|default_if_none:'' }}
                                     </div>
-                                    <div>
-                                        <span class="text-muted">Personal email:</span><br>
-                                        {{ member.personal_email }}
-                                    </div>
-                                    <div class="d-flex-flex-column">
-                                        <span class="text-muted">Linkedin:</span><br>
-                                        {{ member.linkedin_url }}
-                                    </div>
-                                </div>
-                                <div class="col d-flex flex-column gap-3">
-                                    <div class="d-flex-flex-column">
+                                    <div class="col">
                                         <span class="text-muted">Work phone:</span><br>
-                                        {{ member.work_phone }}
+                                        {{ member.work_phone|default_if_none:'' }}
                                     </div>
-                                    <div>
-                                        <span class="text-muted">Work email:</span><br>
-                                        {{ member.work_email }}
+                                    <div class="col">
+                                        <span class="text-muted">Emergency phone:</span><br>
+                                        {{ member.emergency_phone|default_if_none:'' }}
                                     </div>
                                 </div>
-                                <div class="col d-flex flex-column gap-3">
-                                    <div class="d-flex-flex-column">
-                                        <span class="text-muted">Emergency phone:</span><br>
-                                        {{ member.emergency_phone }}
+                                <div class="row">
+                                    <div class="col">
+                                        <span class="text-muted">Personal email:</span><br>
+                                        {{ member.personal_email|default_if_none:'' }}
                                     </div>
-                                    <div>
+                                    <div class="col">
+                                        <span class="text-muted">Work email:</span><br>
+                                        {{ member.work_email|default_if_none:'' }}
+                                    </div>
+                                    <div class="col">
                                         <span class="text-muted">Address:</span><br>
-                                        {{ member.user.address }}
+                                        {{ member.user.address|default_if_none:'' }}
                                     </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <span class="text-muted">Linkedin:</span><br>
+                                        {{ member.linkedin_url|default_if_none:'' }}
+                                    </div>
+                                    <div class="col"></div>
+                                    <div class="col"></div>
                                 </div>
                             </div>
                         </div>
@@ -264,23 +437,19 @@
                         <!-- Education, Experience and Skills -->
                         <div class="border-bottom pb-3">
                             <h4 class="mb-3">Education, Experience and Skills</h4>
-                            <div class="row">
-                                <div class="col d-flex flex-column gap-3">
-                                    <div class="d-flex-flex-column">
+                            <div class="d-flex flex-column gap-3">
+                                <div class="row">
+                                    <div class="col">
                                         <span class="text-muted">Education:</span><br>
-                                        {{ member.education }}
+                                        {{ member.education|default_if_none:'' }}
                                     </div>
-                                </div>
-                                <div class="col d-flex flex-column gap-3">
-                                    <div class="d-flex-flex-column">
+                                    <div class="col">
                                         <span class="text-muted">Experience:</span><br>
-                                        {{ member.experience }}
+                                        {{ member.experience|default_if_none:'' }}
                                     </div>
-                                </div>
-                                <div class="col d-flex flex-column gap-3">
-                                    <div class="d-flex-flex-column">
+                                    <div class="col">
                                         <span class="text-muted">Skills:</span><br>
-                                        {{ member.skills }}
+                                        {{ member.skills|default_if_none:'' }}
                                     </div>
                                 </div>
                             </div>
@@ -289,41 +458,47 @@
                         <!-- Probation -->
                         <div class="border-bottom pb-3">
                             <h4 class="mb-3">Probation</h4>
-                            <div class="row">
-                                <div class="col d-flex flex-column gap-3">
-                                    <div class="d-flex-flex-column">
-                                        <span class="text-muted">Probation start date:</span><br>
-                                        {{ member.probation_start_date }}
+
+                            {% if member.probation_start_date %}
+                                <div class="d-flex flex-column gap-3">
+                                    <div class="row">
+                                        <div class="col">
+                                            <span class="text-muted">Probation start date:</span><br>
+                                            {{ member.probation_start_date|default_if_none:'' }}
+                                        </div>
+                                        <div class="col">
+                                            <span class="text-muted">Probation end date:</span><br>
+                                            {{ member.probation_end_date|default_if_none:'' }}
+                                        </div>
+                                        <div class="col">
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col d-flex flex-column gap-3">
-                                    <div class="d-flex-flex-column">
-                                        <span class="text-muted">Probation end date:</span><br>
-                                        {{ member.probation_end_date }}
-                                    </div>
-                                </div>
-                                <div class="col d-flex flex-column gap-3">
-                                </div>
-                            </div>
+                            {% else %}
+                                <span class="text-muted">Employee wasn't on probation yet</span>
+                            {% endif %}
                         </div>
 
                         <!-- Promotion -->
                         <div class="border-bottom pb-3">
                             <h4 class="mb-3">Promotion</h4>
-                            <div class="row">
-                                <div class="col-4 d-flex flex-column gap-3">
-                                    <div class="d-flex-flex-column">
-                                        <span class="text-muted">Last promotion date:</span><br>
-                                        {{ member.last_promotion_date }}
+                            
+                            {% if member.last_promotion_date %}
+                                <div class="d-flex flex-column gap-3">
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <span class="text-muted">Last promotion date:</span><br>
+                                            {{ member.last_promotion_date|default_if_none:'' }}
+                                        </div>
+                                        <div class="col-8">
+                                            <span class="text-muted">Promotion reason:</span><br>
+                                            {{ member.promotion_reason|default_if_none:'' }}
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-8 d-flex flex-column gap-3">
-                                    <div class="d-flex-flex-column">
-                                        <span class="text-muted">Promotion reason:</span><br>
-                                        {{ member.promotion_reason }}
-                                    </div>
-                                </div>
-                            </div>
+                            {% else %}
+                                <span class="text-muted">Employee wasn't promoted yet</span>
+                            {% endif %}
                         </div>
 
                         <!-- Termination -->
@@ -331,34 +506,29 @@
                             <h4 class="mb-3">Termination</h4>
                             
                             {% if member.termination_date %}
-                                <div class="row">
-                                    <div class="col-4 d-flex flex-column gap-3">
-                                        <div class="d-flex-flex-column">
+                                <div class="d-flex flex-column gap-3">
+                                    <div class="row">
+                                        <div class="col-4">
                                             <span class="text-muted">Termination date:</span><br>
-                                            {{ member.termination_date }}
+                                            {{ member.termination_date|default_if_none:'' }}
                                         </div>
-                                    </div>
-                                    <div class="col-8 d-flex flex-column gap-3">
-                                        <div class="d-flex-flex-column">
+                                        <div class="col-8">
                                             <span class="text-muted">Termination reason:</span><br>
-                                            {{ member.termination_reason }}
+                                            {{ member.termination_reason|default_if_none:'' }}
                                         </div>
                                     </div>
                                 </div>
                             {% else %}
-                                <span class="text-muted">
-                                    Employee is not terminated
-                                </span>
+                                <span class="text-muted">Employee is not terminated</span>
                             {% endif %}
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
         
         <!-- Documents Tab -->
-        <div class="tab-pane fade show d-flex flex-column align-items-center {% if request.GET.tab == 'documents' %}active{% endif %}" id="nav-documents" role="tabpanel" aria-labelledby="nav-documents-tab" tabindex="0">
+        <div class="tab-pane fade d-flex flex-column align-items-center {% if request.GET.tab == 'documents' %}show active{% endif %}" id="nav-documents" role="tabpanel" aria-labelledby="nav-documents-tab" tabindex="0">
             
             <!-- Documents Header -->
             <h3 class="mb-2 d-flex align-items-center justify-content-center mt-3">

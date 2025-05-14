@@ -13,18 +13,22 @@ async function deleteDocument(documentId) {
         window.location.reload();
     }
 }
-// Upload Document
-document.getElementById('upload-document-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const url = '/teams/document/create/';
-    const formData = new FormData(e.target);
 
-    const data = await sendRequest(url, 'POST', formData);
-    if (data.success) {
-        window.location.reload();
-    }
-});
+// Upload Document
+uploadDocumentForm = document.getElementById('upload-document-form');
+if (uploadDocumentForm) {
+    uploadDocumentForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const url = '/teams/document/create/';
+        const formData = new FormData(e.target);
+
+        const data = await sendRequest(url, 'POST', formData);
+        if (data.success) {
+            window.location.reload();
+        }
+    });
+}
 
 // Edit Document
 async function editDocument(documentId, formData) {
@@ -49,3 +53,23 @@ document.querySelectorAll('.edit-document-form').forEach(form => {
         await editDocument(id, formData);
     });
 });
+
+// Edit Employee
+editEmployeeForm = document.getElementById('edit-employee-form');
+employeeId = editEmployeeForm.dataset.id;
+if (editEmployeeForm) {
+    editEmployeeForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const url = `/teams/member/${employeeId}/edit/`;
+        const formData = new FormData(e.target);
+        const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
+    
+        const data = await sendRequest(url, 'PATCH', requestBody);
+        if (data.success) {
+            window.location.reload();
+        } else {
+            alert("Please, enter a valid phone number (e.g. 0121 234 5678) or a number with an international call prefix");
+        }
+    });
+}

@@ -141,15 +141,17 @@
                 {% endif %}
 
                 <div class="col d-flex justify-content-center gap-3 action-icons">
+                    {% if request.user.member.is_employer or request.user.member == member %}
+                        <!-- Member Details -->
+                        <a href="{% url 'teams:member_detail' member.id %}?tab=information">
+                            <i class="bi-info-circle" data-bs-toggle="tooltip" title="View Member Details"></i>
+                        </a>
+                    {% endif %}
+                    
                     {% if request.user.member.is_employer %}
                         <!-- Assign Task -->
                         <a data-bs-toggle="offcanvas" data-bs-target="#assign-task-{{ member.id }}">
                             <i class="bi bi-plus-square" data-bs-toggle="tooltip" title="Assign Task"></i>
-                        </a>
-
-                        <!-- Edit Member -->
-                        <a data-bs-toggle="offcanvas" data-bs-target="#edit-member-{{ member.id }}">
-                            <i class="bi bi-pencil" data-bs-toggle="tooltip" title="Edit"></i>
                         </a>
                         
                         <!-- Analytics -->
@@ -162,13 +164,6 @@
                         <!-- Request Vacation -->
                         <a data-bs-toggle="offcanvas" data-bs-target="#request-vacation-{{ member.id }}">
                             <i class="bi bi-question-square" data-bs-toggle="tooltip" title="Request Vacation"></i>
-                        </a>
-                    {% endif %}
-
-                    {% if request.user.member.is_employer or request.user.member == member %}
-                        <!-- Member Details -->
-                        <a href="{% url 'teams:member_detail' member.id %}?tab=information">
-                            <i class="bi-info-circle" data-bs-toggle="tooltip" title="View Member Details"></i>
                         </a>
                     {% endif %}
                 </div>
@@ -232,54 +227,6 @@
                             <!-- Submit Button -->
                             <button type="submit" class="btn btn-primary px-3">Save</button>
                         </form>                                
-                    </div>
-                </div>
-                
-                <!-- Edit Member Offcanvas -->
-                <div class="offcanvas offcanvas-end" tabindex="-1" id="edit-member-{{ member.id }}">
-                    <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="offcanvasRightLabel">Edit Member: {{ member.user.full_name }}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                    </div>
-                    <div class="offcanvas-body d-flex flex-column justify-content-between">
-                        <form method="post" class="d-flex flex-column edit-member-form" data-member-id="{{ member.id }}">
-                            {% csrf_token %}
-                            
-                            <!-- Rate -->
-                            <label for="id_rate">Rate:</label>
-                            <input type="text" name="rate" id="id_rate" placeholder="Rate" class="form-control mb-2" value="{{ member.rate }}" required maxlength="100">
-                            
-                            <!-- Job Title -->
-                            <label for="id_job_title">Job Title:</label>
-                            <select name="job_title" class="form-control mb-2" id="id_job_title" required>
-                                <option value="" disabled {% if not member.job_title %} selected {% endif %}>Select Job Title</option>
-                                {% for job_title in company.job_titles.all %}
-                                    <option value="{{ job_title.id }}" {% if member.job_title and member.job_title.id == job_title.id %} selected {% endif %}>{{ job_title.name }}</option>
-                                {% endfor %}
-                            </select>
-                            
-                            <!-- Role -->
-                            <label for="id_role">Role:</label>
-                            <select name="role" class="form-control mb-3" id="id_role" required>
-                                {% for value, display in member.Role.choices %}
-                                    <option value="{{ value }}" {% if member.role == value %}selected{% endif %}>{{ display }}</option>
-                                {% endfor %}
-                            </select>
-
-                            <label for="id_annual_vacation_days">Annual Vacation Days:</label>
-                            <input type="number" name="annual_vacation_days" id="id_annual_vacation_days" placeholder="Annual Vacation Days" class="form-control mb-2" value="{{ member.annual_vacation_days }}" required min="0" max="100" step="1">
-
-                            <!-- Submit Button -->
-                            <button type="submit" class="btn btn-primary">Save</button>
-                        </form>
-                        
-                        <!-- Kick Member Button -->
-                        {% if request.user.member.id != member.id %}
-                            <form action="{% url 'teams:kick_member' member.id %}" method="post">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger w-100">Kick Member</button>
-                            </form>
-                        {% endif %}
                     </div>
                 </div>
             {% endif %}

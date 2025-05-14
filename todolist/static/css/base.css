@@ -34,6 +34,10 @@ html {
     cursor: pointer;
 }
 
+.hover-card:hover {
+    background-color: var(--bg-3);
+}
+
 .badge {
     color: var(--text-color);
 }

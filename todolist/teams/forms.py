@@ -23,7 +23,7 @@ class JobTitleForm(forms.ModelForm):
 class MemberForm(forms.ModelForm):
     class Meta:
         model = Member
-        fields = ['rate', 'job_title', 'role', 'annual_vacation_days']
+        exclude = ['user', 'company', 'used_vacation_days']
 
 
 class VacationRequestForm(forms.ModelForm):

@@ -47,7 +47,7 @@ def create_vacation_request(request):
         
         return JsonResponse({'success': True, 'id': vacation_request.id}, status=201)
     else:
-        return JsonResponse({'success': False, 'errors': vacation_request_form.errors}, status=400)
+        return JsonResponse({'success': False, 'error': vacation_request_form.errors}, status=400)
 
 @require_http_methods(["PATCH"])
 @login_required

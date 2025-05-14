@@ -240,27 +240,6 @@ document.querySelectorAll('.assign-task-form').forEach(form => {
     });
 });
 
-async function editMember(memberId, formData) {
-    const url = `/teams/member/${memberId}/edit/`;
-    const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
-    const data = await sendRequest(url, 'PATCH', requestBody);
-
-    if (data.success) {
-        window.location.reload();
-    }
-}
-
-document.querySelectorAll('.edit-member-form').forEach(form => {
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const memberId = form.dataset.memberId;
-        const formData = new FormData(form);
-        
-        await editMember(memberId, formData);
-    });
-});
-
 async function requestVacation(memberId, formData) {
     const errorElement = document.getElementById(`request-vacation-errors-${memberId}`);
 

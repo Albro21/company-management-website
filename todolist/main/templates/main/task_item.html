@@ -1,7 +1,5 @@
 <div class="task-item list-item pointer bg-2"
     style="display: flex;"
-    data-bs-toggle="collapse"
-    data-bs-target="#task-collapse-{{ task.id }}"
     id="task-{{ task.id }}"
     data-category-ids="{% for category in task.categories.all %}{{ category.id }}{% if not forloop.last %},{% endif %}{% endfor %}"
     data-is-high-priority="{{ task.is_high_priority }}"
@@ -49,7 +47,7 @@
                 {% endif %}
             </div>
 
-            <div class="col-1 d-flex align-items-center justify-content-center" style="color: {{ task.project.color }}">
+            <div class="col-1 d-flex align-items-center justify-content-center text-center" style="color: {{ task.project.color }};">
                 {{ task.project.title }}
             </div>
 
@@ -59,7 +57,7 @@
 
             <div class="col-1 d-flex gap-3 action-icons justify-content-center align-items-center">
                 
-                <i class="bi bi-info-circle"></i>
+                <i class="bi bi-info-circle" data-bs-toggle="collapse" data-bs-target="#task-collapse-{{ task.id }}"></i>
 
                 <!-- Edit Task -->
                 <a data-bs-toggle="offcanvas" data-bs-target="#edit-task-{{ task.id }}">

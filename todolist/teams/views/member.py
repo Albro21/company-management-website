@@ -212,11 +212,22 @@ def assign_task(request, member_id):
 
 @require_http_methods(["PATCH"])
 @login_required
-@employer_required
 @parse_json_body
 def edit_member(request, member_id):
     member = get_object_or_404(Member, id=member_id)
-    form = MemberForm(request.json_data, instance=member)
+    data = request.json_data
+    
+    if request.user.member.is_employee:
+        sensitive_fields = [
+            'role', 'employee_status', 'contract_type', 'supervisor', 'job_title',
+            'offline_location', 'offline_workstation_id', 'rate', 'salary',
+            'department', 'employee_id', 'date_of_joining', 'annual_vacation_days'
+        ]
+
+        for field in sensitive_fields:
+            data[field] = getattr(member, field)
+    
+    form = MemberForm(data, instance=member)
 
     if form.is_valid():
         form.save()
@@ -244,7 +255,7 @@ def create_document(request):
 
         return JsonResponse({'success': True, 'id': document.id}, status=201)
     else:
-        return JsonResponse({'success': False, 'errors': f"Form contains errors: {form.errors.as_json()}"}, status=400)
+        return JsonResponse({'success': False, 'error': f"Form contains errors: {form.errors.as_json()}"}, status=400)
 
 @require_http_methods(["DELETE"])
 @login_required
@@ -267,4 +278,4 @@ def edit_document(request, document_id):
         form.save()
         return JsonResponse({'success': True}, status=200)
     else:
-        return JsonResponse({'success': False, 'errors': f"Form contains errors: {form.errors.as_json()}"}, status=400)
+        return JsonResponse({'success': False, 'error': f"Form contains errors: {form.errors.as_json()}"}, status=400)
