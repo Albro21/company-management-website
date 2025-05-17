@@ -23,7 +23,6 @@ class CustomUser(AbstractUser):
     profile_picture = models.ImageField(upload_to='profile_pics/', default='profile_pics/default.jpg')
     phone_number = PhoneNumberField(region='GB', null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
-    address = models.CharField(max_length=255, blank=True)
     city = models.CharField(max_length=255, blank=True)
     country = models.CharField(max_length=100, blank=True)
     

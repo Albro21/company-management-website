@@ -14,6 +14,10 @@ def document_upload_path(instance, filename):
     username = instance.member.user.username
     return f'documents/{username}/{filename}'
 
+def receipt_upload_path(instance, filename):
+    company = instance.member.company.name
+    return f'receipts/{company}/{filename}'
+
 
 class Company(models.Model):
     COMPANY_TYPES = COMPANY_TYPES
@@ -82,7 +86,7 @@ class Member(models.Model):
     rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.00, blank=True)
     salary = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, blank=True)
     
-    employee_id = models.CharField(max_length=20, unique=True, blank=True)
+    employee_id = models.CharField(max_length=20, blank=True, null=True)
     employee_status = models.CharField(max_length=50, choices=EMPLOYEE_STATUSES, default='active')
     
     job_title = models.ForeignKey("teams.JobTitle", on_delete=models.SET_NULL, blank=True, null=True, related_name="members")   
@@ -98,6 +102,7 @@ class Member(models.Model):
     date_of_joining = models.DateField(default=timezone.now, blank=True, null=True)
     contract_type = models.CharField(max_length=50, choices=CONTRACT_TYPES, default='full_time')
     
+    address = models.CharField(max_length=100, blank=True, null=True)
     offline_location = models.CharField(max_length=100, blank=True, null=True)
     offline_workstation_id = models.CharField(max_length=20, blank=True, null=True)
     
@@ -154,7 +159,7 @@ class Member(models.Model):
         return dict(result)
     
     def __str__(self):
-        return f"{self.user.username} ({self.job_title})"
+        return f"{self.user.full_name} ({self.job_title})"
 
 
 class Document(models.Model):
@@ -175,6 +180,36 @@ class Document(models.Model):
     def delete(self, *args, **kwargs):
         if self.file:
             file_path = self.file.path
+            if os.path.exists(file_path):
+                os.remove(file_path)
+
+        super().delete(*args, **kwargs)
+
+
+class Expense(models.Model):
+    member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='expenses')
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='expenses')
+    date = models.DateField()
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.CharField(max_length=100, blank=True, null=True)
+    receipt = models.FileField(upload_to=receipt_upload_path)
+    category = models.CharField(max_length=50, blank=True, null=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    @property
+    def receipt_name(self):
+        return os.path.basename(self.receipt.name)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Expense for {self.member.user.username} on {self.date} ({self.amount}£)"
+    
+    def delete(self, *args, **kwargs):
+        if self.receipt:
+            file_path = self.receipt.path
             if os.path.exists(file_path):
                 os.remove(file_path)
 

@@ -16,6 +16,10 @@ urlpatterns = [
     path('document/<int:document_id>/delete/', member.delete_document, name='delete_document'),
     path('document/<int:document_id>/edit/', member.edit_document, name='edit_document'),
     
+    path('expense/create/', member.create_expense, name='create_expense'),
+    path('expense/<int:expense_id>/delete/', member.delete_expense, name='delete_expense'),
+    path('expense/<int:expense_id>/edit/', member.edit_expense, name='edit_expense'),
+    
     path('project-weekly-report/<int:project_id>/', reports.project_weekly_report, name='project_weekly_report'),
     path('project-monthly-report/<int:project_id>/', reports.project_monthly_report, name='project_monthly_report'),
     

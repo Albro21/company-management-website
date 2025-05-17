@@ -36,3 +36,8 @@ class DocumentForm(forms.ModelForm):
     class Meta:
         model = Document
         fields = ['document_type', 'file']
+
+class ExpenseForm(forms.ModelForm):
+    class Meta:
+        model = Expense
+        fields = ['date', 'amount', 'description', 'receipt', 'category']

@@ -5,7 +5,10 @@ db.sqlite3
 **/migrations/*
 !**/migrations/__init__.py
 data.json
+
+# Media files
 */media/profile_pics/*
 !*/media/profile_pics/default.jpg
 */media/company_logos/*
 */media/documents/*
+*/media/receipts/*
