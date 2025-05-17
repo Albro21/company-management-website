@@ -1,4 +1,6 @@
 from .company import *
+from .document import *
+from .expense import *
 from .general import *
 from .job_title import *
 from .join_request import *

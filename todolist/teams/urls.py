@@ -1,5 +1,5 @@
 from django.urls import path
-from teams.views import company, general, job_title, join_request, member, reports, vacation_request
+from teams.views import company, document, expense, general, job_title, join_request, member, reports, vacation_request
 
 app_name = 'teams'
 
@@ -12,13 +12,13 @@ urlpatterns = [
     path('member/<int:member_id>/edit/', member.edit_member, name='edit_member'),
     path('member/<int:member_id>/', member.member_detail, name='member_detail'),
     
-    path('document/create/', member.create_document, name='create_document'),
-    path('document/<int:document_id>/delete/', member.delete_document, name='delete_document'),
-    path('document/<int:document_id>/edit/', member.edit_document, name='edit_document'),
+    path('document/create/', document.create_document, name='create_document'),
+    path('document/<int:document_id>/delete/', document.delete_document, name='delete_document'),
+    path('document/<int:document_id>/edit/', document.edit_document, name='edit_document'),
     
-    path('expense/create/', member.create_expense, name='create_expense'),
-    path('expense/<int:expense_id>/delete/', member.delete_expense, name='delete_expense'),
-    path('expense/<int:expense_id>/edit/', member.edit_expense, name='edit_expense'),
+    path('expense/create/', expense.create_expense, name='create_expense'),
+    path('expense/<int:expense_id>/delete/', expense.delete_expense, name='delete_expense'),
+    path('expense/<int:expense_id>/edit/', expense.edit_expense, name='edit_expense'),
     
     path('project-weekly-report/<int:project_id>/', reports.project_weekly_report, name='project_weekly_report'),
     path('project-monthly-report/<int:project_id>/', reports.project_monthly_report, name='project_monthly_report'),
