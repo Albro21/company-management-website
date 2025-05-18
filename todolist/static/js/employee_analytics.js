@@ -1,13 +1,13 @@
 const totalTimeElement = document.getElementById("total_time");
 
 document.addEventListener("DOMContentLoaded", function () {
-    const stackedBarCanvas = document.getElementById("memberChart");
+    const stackedBarCanvas = document.getElementById("employeeChart");
     const stackedBarCTX = stackedBarCanvas.getContext("2d");
     
     const donutCanvas = document.getElementById("donutChart");
     const donutCTX = donutCanvas.getContext("2d");
 
-    const memberId = stackedBarCanvas.dataset.memberId;
+    const employeeId = stackedBarCanvas.dataset.employeeId;
     
     Chart.register(ChartDataLabels);
 
@@ -166,7 +166,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     async function fetchChartData(filter) {
-        const url = `/teams/member/${memberId}/analytics/`;
+        const url = `/teams/employee/${employeeId}/analytics/`;
         const requestBody = JSON.stringify({ filter: filter});
     
         const data = await sendRequest(url, "POST", requestBody);

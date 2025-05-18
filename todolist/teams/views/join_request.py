@@ -6,7 +6,7 @@ from django.views.decorators.http import require_http_methods
 
 # Local apps
 from teams.decorators import employer_required
-from teams.models import Company, JoinRequest, Member
+from teams.models import Company, JoinRequest
 
 
 @require_http_methods(["POST"])
@@ -35,11 +35,7 @@ def create_join_request(request):
 @employer_required
 def accept_join_request(request, request_id):
     join_request = JoinRequest.objects.get(id=request_id)
-    Member.objects.create(
-        company=join_request.company,
-        user=join_request.user
-    )
-    join_request.user.join_company(join_request.company)
+    join_request.user.join_company(join_request.company, role="employee")
     join_request.delete()
     return redirect('teams:team')
 

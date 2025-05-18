@@ -16,7 +16,7 @@ def create_expense(request):
     if form.is_valid():
         expense = form.save(commit=False)
         expense.company = request.user.company
-        expense.member = request.user.member
+        expense.user = request.user
         expense.save()
 
         return JsonResponse({'success': True, 'id': expense.id}, status=201)
@@ -26,14 +26,14 @@ def create_expense(request):
 @require_http_methods(["DELETE"])
 @login_required
 def delete_expense(request, expense_id):
-    expense = get_object_or_404(Expense, id=expense_id, member=request.user.member)
+    expense = get_object_or_404(Expense, id=expense_id, user=request.user)
     expense.delete()
     return JsonResponse({'success': True}, status=200)
 
 @require_http_methods(["POST"])
 @login_required
 def edit_expense(request, expense_id):
-    expense = get_object_or_404(Expense, id=expense_id, member=request.user.member)
+    expense = get_object_or_404(Expense, id=expense_id, user=request.user)
     
     if 'receipt' not in request.FILES:
         form = ExpenseForm(request.POST, instance=expense)

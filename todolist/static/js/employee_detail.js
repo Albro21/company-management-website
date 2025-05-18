@@ -12,15 +12,16 @@ if (editEmployeeForm) {
     editEmployeeForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        const url = `/teams/member/${employeeId}/edit/`;
+        const url = `/teams/employee/${employeeId}/edit/`;
         const formData = new FormData(e.target);
+        formData.delete('csrfmiddlewaretoken');
         const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
     
         const data = await sendRequest(url, 'PATCH', requestBody);
         if (data.success) {
             window.location.reload();
         } else {
-            alert("Please, enter a valid phone number (e.g. 0121 234 5678) or a number with an international call prefix");
+            alert(data.error);
         }
     });
 }

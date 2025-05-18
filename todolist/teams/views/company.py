@@ -3,28 +3,26 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth import get_user_model
 
 # Local apps
 from teams.decorators import employer_required
 from teams.forms import CompanyForm, JobTitleForm
-from teams.models import Member
 
+
+User = get_user_model()
 
 @login_required
 def create_company(request):
     if request.method == 'POST':
         form = CompanyForm(request.POST, request.FILES)
+        user = request.user
         
         if form.is_valid():
             company = form.save(commit=False)
-            company.created_by = request.user
+            company.created_by = user
             company.save()
-            request.user.join_company(company)
-            Member.objects.create(
-                company=company,
-                user=request.user,
-                role=Member.Role.EMPLOYER
-            )
+            user.join_company(company, role='employer')
             return redirect('teams:team') 
         
         return render(request, 'teams/create_company.html', {'form': form})
@@ -81,13 +79,13 @@ def leave_company(request):
 @require_http_methods(["POST"])
 @login_required
 @employer_required
-def kick_member(request, member_id):
-    member = get_object_or_404(Member, id=member_id)
+def kick_employee(request, employee_id):
+    employee = get_object_or_404(User, id=employee_id)
     
-    if request.user == member.user:
+    if request.user == employee:
         messages.error(request, "You cannot kick yourself.")
         return redirect("teams:team")
 
-    member.user.leave_company()
-    messages.success(request, f"{member.user.full_name} was kicked from the company.")
+    employee.leave_company()
+    messages.success(request, f"{employee.full_name} was kicked from the company.")
     return redirect("teams:team")

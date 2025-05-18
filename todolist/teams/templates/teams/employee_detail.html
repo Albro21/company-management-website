@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ member.user.full_name }}{% endblock title %}
+{% block title %}{{ employee.full_name }}{% endblock title %}
 
 {% block styles %}
-    <link rel="stylesheet" href="{% static 'css/member_detail.css' %}">
+    <link rel="stylesheet" href="{% static 'css/employee_detail.css' %}">
 {% endblock styles %}
 
 {% block content %}
@@ -63,8 +63,8 @@
 
                     <!-- Profile Card  -->
                     <div class="bg-2 rounded d-flex flex-column p-3 gap-3 align-items-center">
-                        <img src="{{ member.user.profile_picture.url }}" class="w-75 rounded-circle" alt="Profile Picture">
-                        <h2>{{ member.user.full_name }}</h2>
+                        <img src="{{ employee.profile_picture.url }}" class="w-75 rounded-circle" alt="Profile Picture">
+                        <h2>{{ employee.full_name }}</h2>
                     </div>
 
                     <!-- Contact Card -->
@@ -75,63 +75,63 @@
                             <div class="row">
                                 <div class="col-1"><i class="bi bi-at"></i></div>
                                 <div class="col-3">Username:</div>
-                                <div class="col-8">{{ member.user.username }}</div>
+                                <div class="col-8">{{ employee.username }}</div>
                             </div>
                             
-                            {% if member.personal_email %}
+                            {% if employee.personal_email %}
                             <div class="row">
                                 <div class="col-1"><i class="bi bi-envelope-at"></i></div>
                                 <div class="col-3">Personal:</div>
-                                <div class="col-8">{{ member.personal_email }}</div>
+                                <div class="col-8">{{ employee.personal_email }}</div>
                             </div>
                             {% endif %}
                             
-                            {% if member.work_email %}
+                            {% if employee.work_email %}
                             <div class="row">
                                 <div class="col-1"><i class="bi bi-envelope"></i></div>
                                 <div class="col-3">Work:</div>
-                                <div class="col-8">{{ member.work_email }}</div>
+                                <div class="col-8">{{ employee.work_email }}</div>
                             </div>
                             {% endif %}
                             
-                            {% if member.mobile_phone %}
+                            {% if employee.mobile_phone %}
                                 <div class="row">
                                     <div class="col-1"><i class="bi bi-phone"></i></div>
                                     <div class="col-3">Mobile:</div>
-                                    <div class="col-8">{{ member.mobile_phone }}</div>
+                                    <div class="col-8">{{ employee.mobile_phone }}</div>
                                 </div>
                             {% endif %}
                             
-                            {% if member.work_phone %}
+                            {% if employee.work_phone %}
                                 <div class="row">
                                     <div class="col-1"><i class="bi bi-telephone"></i></div>
                                     <div class="col-3">Work:</div>
-                                    <div class="col-8">{{ member.work_phone }}</div>
+                                    <div class="col-8">{{ employee.work_phone }}</div>
                                 </div>
                             {% endif %}
                             
-                            {% if member.emergency_phone %}
+                            {% if employee.emergency_phone %}
                                 <div class="row">
                                     <div class="col-1"><i class="bi bi-telephone-plus"></i></div>
                                     <div class="col-3">Emergency:</div>
-                                    <div class="col-8">{{ member.emergency_phone }}</div>
+                                    <div class="col-8">{{ employee.emergency_phone }}</div>
                                 </div>
                             {% endif %}
                             
-                            {% if member.address %}
+                            {% if employee.address %}
                                 <div class="row">
                                     <div class="col-1"><i class="bi bi-geo-alt"></i></div>
                                     <div class="col-3">Address:</div>
-                                    <div class="col-8">{{ member.address }}</div>
+                                    <div class="col-8">{{ employee.address }}</div>
                                 </div>
                             {% endif %}
 
                             
-                            {% if member.linkedin_url %}
+                            {% if employee.linkedin_url %}
                                 <div class="row">
                                     <div class="col-1"><i class="bi bi-linkedin"></i></div>
                                     <div class="col-3">LinkedIn:</div>
-                                    <div class="col-8"><a href="{{ member.linkedin_url }}" target="_blank">LinkedIn</a></div>
+                                    <div class="col-8"><a href="{{ employee.linkedin_url }}" target="_blank">LinkedIn</a></div>
                                 </div>
                             {% endif %}
                         </div>
@@ -144,15 +144,15 @@
 
                             <div class="row">
                                 <div class="col-8">Annual vacation Days:</div>
-                                <div class="col-4 text-center">{{ member.annual_vacation_days }}</div>
+                                <div class="col-4 text-center">{{ employee.annual_vacation_days }}</div>
                             </div>
                             <div class="row">
                                 <div class="col-8">Used vacation Days:</div>
-                                <div class="col-4 text-center">{{ member.used_vacation_days }}</div>
+                                <div class="col-4 text-center">{{ employee.used_vacation_days }}</div>
                             </div>
                             <div class="row">
                                 <div class="col-8">Remaining vacation Days:</div>
-                                <div class="col-4 text-center">{{ member.remaining_vacation_days }}</div>
+                                <div class="col-4 text-center">{{ employee.remaining_vacation_days }}</div>
                             </div>
                         </div>
                     </div>
@@ -165,55 +165,58 @@
                     <!-- Edit Employee Offcanvas -->
                     <div class="offcanvas offcanvas-end" tabindex="-1" id="edit-employee-offcanvas">
                         <div class="offcanvas-header">
-                            <h5 class="offcanvas-title" id="offcanvasRightLabel">Edit {{ member.user.full_name }}</h5>
+                            <h5 class="offcanvas-title" id="offcanvasRightLabel">Edit {{ employee.full_name }}</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                         </div>
                         <div class="offcanvas-body d-flex flex-column">
-                            <form method="POST" class="d-flex flex-column" id="edit-employee-form" data-id="{{ member.id }}" enctype="multipart/form-data">
+                            <form method="POST" class="d-flex flex-column" id="edit-employee-form" data-id="{{ employee.id }}" enctype="multipart/form-data">
                                 {% csrf_token %}
-                                
-                                {% if request.user.member.is_employer %}
+                                {% if request.user.is_employer %}
                                     <h3 class="text-center py-2">Work Information</h3>
 
                                     <!-- Role -->
                                     <label for="id_role">Role:</label>
                                     <select name="role" class="form-control mb-3" id="id_role" required>
-                                        {% for value, display in member.Role.choices %}
-                                            <option value="{{ value }}" {% if member.role == value %}selected{% endif %}>{{ display }}</option>
+                                        {% for value, display in employee.ROLES %}
+                                            <option value="{{ value }}" {% if employee.role == value %}selected{% endif %}>{{ display }}</option>
                                         {% endfor %}
                                     </select>
                                     
                                     <!-- Employee Status -->
                                     <label for="id_employee_status">Employee Status:</label>
                                     <select name="employee_status" class="form-control mb-3" id="id_employee_status" required>
-                                        {% for value, display in member.EMPLOYEE_STATUSES  %}
-                                            <option value="{{ value }}" {% if member.employee_status == value %}selected{% endif %}>{{ display }}</option>
+                                        {% for value, display in employee.EMPLOYEE_STATUSES  %}
+                                            <option value="{{ value }}" {% if employee.employee_status == value %}selected{% endif %}>{{ display }}</option>
                                         {% endfor %}
                                     </select>
                                     
                                     <!-- Contract Type -->
                                     <label for="id_contract_type">Contract Type:</label>
                                     <select name="contract_type" class="form-control mb-3" id="id_contract_type" required>
-                                        {% for value, display in member.CONTRACT_TYPES  %}
-                                            <option value="{{ value }}" {% if member.contract_type == value %}selected{% endif %}>{{ display }}</option>
+                                        {% for value, display in employee.CONTRACT_TYPES  %}
+                                            <option value="{{ value }}" {% if employee.contract_type == value %}selected{% endif %}>{{ display }}</option>
                                         {% endfor %}
                                     </select>
                                     
                                     <!-- Supervisor -->
                                     <label for="id_supervisor">Supervisor:</label>
                                     <select name="supervisor" class="form-control mb-3" id="id_supervisor">
-                                        {% for supervisor in member.company.members.all %}
-                                            <option value="{{ member.id }}"{% if member.supervisor and member.supervisor.id == supervisor.id and member.id != supervisor.id %}selected{% endif %}>
-                                                {{ supervisor.user.full_name }}
-                                            </option>
+                                        <option value="">Select a supervisor</option>
+                                        {% for supervisor in employee.company.employees.all %}
+                                            {% if supervisor != employee %}
+                                                <option value="{{ supervisor.id }}"{% if employee.supervisor == supervisor %}selected{% endif %}>
+                                                    {{ supervisor.full_name }}
+                                                </option>
+                                            {% endif %}
                                         {% endfor %}
                                     </select>
 
                                     <!-- Job Title -->
                                     <label for="id_job_title">Job Title:</label>
                                     <select name="job_title" class="form-control mb-3" id="id_job_title">
-                                        {% for job_title in member.company.job_titles.all %}
-                                            <option value="{{ job_title.id }}" {% if member.job_title.id == job_title.id %}selected{% endif %}>
+                                        <option value="">Select a job title</option>
+                                        {% for job_title in employee.company.job_titles.all %}
+                                            <option value="{{ job_title.id }}" {% if employee.job_title.id == job_title.id %}selected{% endif %}>
                                                 {{ job_title.name }}
                                             </option>
                                         {% endfor %}
@@ -221,103 +224,103 @@
                                     
                                     <!-- Offline Location -->
                                     <label for="id_offline_location">Offline Location:</label>
-                                    <input type="text" class="form-control mb-3" id="id_offline_location" name="offline_location" value="{{ member.offline_location|default_if_none:'' }}">
+                                    <input type="text" class="form-control mb-3" id="id_offline_location" name="offline_location" value="{{ employee.offline_location|default_if_none:'' }}">
                                     
                                     <!-- Offline Workstation ID -->
                                     <label for="id_offline_workstation_id">Offline Workstation ID:</label>
-                                    <input type="text" class="form-control mb-3" id="id_offline_workstation_id" name="offline_workstation_id" value="{{ member.offline_workstation_id|default_if_none:'' }}">
+                                    <input type="text" class="form-control mb-3" id="id_offline_workstation_id" name="offline_workstation_id" value="{{ employee.offline_workstation_id|default_if_none:'' }}">
                                     
                                     <!-- Rate -->
                                     <label for="id_rate">Rate:</label>
-                                    <input type="number" step="0.01" min="0" class="form-control mb-3" id="id_rate" name="rate" value="{{ member.rate|default_if_none:'' }}">
+                                    <input type="number" step="0.01" min="0" class="form-control mb-3" id="id_rate" name="rate" value="{{ employee.rate|default_if_none:'' }}">
                                     
                                     <!-- Salary -->
                                     <label for="id_salary">Salary:</label>
-                                    <input type="number" step="0.01" min="0" class="form-control mb-3" id="id_salary" name="salary" value="{{ member.salary|default_if_none:'' }}">
+                                    <input type="number" step="0.01" min="0" class="form-control mb-3" id="id_salary" name="salary" value="{{ employee.salary|default_if_none:'' }}">
                                     
                                     <!-- Department -->
                                     <label for="id_department">Department:</label>
-                                    <input type="text" class="form-control mb-3" id="id_department" name="department" value="{{ member.department|default_if_none:'' }}">
+                                    <input type="text" class="form-control mb-3" id="id_department" name="department" value="{{ employee.department|default_if_none:'' }}">
                                     
                                     <!-- Employee ID -->
                                     <label for="id_employee_id">Employee ID:</label>
-                                    <input type="text" class="form-control mb-3" id="id_employee_id" name="employee_id" value="{{ member.employee_id|default_if_none:'' }}">
+                                    <input type="text" class="form-control mb-3" id="id_employee_id" name="employee_id" value="{{ employee.employee_id|default_if_none:'' }}">
                                     
                                     <!-- Date of Joining -->
                                     <label for="id_date_of_joining">Date of Joining:</label>
-                                    <input type="date" class="form-control mb-3" id="id_date_of_joining" name="date_of_joining" value="{{ member.date_of_joining|date:'Y-m-d' }}">
+                                    <input type="date" class="form-control mb-3" id="id_date_of_joining" name="date_of_joining" value="{{ employee.date_of_joining|date:'Y-m-d' }}">
                                     
                                     <!-- Annual Vacation Days -->
                                     <label for="id_annual_vacation_days">Annual Vacation Days:</label>
-                                    <input type="number" step="1" min="0" class="form-control mb-3" id="id_annual_vacation_days" name="annual_vacation_days" value="{{ member.annual_vacation_days|default_if_none:'' }}">
+                                    <input type="number" step="1" min="0" class="form-control mb-3" id="id_annual_vacation_days" name="annual_vacation_days" value="{{ employee.annual_vacation_days|default_if_none:'' }}">
                                 {% endif %}
                                 
-                                {% if request.user.member == member %}
+                                {% if request.user == employee %}
                                     <h3 class="text-center py-3 border-top">Contact Information</h3>
                                     
                                     <!-- Mobile Phone -->
                                     <label for="id_mobile_phone">Mobile Phone:</label>
-                                    <input type="tel" class="form-control mb-3" id="id_mobile_phone" name="mobile_phone" value="{{ member.mobile_phone|default_if_none:'' }}">
+                                    <input type="tel" class="form-control mb-3" id="id_mobile_phone" name="mobile_phone" value="{{ employee.mobile_phone|default_if_none:'' }}">
                                     
                                     <!-- Work Phone -->
                                     <label for="id_work_phone">Work Phone:</label>
-                                    <input type="tel" class="form-control mb-3" id="id_work_phone" name="work_phone" value="{{ member.work_phone|default_if_none:'' }}">
+                                    <input type="tel" class="form-control mb-3" id="id_work_phone" name="work_phone" value="{{ employee.work_phone|default_if_none:'' }}">
                                     
                                     <!-- Emergency Phone -->
                                     <label for="id_emergency_phone">Emergency Phone:</label>
-                                    <input type="tel" class="form-control mb-3" id="id_emergency_phone" name="emergency_phone" value="{{ member.emergency_phone|default_if_none:'' }}">
+                                    <input type="tel" class="form-control mb-3" id="id_emergency_phone" name="emergency_phone" value="{{ employee.emergency_phone|default_if_none:'' }}">
                                     
                                     <!-- Personal Email -->
                                     <label for="id_personal_email">Personal Email:</label>
-                                    <input type="email" class="form-control mb-3" id="id_personal_email" name="personal_email" value="{{ member.personal_email|default_if_none:'' }}">
+                                    <input type="email" class="form-control mb-3" id="id_personal_email" name="personal_email" value="{{ employee.personal_email|default_if_none:'' }}">
                                     
                                     <!-- Work Email -->
                                     <label for="id_work_email">Work Email:</label>
-                                    <input type="email" class="form-control mb-3" id="id_work_email" name="work_email" value="{{ member.work_email|default_if_none:'' }}">
+                                    <input type="email" class="form-control mb-3" id="id_work_email" name="work_email" value="{{ employee.work_email|default_if_none:'' }}">
                                     
                                     <!-- Address -->
                                     <label for="id_address">Address:</label>
-                                    <input type="text" class="form-control mb-3" id="id_address" name="address" value="{{ member.address|default_if_none:'' }}">
+                                    <input type="text" class="form-control mb-3" id="id_address" name="address" value="{{ employee.address|default_if_none:'' }}">
                                     
                                     <!-- LinkedIn URL -->
                                     <label for="id_linkedin_url">LinkedIn URL:</label>
-                                    <input type="text" class="form-control mb-3" id="id_linkedin_url" name="linkedin_url" value="{{ member.linkedin_url|default_if_none:'' }}">
+                                    <input type="text" class="form-control mb-3" id="id_linkedin_url" name="linkedin_url" value="{{ employee.linkedin_url|default_if_none:'' }}">
                                     
                                     <h3 class="text-center py-3 border-top">Education, Experience and Skills</h3>
                                     
                                     <!-- Education -->
                                     <label for="id_education">Education:</label>
-                                    <textarea name="education" id="id_education" placeholder="Education" class="form-control mb-3">{{ member.education|default_if_none:'' }}</textarea>
+                                    <textarea name="education" id="id_education" placeholder="Education" class="form-control mb-3">{{ employee.education|default_if_none:'' }}</textarea>
                                     
                                     <!-- Experience -->
                                     <label for="id_experience">Experience:</label>
-                                    <textarea name="experience" id="id_experience" placeholder="Experience" class="form-control mb-3">{{ member.experience|default_if_none:'' }}</textarea>
+                                    <textarea name="experience" id="id_experience" placeholder="Experience" class="form-control mb-3">{{ employee.experience|default_if_none:'' }}</textarea>
                                     
                                     <!-- Skills -->
                                     <label for="id_skills">Skills:</label>
-                                    <textarea name="skills" id="id_skills" placeholder="Skills" class="form-control mb-3">{{ member.skills|default_if_none:'' }}</textarea>
+                                    <textarea name="skills" id="id_skills" placeholder="Skills" class="form-control mb-3">{{ employee.skills|default_if_none:'' }}</textarea>
                                 {% endif %}
                                 
-                                {% if request.user.member.is_employer %}
+                                {% if request.user.is_employer %}
                                     <h3 class="text-center py-3 border-top">Probation</h3>
 
                                     <!-- Probation Start Date -->
                                     <label for="id_probation_start_date">Probation Start Date:</label>
-                                    <input type="date" class="form-control mb-3" id="id_probation_start_date" name="probation_start_date" value="{{ member.probation_start_date|default_if_none:''|date:'Y-m-d' }}">
+                                    <input type="date" class="form-control mb-3" id="id_probation_start_date" name="probation_start_date" value="{{ employee.probation_start_date|default_if_none:''|date:'Y-m-d' }}">
                                     
                                     <!-- Probation End Date -->
                                     <label for="id_probation_end_date">Probation End Date:</label>
-                                    <input type="date" class="form-control mb-3" id="id_probation_end_date" name="probation_end_date" value="{{ member.probation_end_date|default_if_none:''|date:'Y-m-d' }}">
+                                    <input type="date" class="form-control mb-3" id="id_probation_end_date" name="probation_end_date" value="{{ employee.probation_end_date|default_if_none:''|date:'Y-m-d' }}">
                                     
                                     <h3 class="text-center py-3 border-top">Promotion</h3>
                                     
                                     <!-- Last Promotion Date -->
                                     <label for="id_last_promotion_date">Last Promotion Date:</label>
-                                    <input type="date" class="form-control mb-3" id="id_last_promotion_date" name="last_promotion_date" value="{{ member.last_promotion_date|default_if_none:''|date:'Y-m-d' }}">
+                                    <input type="date" class="form-control mb-3" id="id_last_promotion_date" name="last_promotion_date" value="{{ employee.last_promotion_date|default_if_none:''|date:'Y-m-d' }}">
                                     
                                     <!-- Promotion Reason -->
                                     <label for="id_promotion_reason">Promotion Reason:</label>
-                                    <textarea name="promotion_reason" id="id_promotion_reason" placeholder="Promotion Reason" class="form-control mb-3">{{ member.promotion_reason|default_if_none:'' }}</textarea>
+                                    <textarea name="promotion_reason" id="id_promotion_reason" placeholder="Promotion Reason" class="form-control mb-3">{{ employee.promotion_reason|default_if_none:'' }}</textarea>
                                 {% endif %}
                                 
                                 <!-- Submit Button -->
@@ -337,57 +340,57 @@
                                 <div class="row">
                                     <div class="col">
                                         <span class="text-muted">Employee ID:</span><br>
-                                        {{ member.employee_id|default_if_none:'' }}
+                                        {{ employee.employee_id|default_if_none:'' }}
                                     </div>
                                     <div class="col">
                                         <span class="text-muted">Employee status:</span><br>
-                                        {{ member.get_employee_status_display|default_if_none:'' }}
+                                        {{ employee.get_employee_status_display|default_if_none:'' }}
                                     </div>
                                     <div class="col">
                                         <span class="text-muted">Contract type:</span><br>
-                                        {{ member.get_contract_type_display|default_if_none:'' }}
+                                        {{ employee.get_contract_type_display|default_if_none:'' }}
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col">
                                         <span class="text-muted">Role:</span><br>
-                                        {{ member.role|default_if_none:'' }}
+                                        {{ employee.role|default_if_none:'' }}
                                     </div>
                                     <div class="col">
                                         <span class="text-muted">Job title:</span><br>
-                                        {{ member.job_title.name|default_if_none:'' }}
+                                        {{ employee.job_title.name|default_if_none:'' }}
                                     </div>
                                     <div class="col">
                                         <span class="text-muted">Offline location:</span><br>
-                                        {{ member.offline_location|default_if_none:'' }}
+                                        {{ employee.offline_location|default_if_none:'' }}
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col">
                                         <span class="text-muted">Supervisor:</span><br>
-                                        {{ member.supervisor.user.full_name|default_if_none:'' }}
+                                        {{ employee.supervisor.full_name|default_if_none:'' }}
                                     </div>
                                     <div class="col">
                                         <span class="text-muted">Department:</span><br>
-                                        {{ member.department|default_if_none:'' }}
+                                        {{ employee.department|default_if_none:'' }}
                                     </div>
                                     <div class="col">
                                         <span class="text-muted">Offline workstation ID:</span><br>
-                                        {{ member.offline_workstation_id|default_if_none:'' }}
+                                        {{ employee.offline_workstation_id|default_if_none:'' }}
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col">
                                         <span class="text-muted">Rate:</span><br>
-                                        {{ member.rate|default_if_none:'' }}
+                                        {{ employee.rate|default_if_none:'' }}
                                     </div>
                                     <div class="col">
                                         <span class="text-muted">Salary:</span><br>
-                                        {{ member.salary|default_if_none:'' }}
+                                        {{ employee.salary|default_if_none:'' }}
                                     </div>
                                     <div class="col">
                                         <span class="text-muted">Date of joining:</span><br>
-                                        {{ member.date_of_joining|default_if_none:'' }}
+                                        {{ employee.date_of_joining|default_if_none:'' }}
                                     </div>
                                 </div>
                             </div>
@@ -400,15 +403,15 @@
                                 <div class="row">
                                     <div class="col">
                                         <span class="text-muted">Date of birth:</span><br>
-                                        {{ member.user.date_of_birth|default_if_none:'' }}
+                                        {{ employee.date_of_birth|default_if_none:'' }}
                                     </div>
                                     <div class="col">
                                         <span class="text-muted">Age:</span><br>
-                                        {{ member.user.age|default_if_none:'' }}
+                                        {{ employee.age|default_if_none:'' }}
                                     </div>
                                     <div class="col">
                                         <span class="text-muted">Time zone:</span><br>
-                                        {{ member.user.timezone|default_if_none:'' }}
+                                        {{ employee.timezone|default_if_none:'' }}
                                     </div>
                                 </div>
                             </div>
@@ -421,29 +424,29 @@
                                 <div class="row">
                                     <div class="col">
                                         <span class="text-muted">Mobile phone:</span><br>
-                                        {{ member.mobile_phone|default_if_none:'' }}
+                                        {{ employee.mobile_phone|default_if_none:'' }}
                                     </div>
                                     <div class="col">
                                         <span class="text-muted">Work phone:</span><br>
-                                        {{ member.work_phone|default_if_none:'' }}
+                                        {{ employee.work_phone|default_if_none:'' }}
                                     </div>
                                     <div class="col">
                                         <span class="text-muted">Emergency phone:</span><br>
-                                        {{ member.emergency_phone|default_if_none:'' }}
+                                        {{ employee.emergency_phone|default_if_none:'' }}
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col">
                                         <span class="text-muted">Personal email:</span><br>
-                                        {{ member.personal_email|default_if_none:'' }}
+                                        {{ employee.personal_email|default_if_none:'' }}
                                     </div>
                                     <div class="col">
                                         <span class="text-muted">Work email:</span><br>
-                                        {{ member.work_email|default_if_none:'' }}
+                                        {{ employee.work_email|default_if_none:'' }}
                                     </div>
                                     <div class="col">
                                         <span class="text-muted">Address:</span><br>
-                                        {{ member.address|default_if_none:'' }}
+                                        {{ employee.address|default_if_none:'' }}
                                     </div>
                                 </div>
                             </div>
@@ -456,15 +459,15 @@
                                 <div class="row">
                                     <div class="col">
                                         <span class="text-muted">Education:</span><br>
-                                        {{ member.education|default_if_none:'' }}
+                                        {{ employee.education|default_if_none:'' }}
                                     </div>
                                     <div class="col">
                                         <span class="text-muted">Experience:</span><br>
-                                        {{ member.experience|default_if_none:'' }}
+                                        {{ employee.experience|default_if_none:'' }}
                                     </div>
                                     <div class="col">
                                         <span class="text-muted">Skills:</span><br>
-                                        {{ member.skills|default_if_none:'' }}
+                                        {{ employee.skills|default_if_none:'' }}
                                     </div>
                                 </div>
                             </div>
@@ -474,16 +477,16 @@
                         <div class="border-bottom pb-3">
                             <h4 class="mb-3">Probation</h4>
 
-                            {% if member.probation_start_date %}
+                            {% if employee.probation_start_date %}
                                 <div class="d-flex flex-column gap-3">
                                     <div class="row">
                                         <div class="col">
                                             <span class="text-muted">Probation start date:</span><br>
-                                            {{ member.probation_start_date|default_if_none:'' }}
+                                            {{ employee.probation_start_date|default_if_none:'' }}
                                         </div>
                                         <div class="col">
                                             <span class="text-muted">Probation end date:</span><br>
-                                            {{ member.probation_end_date|default_if_none:'' }}
+                                            {{ employee.probation_end_date|default_if_none:'' }}
                                         </div>
                                         <div class="col">
                                         </div>
@@ -498,16 +501,16 @@
                         <div class="border-bottom pb-3">
                             <h4 class="mb-3">Promotion</h4>
                             
-                            {% if member.last_promotion_date %}
+                            {% if employee.last_promotion_date %}
                                 <div class="d-flex flex-column gap-3">
                                     <div class="row">
                                         <div class="col-4">
                                             <span class="text-muted">Last promotion date:</span><br>
-                                            {{ member.last_promotion_date|default_if_none:'' }}
+                                            {{ employee.last_promotion_date|default_if_none:'' }}
                                         </div>
                                         <div class="col-8">
                                             <span class="text-muted">Promotion reason:</span><br>
-                                            {{ member.promotion_reason|default_if_none:'' }}
+                                            {{ employee.promotion_reason|default_if_none:'' }}
                                         </div>
                                     </div>
                                 </div>
@@ -520,16 +523,16 @@
                         <div class="border-bottom pb-3">
                             <h4 class="mb-3">Termination</h4>
                             
-                            {% if member.termination_date %}
+                            {% if employee.termination_date %}
                                 <div class="d-flex flex-column gap-3">
                                     <div class="row">
                                         <div class="col-4">
                                             <span class="text-muted">Termination date:</span><br>
-                                            {{ member.termination_date|default_if_none:'' }}
+                                            {{ employee.termination_date|default_if_none:'' }}
                                         </div>
                                         <div class="col-8">
                                             <span class="text-muted">Termination reason:</span><br>
-                                            {{ member.termination_reason|default_if_none:'' }}
+                                            {{ employee.termination_reason|default_if_none:'' }}
                                         </div>
                                     </div>
                                 </div>
@@ -549,7 +552,7 @@
                 <!-- Documents Header -->
                 <h3 class="mb-2 d-flex align-items-center justify-content-center mt-3">
                     Documents
-                    {% if request.user.member == member %}
+                    {% if request.user == employee %}
                         <!-- Document Upload Button -->
                         <button class="ms-3 btn btn-primary rounded-3 shadow-lg d-flex justify-content-center align-items-center"
                             style="width: 30px; height: 30px;"
@@ -560,7 +563,7 @@
                     {% endif %}
                 </h3>
     
-                {% if request.user.member == member %}
+                {% if request.user == employee %}
                     <!-- Document Upload Offcanvas -->
                     <div class="offcanvas offcanvas-end" tabindex="-1" id="documentUploadOffcanvas">
                         <div class="offcanvas-header">
@@ -591,7 +594,7 @@
                 {% endif %}
     
                 
-                {% if member.documents.all %}
+                {% if employee.documents.all %}
                     <!-- Table Header -->
                     <div class="row py-2 w-100">
                         <div class="col">Document Type</div>
@@ -600,7 +603,7 @@
                         <div class="col text-center">Actions</div>
                     </div>
                     <div class="d-flex flex-column align-items-center mb-4 w-100">
-                        {% for document in member.documents.all %}
+                        {% for document in employee.documents.all %}
                             <div class="row py-2 w-100 list-item bg-2">
                                 <div class="col">
                                     {{ document.get_document_type_display }}
@@ -615,7 +618,7 @@
                                 </div>
     
                                 <div class="col d-flex justify-content-center gap-3 action-icons">
-                                    {% if request.user.member == member %}
+                                    {% if request.user == employee %}
                                         <!-- Edit Document -->
                                         <a data-bs-toggle="offcanvas" data-bs-target="#edit-document-{{ document.id }}">
                                             <i class="bi bi-pencil" data-bs-toggle="tooltip" title="Edit"></i>
@@ -629,7 +632,7 @@
                                 </div>
                             </div>
                             
-                            {% if request.user.member == member %}
+                            {% if request.user == employee %}
                                 <!-- Edit Document Offcanvas -->
                                 <div class="offcanvas offcanvas-end" tabindex="-1" id="edit-document-{{ document.id }}">
                                     <div class="offcanvas-header">
@@ -692,7 +695,7 @@
                 <!-- Expenses Header -->
                 <h3 class="mb-2 d-flex align-items-center justify-content-center mt-3">
                     Expenses
-                    {% if request.user.member == member %}
+                    {% if request.user == employee %}
                         <!-- Expense Upload Button -->
                         <button class="ms-3 btn btn-primary rounded-3 shadow-lg d-flex justify-content-center align-items-center"
                             style="width: 30px; height: 30px;"
@@ -703,7 +706,7 @@
                     {% endif %}
                 </h3>
     
-                {% if request.user.member == member %}
+                {% if request.user == employee %}
                     <!-- Expense Upload Offcanvas -->
                     <div class="offcanvas offcanvas-end" tabindex="-1" id="expenseUploadOffcanvas">
                         <div class="offcanvas-header">
@@ -742,7 +745,7 @@
                 {% endif %}
     
                 
-                {% if member.expenses.all %}
+                {% if employee.expenses.all %}
                     <!-- Table Header -->
                     <div class="row py-2 w-100">
                         <div class="col">Category</div>
@@ -753,7 +756,7 @@
                         <div class="col text-center">Actions</div>
                     </div>
                     <div class="d-flex flex-column align-items-center mb-4 w-100">
-                        {% for expense in member.expenses.all %}
+                        {% for expense in employee.expenses.all %}
                             <div class="row py-2 w-100 list-item bg-2">
                                 <div class="col">
                                     {{ expense.category }}
@@ -776,7 +779,7 @@
                                 </div>
     
                                 <div class="col d-flex justify-content-center gap-3 action-icons">
-                                    {% if request.user.member == member %}
+                                    {% if request.user == employee %}
                                         <!-- Edit Expense -->
                                         <a data-bs-toggle="offcanvas" data-bs-target="#edit-expense-{{ expense.id }}">
                                             <i class="bi bi-pencil" data-bs-toggle="tooltip" title="Edit"></i>
@@ -790,7 +793,7 @@
                                 </div>
                             </div>
                             
-                            {% if request.user.member == member %}
+                            {% if request.user == employee %}
                                 <!-- Edit Expense Offcanvas -->
                                 <div class="offcanvas offcanvas-end" tabindex="-1" id="edit-expense-{{ expense.id }}">
                                     <div class="offcanvas-header">
@@ -858,7 +861,7 @@
 {% endblock content %}
 
 {% block scripts %}
-    <script src="{% static 'js/member_detail.js' %}"></script>
+    <script src="{% static 'js/employee_detail.js' %}"></script>
     <script src="{% static 'js/document.js' %}"></script>
     <script src="{% static 'js/expense.js' %}"></script>
 {% endblock scripts %}

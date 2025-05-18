@@ -52,9 +52,9 @@ def process_company_bar_chart(company, start_date, end_date):
     while current_date <= end_date:
         date_str = current_date.strftime("%d/%m/%y")
         date_labels.append(date_str)
-
-        for member in company.members.all():
-            daily_data = member.hours_spent_by_projects(current_date, company.projects.all())
+        
+        for employee in company.employees.all():
+            daily_data = employee.hours_spent_by_projects(current_date, company.projects.all())
             for project_title, duration in daily_data.items():
                 project_time_by_date[project_title][date_str] += duration
 
@@ -86,8 +86,8 @@ def process_company_donut_chart(company, start_date, end_date):
 
     current_date = start_date
     while current_date <= end_date:
-        for member in company.members.all():
-            daily_data = member.hours_spent_by_projects(current_date, company.projects.all())
+        for employee in company.employees.all():
+            daily_data = employee.hours_spent_by_projects(current_date, company.projects.all())
             for project_title, duration in daily_data.items():
                 project_time[project_title] += duration
         current_date += timedelta(days=1)
@@ -161,9 +161,10 @@ def team(request):
         return render(request, 'teams/no_company.html')
 
     if request.method == 'POST':
-        return process_company_charts(request)
+        if request.user.company.projects.exists():
+            return process_company_charts(request)
 
-    if request.user.member.is_employer:
+    if request.user.is_employer:
         task_form = TaskForm(prefix="task")
         project_form = ProjectForm(prefix="project")
         context = {
@@ -177,17 +178,17 @@ def team(request):
 
 @login_required
 def calendar(request):
-    vacations = VacationRequest.objects.filter(company=request.user.member.company, status='approved')
+    vacations = VacationRequest.objects.filter(company=request.user.company, status='approved')
 
     events = []
     for vacation in vacations:
         events.append({
-            'title': f"Vacation – {vacation.member.user.get_full_name() or vacation.member.user.username}",
+            'title': f"Vacation – {vacation.user.get_full_name() or vacation.user.username}",
             'start': str(vacation.start_date),
             'end': str(vacation.end_date + timedelta(days=1)),
             'extendedProps': {
                 'type': 'Vacation',
-                'member': vacation.member.user.get_full_name(),
+                'employee': vacation.user.get_full_name(),
                 'start_date': vacation.start_date.strftime('%d/%m/%y'),
                 'end_date': vacation.end_date.strftime('%d/%m/%y'),
                 'days': vacation.number_of_days(),

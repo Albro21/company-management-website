@@ -1,7 +1,5 @@
 # Standard libs
-from collections import defaultdict
 import os
-from phonenumber_field.modelfields import PhoneNumberField
 
 # Django
 from django.db import models
@@ -11,11 +9,11 @@ from .choices import *
 
 
 def document_upload_path(instance, filename):
-    username = instance.member.user.username
+    username = instance.user.username
     return f'documents/{username}/{filename}'
 
 def receipt_upload_path(instance, filename):
-    company = instance.member.company.name
+    company = instance.user.company.name
     return f'receipts/{company}/{filename}'
 
 
@@ -70,102 +68,10 @@ class JobTitle(models.Model):
         return self.name
 
 
-class Member(models.Model):
-    EMPLOYEE_STATUSES = EMPLOYEE_STATUSES
-    CONTRACT_TYPES = CONTRACT_TYPES
-    
-    class Role(models.TextChoices):
-        EMPLOYER = 'employer', 'Employer'
-        EMPLOYEE = 'employee', 'Employee'
-    
-    company = models.ForeignKey("teams.Company", on_delete=models.CASCADE, related_name="members")
-    user = models.OneToOneField("users.CustomUser", on_delete=models.CASCADE, related_name="member")
-    supervisor = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True, related_name="subordinates")
-    role = models.CharField(max_length=20, choices=Role.choices, default=Role.EMPLOYEE)
-    
-    rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.00, blank=True)
-    salary = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, blank=True)
-    
-    employee_id = models.CharField(max_length=20, blank=True, null=True)
-    employee_status = models.CharField(max_length=50, choices=EMPLOYEE_STATUSES, default='active')
-    
-    job_title = models.ForeignKey("teams.JobTitle", on_delete=models.SET_NULL, blank=True, null=True, related_name="members")   
-    department = models.CharField(max_length=100, blank=True, null=True)
-    
-    mobile_phone = PhoneNumberField(region='GB', blank=True, null=True)
-    work_phone = PhoneNumberField(region='GB', blank=True, null=True)
-    emergency_phone = PhoneNumberField(region='GB', blank=True, null=True)
-    
-    personal_email = models.EmailField(blank=True, null=True)
-    work_email = models.EmailField(blank=True, null=True)
-    
-    date_of_joining = models.DateField(default=timezone.now, blank=True, null=True)
-    contract_type = models.CharField(max_length=50, choices=CONTRACT_TYPES, default='full_time')
-    
-    address = models.CharField(max_length=100, blank=True, null=True)
-    offline_location = models.CharField(max_length=100, blank=True, null=True)
-    offline_workstation_id = models.CharField(max_length=20, blank=True, null=True)
-    
-    annual_vacation_days = models.PositiveIntegerField(default=20)
-    used_vacation_days = models.PositiveIntegerField(default=0)
-    
-    probation_start_date = models.DateField(blank=True, null=True)
-    probation_end_date = models.DateField(blank=True, null=True)
-    
-    termination_date = models.DateField(blank=True, null=True)
-    termination_reason = models.TextField(blank=True, null=True)
-    
-    last_promotion_date = models.DateField(blank=True, null=True)
-    promotion_reason = models.TextField(blank=True, null=True)
-    
-    education = models.TextField(blank=True, null=True)
-    experience = models.TextField(blank=True, null=True)
-    skills = models.TextField(blank=True, null=True)
-    
-    linkedin_url = models.URLField(blank=True, null=True)
-    
-    @property
-    def is_active(self):
-        return self.user.time_entries.filter(end_time__isnull=True).exists()
-    
-    @property
-    def is_employer(self):
-        return self.role == self.Role.EMPLOYER
-    
-    @property
-    def is_employee(self):
-        return self.role == self.Role.EMPLOYEE
-    
-    @property
-    def remaining_vacation_days(self):
-        return self.annual_vacation_days - self.used_vacation_days
-    
-    def hours_spent_by_projects(self, target_date, projects):
-        if projects is None:
-            raise ValueError("The 'projects' parameter is required.")
-
-        entries = self.user.time_entries.filter(
-            start_time__date=target_date,
-            project__in=projects
-        ).select_related('project')
-
-        result = defaultdict(float)
-
-        for entry in entries:
-            duration = entry.duration.total_seconds() / 3600
-            project_title = entry.project.title
-            result[project_title] += duration
-
-        return dict(result)
-    
-    def __str__(self):
-        return f"{self.user.full_name} ({self.job_title})"
-
-
 class Document(models.Model):
     DOCUMENT_TYPES = DOCUMENT_TYPES
     
-    member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='documents')
+    user = models.ForeignKey("users.CustomUser", on_delete=models.CASCADE, related_name='documents', blank=True, null=True)
     document_type = models.CharField(max_length=50, choices=DOCUMENT_TYPES, default='other')
     file = models.FileField(upload_to=document_upload_path)
     uploaded_at = models.DateTimeField(auto_now_add=True)
@@ -175,7 +81,7 @@ class Document(models.Model):
         return os.path.basename(self.file.name)
     
     def __str__(self):
-        return f"{self.member.user.full_name} - {self.document_type}"
+        return f"{self.user.full_name} - {self.document_type}"
     
     def delete(self, *args, **kwargs):
         if self.file:
@@ -187,7 +93,7 @@ class Document(models.Model):
 
 
 class Expense(models.Model):
-    member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='expenses')
+    user = models.ForeignKey("users.CustomUser", on_delete=models.CASCADE, related_name='expenses', blank=True, null=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='expenses')
     date = models.DateField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -205,7 +111,7 @@ class Expense(models.Model):
         ordering = ['-created_at']
     
     def __str__(self):
-        return f"Expense for {self.member.user.username} on {self.date} ({self.amount}£)"
+        return f"Expense for {self.user.username} on {self.date} ({self.amount}£)"
     
     def delete(self, *args, **kwargs):
         if self.receipt:
@@ -224,7 +130,7 @@ class VacationRequest(models.Model):
     ]
     
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='vacation_requests')
-    member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='vacation_requests')
+    user = models.ForeignKey("users.CustomUser", on_delete=models.CASCADE, related_name='vacation_requests', blank=True, null=True)
     start_date = models.DateField()
     end_date = models.DateField()
     reason = models.TextField(max_length=255)
@@ -238,11 +144,11 @@ class VacationRequest(models.Model):
         return (self.end_date - self.start_date).days + 1
 
     def __str__(self):
-        return f"{self.member.user.username} - {self.start_date} to {self.end_date} ({self.get_status_display()})"
+        return f"{self.user.username} - {self.start_date} to {self.end_date} ({self.get_status_display()})"
 
 
 class JoinRequest(models.Model):
-    user = models.ForeignKey("users.CustomUser", on_delete=models.CASCADE, related_name='join_requests')
+    user = models.ForeignKey("users.CustomUser", on_delete=models.CASCADE, related_name='join_requests', blank=True, null=True)
     company = models.ForeignKey("teams.Company", on_delete=models.CASCADE, related_name='join_requests')
 
     class Meta:

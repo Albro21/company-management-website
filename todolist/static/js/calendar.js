@@ -5,12 +5,12 @@ function createTooltip (info) {
             <h5 class="text-center border-bottom py-1">${info.event.extendedProps.type}</h5>
             <div class="row p-2">
                 <div class="col-3 d-flex flex-column text-start">
-                    Member:<br>
+                    Employee:<br>
                     Period:<br>
                     Reason:
                 </div>
                 <div class="col-9 d-flex flex-column text-start justify-content-start">
-                    ${info.event.extendedProps.member}<br>
+                    ${info.event.extendedProps.employee}<br>
                     ${info.event.extendedProps.start_date} – ${info.event.extendedProps.end_date} (${info.event.extendedProps.days} days)<br>
                     <p class="m-0">
                         ${info.event.extendedProps.reason}

@@ -9,16 +9,18 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth import get_user_model
 
 # Local apps
 from common.decorators import parse_json_body
 from main.forms import TaskForm
 from main.models import Task
 from timetracker.models import TimeEntry
-from teams.forms import MemberForm, DocumentForm, ExpenseForm
-from teams.models import Member, Document, Expense
+from teams.models import Document, JobTitle
 from teams.decorators import employer_required
 
+
+User = get_user_model()
 
 def get_date_range_from_filter(filter_option, all_time_first_entry):
     today = date.today()
@@ -49,14 +51,14 @@ def get_date_range_from_filter(filter_option, all_time_first_entry):
 
     return start_date, end_date
 
-def process_member_bar_chart(member, start_date, end_date):
+def process_employee_bar_chart(employee, start_date, end_date):
     date_labels = []
     project_time_by_date = defaultdict(lambda: defaultdict(int))
     current_date = start_date
     while current_date <= end_date:
         date_str = current_date.strftime("%d/%m/%y")
         date_labels.append(date_str)
-        daily_data = member.hours_spent_by_projects(current_date, member.company.projects.all())
+        daily_data = employee.hours_spent_by_projects(current_date, employee.company.projects.all())
         for project_title, duration in daily_data.items():
             project_time_by_date[project_title][date_str] += duration
         current_date += timedelta(days=1)
@@ -65,7 +67,7 @@ def process_member_bar_chart(member, start_date, end_date):
 
     project_color_map = {
         project.title: project.color
-        for project in member.user.company.projects.filter(title__in=project_titles)
+        for project in user.company.projects.filter(title__in=project_titles)
     }
 
     datasets = []
@@ -82,12 +84,12 @@ def process_member_bar_chart(member, start_date, end_date):
         "datasets": datasets
     }
 
-def process_member_donut_chart(member, start_date, end_date):
+def process_employee_donut_chart(employee, start_date, end_date):
     project_time = defaultdict(int)
     
     current_date = start_date
     while current_date <= end_date:
-        daily_data = member.hours_spent_by_projects(current_date, member.company.projects.all())
+        daily_data = employee.hours_spent_by_projects(current_date, employee.company.projects.all())
         for project_title, duration in daily_data.items():
             project_time[project_title] += duration
         current_date += timedelta(days=1)
@@ -97,7 +99,7 @@ def process_member_donut_chart(member, start_date, end_date):
     
     project_color_map = {
         project.title: project.color
-        for project in member.user.company.projects.filter(title__in=labels)
+        for project in user.company.projects.filter(title__in=labels)
     }
 
     datasets = [{
@@ -111,7 +113,7 @@ def process_member_donut_chart(member, start_date, end_date):
         "datasets": datasets
     }
 
-def process_member_charts(request, member):
+def process_employee_charts(request, employee):
     try:
         data = json.loads(request.body)
         filter_option = data.get("filter")
@@ -119,8 +121,8 @@ def process_member_charts(request, member):
         return JsonResponse({"success": False, "error": "Invalid JSON"}, status=400)
 
     all_time_first_entry = (
-        member.user.time_entries
-        .filter(task__project__in=member.company.projects.all())
+        user.time_entries
+        .filter(task__project__in=employee.company.projects.all())
         .order_by('start_time')
         .first()
     )   
@@ -131,12 +133,12 @@ def process_member_charts(request, member):
 
     start_date, end_date = date_range
 
-    bar_chart_data = process_member_bar_chart(member, start_date, end_date)
-    donut_chart_data = process_member_donut_chart(member, start_date, end_date)
+    bar_chart_data = process_employee_bar_chart(employee, start_date, end_date)
+    donut_chart_data = process_employee_donut_chart(employee, start_date, end_date)
     
     time_entries = TimeEntry.objects.filter(
-        user=member.user,
-        task__project__in=member.user.company.projects.all(),
+        user=user,
+        task__project__in=user.company.projects.all(),
         start_time__date__gte=start_date,
         start_time__date__lte=end_date
     )
@@ -157,9 +159,9 @@ def process_member_charts(request, member):
 
 @login_required
 @employer_required
-def member_analytics(request, member_id):
+def employee_analytics(request, employee_id):
     
-    member = get_object_or_404(Member, id=member_id, company=request.user.company)
+    employee = get_object_or_404(User, id=employee_id, company=request.user.company)
     
     if request.method == 'POST':
         if request.POST.get('form_type') == 'edit_task':
@@ -168,39 +170,37 @@ def member_analytics(request, member_id):
             form = TaskForm(request.POST, instance=task)
             if form.is_valid():
                 form.save()
-                return redirect('teams:member_analytics', member_id=member_id)
+                return redirect('teams:employee_analytics', employee_id=employee_id)
         else:
-            return process_member_charts(request, member)
+            return process_employee_charts(request, employee)
     else:
         
         assigned_tasks = Task.objects.filter(
-            user=member.user,
+            user=employee,
             is_completed=False,
-            project__in=member.company.projects.all()
+            project__in=employee.company.projects.all()
         )
         
         context = {
-            'member': member,
+            'employee': employee,
             'assigned_tasks': assigned_tasks,
             'form': TaskForm()
         }
 
-        return render(request, 'teams/member_analytics.html', context)
+        return render(request, 'teams/employee_analytics.html', context)
 
 @require_http_methods(["POST"])
 @login_required
 @employer_required
 @parse_json_body
-def assign_task(request, member_id):
-    member = get_object_or_404(Member, id=member_id)
-    
+def assign_task(request, employee_id):
     data = request.json_data
     category_ids = data.pop('categories', [])
     
     form = TaskForm(data)
     if form.is_valid():
         task = form.save(commit=False)
-        task.user = member.user
+        task.user = get_object_or_404(User, id=employee_id)
         task.save()
         
         if category_ids:
@@ -213,33 +213,28 @@ def assign_task(request, member_id):
 @require_http_methods(["PATCH"])
 @login_required
 @parse_json_body
-def edit_member(request, member_id):
-    member = get_object_or_404(Member, id=member_id)
+def edit_employee(request, employee_id):
+    employee = get_object_or_404(User, id=employee_id)
     data = request.json_data
     
-    if request.user.member.is_employee:
-        sensitive_fields = [
-            'role', 'employee_status', 'contract_type', 'supervisor', 'job_title',
-            'offline_location', 'offline_workstation_id', 'rate', 'salary',
-            'department', 'employee_id', 'date_of_joining', 'annual_vacation_days'
-        ]
-
-        for field in sensitive_fields:
-            data[field] = getattr(member, field)
+    for key, value in data.items():
+        if value:
+            if key == 'supervisor':
+                value = get_object_or_404(User, id=value)
+            elif key == 'job_title':
+                value = get_object_or_404(JobTitle, id=value)
+            
+            setattr(employee, key, value)
     
-    form = MemberForm(data, instance=member)
+    employee.save()
+    return JsonResponse({'success': True}, status=200)
 
-    if form.is_valid():
-        form.save()
-        return JsonResponse({'success': True}, status=200)
-    else:
-        return JsonResponse({'success': False, 'error': f'Form contains errors: {form.errors.as_json()}'}, status=400)
 
 @login_required
-def member_detail(request, member_id):
-    member = request.user.member
-    if member.id == member_id or member.is_employer:
-        member = get_object_or_404(Member, id=member_id)
+def employee_detail(request, user_id):
+    user = request.user
+    if user.id == user_id or user.is_employer:
+        employee = get_object_or_404(User, id=user_id)
         selected_tab = request.GET.get('tab', 'information')
-        return render(request, 'teams/member_detail.html', {'member': member, 'selected_tab': selected_tab, 'document_types': Document.DOCUMENT_TYPES})
+        return render(request, 'teams/employee_detail.html', {'employee': employee, 'selected_tab': selected_tab, 'document_types': Document.DOCUMENT_TYPES})
     return HttpResponseForbidden("You do not have permission to view this page.")

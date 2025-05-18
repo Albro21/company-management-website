@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ member.user.full_name }}'s analytics{% endblock title %}
+{% block title %}{{ user.full_name }}'s analytics{% endblock title %}
 
 {% block styles %}
 {% endblock styles %}
@@ -9,20 +9,20 @@
 {% block content %}
     <div class="row mb-5">
         <div class="col-3 d-flex flex-column justify-content-center align-items-center p-3 bg-2 rounded">
-            <img src="{{ member.user.profile_picture.url }}" width="150px" height="150px" class="rounded-circle">
+            <img src="{{ employee.profile_picture.url }}" width="150px" height="150px" class="rounded-circle">
             <h3>
-                {{ member.user.full_name }}
+                {{ employee.full_name }}
             </h3>
         </div>
         <div class="col-3 d-flex flex-column gap-3">
             <div class="bg-2 rounded h-100 d-flex align-items-center justify-content-center">
-                Annual vacation days: {{ member.annual_vacation_days }}
+                Annual vacation days: {{ employee.annual_vacation_days }}
             </div>
             <div class="bg-2 rounded h-100 d-flex align-items-center justify-content-center">
-                Used vacation days: {{ member.used_vacation_days }}
+                Used vacation days: {{ employee.used_vacation_days }}
             </div>
             <div class="bg-2 rounded h-100 d-flex align-items-center justify-content-center">
-                Remaining vacation days: {{ member.remaining_vacation_days }}
+                Remaining vacation days: {{ employee.remaining_vacation_days }}
             </div>
         </div>
     </div>
@@ -61,7 +61,7 @@
             
             <!-- Stacked Bar chart -->
             <div style="width: 100%;">
-                <canvas id="memberChart" data-member-id="{{ member.id }}"></canvas>
+                <canvas id="employeeChart" data-employee-id="{{ employee.id }}"></canvas>
             </div>
         </div>
     </div>
@@ -90,7 +90,7 @@
 {% endblock content %}
 
 {% block scripts %}
-    <script src="{% static 'js/member_analytics.js' %}"></script>
+    <script src="{% static 'js/employee_analytics.js' %}"></script>
     <script src="{% static 'js/task.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>

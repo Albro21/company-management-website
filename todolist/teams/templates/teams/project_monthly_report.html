@@ -18,7 +18,9 @@
                     <h5 class="text-center">Client: {{ project.client }}</h3>
                 </div>
                 <div class="col d-flex justify-content-end align-items-center">
-                    <img src="{{ project.company.logo.url }}" alt="Company Logo" height="100px">
+                    {% if project.company.logo %}
+                        <img src="{{ project.company.logo.url }}" alt="Company Logo" height="100px">
+                    {% endif %}
                 </div>
             </div>
 
@@ -45,15 +47,15 @@
                 </div>
     
                 <!-- Employee Rows -->
-                {% for data in member_data %}
+                {% for data in employee_data %}
                     <div class="row px-1 py-3 w-100 border-bottom">
-                        <div class="col-1 text-start" style="white-space: nowrap;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ data.member_name }}</div>
-                        {% for time in data.member_times %}
+                        <div class="col-1 text-start" style="white-space: nowrap;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ data.employee_name }}</div>
+                        {% for time in data.employee_times %}
                             <div class="col text-center">
                                 {{ time }}
                             </div>
                         {% endfor %}
-                        <div class="col text-end">{{ data.member_total }}</div>
+                        <div class="col text-end">{{ data.employee_total }}</div>
                     </div>
                 {% endfor %}
             </div>

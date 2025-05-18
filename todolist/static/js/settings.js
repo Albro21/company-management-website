@@ -18,3 +18,22 @@ document.getElementById('theme-switch').addEventListener('change', async functio
         window.location.reload();
     }
 });
+
+document.getElementById('edit-user-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const url = `/edit-user/`;
+    const formData = new FormData(e.target);
+    formData.delete('csrfmiddlewaretoken');
+
+    const data = await sendRequest(url, 'POST', formData);
+    if (data.success) {
+        window.location.reload();
+    } else {
+        usernameError = document.getElementById('username-error');
+        usernameError.textContent = data.error;
+
+        usernameInput = document.getElementById('username');
+        usernameInput.classList.add('is-invalid');
+    }
+});

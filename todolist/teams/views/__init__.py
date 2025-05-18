@@ -4,6 +4,6 @@ from .expense import *
 from .general import *
 from .job_title import *
 from .join_request import *
-from .member import *
+from .employee import *
 from .reports import *
 from .vacation_request import *

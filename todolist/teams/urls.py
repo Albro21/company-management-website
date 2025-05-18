@@ -1,5 +1,5 @@
 from django.urls import path
-from teams.views import company, document, expense, general, job_title, join_request, member, reports, vacation_request
+from teams.views import company, document, expense, general, job_title, join_request, employee, reports, vacation_request
 
 app_name = 'teams'
 
@@ -7,10 +7,10 @@ urlpatterns = [
     path('team/', general.team, name='team'),
     path('calendar/', general.calendar, name='calendar'),
     
-    path('member/<int:member_id>/analytics/', member.member_analytics, name='member_analytics'),
-    path('member/<int:member_id>/assign-task/', member.assign_task, name='assign_task'),
-    path('member/<int:member_id>/edit/', member.edit_member, name='edit_member'),
-    path('member/<int:member_id>/', member.member_detail, name='member_detail'),
+    path('employee/<int:employee_id>/analytics/', employee.employee_analytics, name='employee_analytics'),
+    path('employee/<int:employee_id>/assign-task/', employee.assign_task, name='assign_task'),
+    path('employee/<int:employee_id>/edit/', employee.edit_employee, name='edit_employee'),
+    path('employee/<int:user_id>/', employee.employee_detail, name='employee_detail'),
     
     path('document/create/', document.create_document, name='create_document'),
     path('document/<int:document_id>/delete/', document.delete_document, name='delete_document'),
@@ -26,7 +26,7 @@ urlpatterns = [
     path('company/create/', company.create_company, name='create_company'),
     path('company/settings/', company.settings, name='settings'),
     path('company/leave/', company.leave_company, name='leave_company'),
-    path('company/kick/<int:member_id>/', company.kick_member, name='kick_member'),
+    path('company/kick/<int:employee_id>/', company.kick_employee, name='kick_employee'),
     
     path('join-request/create/', join_request.create_join_request, name='create_join_request'),
     path('join-request/<int:request_id>/accept/', join_request.accept_join_request, name='accept_join_request'),

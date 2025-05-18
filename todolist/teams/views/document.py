@@ -15,7 +15,7 @@ def create_document(request):
     form = DocumentForm(request.POST, request.FILES)
     if form.is_valid():
         document = form.save(commit=False)
-        document.member = request.user.member
+        document.user = request.user
         document.save()
 
         return JsonResponse({'success': True, 'id': document.id}, status=201)
@@ -25,14 +25,14 @@ def create_document(request):
 @require_http_methods(["DELETE"])
 @login_required
 def delete_document(request, document_id):
-    document = get_object_or_404(Document, id=document_id, member=request.user.member)
+    document = get_object_or_404(Document, id=document_id, user=request.user)
     document.delete()
     return JsonResponse({'success': True}, status=200)
 
 @require_http_methods(["POST"])
 @login_required
 def edit_document(request, document_id):
-    document = get_object_or_404(Document, id=document_id, member=request.user.member)
+    document = get_object_or_404(Document, id=document_id, user=request.user)
     
     if 'file' not in request.FILES:
         form = DocumentForm(request.POST, instance=document)

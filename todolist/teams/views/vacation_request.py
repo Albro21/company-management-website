@@ -26,24 +26,24 @@ def create_vacation_request(request):
     if start_date > end_date:
         return JsonResponse({'success': False, 'error': 'Start date must be before end date.'}, status=400)
     
-    if request.user.member.remaining_vacation_days < days_requested:
+    if request.user.remaining_vacation_days < days_requested:
         return JsonResponse({'success': False, 'error': 'Your vacation exceeds your remaining annual vacation days.'}, status=400)
 
     vacation_request_form = VacationRequestForm(data=data)
     if vacation_request_form.is_valid():
         vacation_request = vacation_request_form.save(commit=False)
         vacation_request.company = request.user.company
-        vacation_request.member = request.user.member
+        vacation_request.user = request.user
         
-        if request.user.member.is_employer:
+        if request.user.is_employer:
             vacation_request.status = "approved"
         else:
             vacation_request.status = "pending"
         
         vacation_request.save()
         
-        request.user.member.used_vacation_days += vacation_request.number_of_days()
-        request.user.member.save()
+        request.user.used_vacation_days += vacation_request.number_of_days()
+        request.user.save()
         
         return JsonResponse({'success': True, 'id': vacation_request.id}, status=201)
     else:
@@ -63,7 +63,7 @@ def accept_vacation_request(request, request_id):
 @employer_required
 def decline_vacation_request(request, request_id):
     vacation_request = VacationRequest.objects.get(id=request_id)
-    vacation_request.member.used_vacation_days -= vacation_request.number_of_days()
-    vacation_request.member.save()
+    vacation_request.employee.used_vacation_days -= vacation_request.number_of_days()
+    vacation_request.employee.save()
     vacation_request.delete()
     return JsonResponse({'success': True, 'id': vacation_request.id}, status=200)

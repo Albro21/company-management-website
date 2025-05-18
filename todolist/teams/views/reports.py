@@ -36,34 +36,33 @@ def project_weekly_report(request, project_id):
     
     week_dates = [start_of_week + timedelta(days=i) for i in range(7)]
 
-    company_members = project.company.members.all()
+    company_employees = project.company.employees.all()
 
-    member_data = []
+    employee_data = []
     totals_by_day = [0] * 7
     grand_total = 0
 
-    for member in company_members:
-        user = member.user
-        user_full_name = user.full_name
+    for employee in company_employees:
+        employee_full_name = employee.full_name
         daily_hours = []
-        user_total = 0
+        employee_total = 0
 
         for i, current_date in enumerate(week_dates):
-            entries = user.time_entries.filter(
+            entries = employee.time_entries.filter(
                 start_time__date=current_date,
                 project=project
             )
             total_seconds = sum(entry.duration.total_seconds() for entry in entries)
-            user_total += total_seconds
+            employee_total += total_seconds
             totals_by_day[i] += total_seconds
             daily_hours.append(seconds_to_hm(total_seconds))
 
-        member_data.append({
-            "member_name": user_full_name,
-            "member_times": daily_hours,
-            "member_total": seconds_to_hm(user_total)
+        employee_data.append({
+            "employee_name": employee_full_name,
+            "employee_times": daily_hours,
+            "employee_total": seconds_to_hm(employee_total)
         })
-        grand_total += user_total
+        grand_total += employee_total
 
     project_row = [seconds_to_hm(s) for s in totals_by_day]
     project_total = seconds_to_hm(grand_total)
@@ -73,7 +72,7 @@ def project_weekly_report(request, project_id):
         'week_dates': week_dates,
         'project_row': project_row,
         'project_total': project_total,
-        'member_data': member_data,
+        'employee_data': employee_data,
         'start_date': start_of_week.strftime('%d/%m/%y'),
         'end_date': end_of_week.strftime('%d/%m/%y'),
     }
@@ -100,34 +99,33 @@ def project_monthly_report(request, project_id):
     month_days = (end_of_month - start_of_month).days + 1
     month_dates = [start_of_month + timedelta(days=i) for i in range(month_days)]
 
-    company_members = project.company.members.all()
+    company_employees = project.company.employees.all()
 
-    member_data = []
+    employee_data = []
     totals_by_day = [0] * month_days
     grand_total = 0
 
-    for member in company_members:
-        user = member.user
-        user_full_name = user.full_name
+    for employee in company_employees:
+        employee_full_name = employee.full_name
         daily_hours = []
-        user_total = 0
+        employee_total = 0
 
         for i, current_date in enumerate(month_dates):
-            entries = user.time_entries.filter(
+            entries = employee.time_entries.filter(
                 start_time__date=current_date,
                 project=project
             )
             total_seconds = sum(entry.duration.total_seconds() for entry in entries)
-            user_total += total_seconds
+            employee_total += total_seconds
             totals_by_day[i] += total_seconds
             daily_hours.append(seconds_to_hm(total_seconds))
 
-        member_data.append({
-            "member_name": user_full_name,
-            "member_times": daily_hours,
-            "member_total": seconds_to_hm(user_total)
+        employee_data.append({
+            "employee_name": employee_full_name,
+            "employee_times": daily_hours,
+            "employee_total": seconds_to_hm(employee_total)
         })
-        grand_total += user_total
+        grand_total += employee_total
 
     project_row = [seconds_to_hm(s) for s in totals_by_day]
     project_total = seconds_to_hm(grand_total)
@@ -137,7 +135,7 @@ def project_monthly_report(request, project_id):
         'month_dates': month_dates,
         'project_row': project_row,
         'project_total': project_total,
-        'member_data': member_data,
+        'employee_data': employee_data,
         'start_date': start_of_month.strftime('%d/%m/%y'),
         'end_date': end_of_month.strftime('%d/%m/%y'),
     }

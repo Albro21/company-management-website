@@ -219,8 +219,8 @@ document.addEventListener("DOMContentLoaded", function () {
     fetchChartData("week");
 });
 
-async function assignTask(memberId, formData) {
-    const url = `/teams/member/${memberId}/assign-task/`;
+async function assignTask(employeeId, formData) {
+    const url = `/teams/employee/${employeeId}/assign-task/`;
     const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
     const data = await sendRequest(url, 'POST', requestBody);
 
@@ -233,15 +233,15 @@ document.querySelectorAll('.assign-task-form').forEach(form => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        const memberId = form.dataset.memberId;
+        const employeeId = form.dataset.employeeId;
         const formData = new FormData(form);
         
-        await assignTask(memberId, formData);
+        await assignTask(employeeId, formData);
     });
 });
 
-async function requestVacation(memberId, formData) {
-    const errorElement = document.getElementById(`request-vacation-errors-${memberId}`);
+async function requestVacation(employeeId, formData) {
+    const errorElement = document.getElementById(`request-vacation-errors-${employeeId}`);
 
     const url = `/teams/vacation-request/create/`;
     const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
@@ -258,10 +258,10 @@ document.querySelectorAll('.request-vacation-form').forEach(form => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        const memberId = form.dataset.memberId;
+        const employeeId = form.dataset.employeeId;
         const formData = new FormData(form);
         
-        await requestVacation(memberId, formData);
+        await requestVacation(employeeId, formData);
     });
 });
 

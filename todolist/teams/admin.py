@@ -1,10 +1,11 @@
 from django.contrib import admin
 from .models import *
+from users.models import CustomUser
 
-class MemberInline(admin.TabularInline):
+class EmployeeInline(admin.TabularInline):
     can_delete = False
-    model = Member
-    fields = ('user', 'work_email', 'role', 'employee_id', 'job_title', 'employee_status', 'contract_type')
+    model = CustomUser
+    fields = ('username', 'work_email', 'role', 'employee_id', 'job_title', 'employee_status', 'contract_type')
     extra = 0
 
 class JobTitleInline(admin.TabularInline):
@@ -30,13 +31,7 @@ class CompanyAdmin(admin.ModelAdmin):
     list_filter = ('company_type', 'industry', 'created_at')
     prepopulated_fields = {'slug': ('name',)}
     readonly_fields = ('created_at',)
-    inlines = [JobTitleInline, ExpenseInline, MemberInline]
-
-@admin.register(Member)
-class MemberAdmin(admin.ModelAdmin):
-    list_display = ('user', 'job_title')
-    search_fields = ('user__username', 'job_title')
-    inlines = [DocumentInline, ExpenseInline, VacationRequestInline]
+    inlines = [JobTitleInline, ExpenseInline, EmployeeInline]
 
 admin.site.register(VacationRequest)
 admin.site.register(Document)

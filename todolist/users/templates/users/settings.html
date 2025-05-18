@@ -4,107 +4,77 @@
 {% block title %} Settings {% endblock title %}
 
 {% block styles %}
-    <link rel="stylesheet" href="{% static 'css/settings.css' %}">
 {% endblock styles %}
 
 {% block content %}
-    <div class="row justify-content-center gap-4">
-        <h1 class="text-center">Settings</h1>
-        <div class="w-auto bg-2 rounded">
-            <div>
-                <form class="d-flexwrap sett-form" method="POST" enctype="multipart/form-data">
-                    {% csrf_token %}
+    <div class="d-flex flex-column gap-3 bg-2 rounded py-3 px-4 my-4">
+        <h3 class="text-center">User Settings</h3>
+        <form class="d-flex flex-column align-items-center" method="POST" enctype="multipart/form-data" id="edit-user-form">
+            {% csrf_token %}
+
+            <div class="d-flex gap-3 justify-content-center align-items-center w-100">
+                <!-- Profile picture -->
+                <div>
+                    <label for="profile_picture_input">
+                        <img 
+                            id="profile_picture" 
+                            src="{{ user.profile_picture.url }}" 
+                            class="img-sett pointer" 
+                            style="height: 180px; width: 180px;">
+                    </label>
+                    <input type="file" id="profile_picture_input" name="profile_picture" class="d-none" accept="image/*">
+                </div>
+    
+                <div class="row align-items-start w-100">
+                    <div class="col d-flex flex-column gap-3">
+                        
+                        <!-- Username -->
+                        <div>
+                            <label for="username" class="form-label">Username:</label>
+                            <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required autocomplete="on">
+                        </div>
+                        
+                        <!-- Email -->
+                        <div>
+                            <label for="email" class="form-label">Email:</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required autocomplete="on">
+                        </div>
+                    </div>
                     
-                    <!-- Profile picture -->
-                    <div class="sett-picture">
-                        <label for="profile_picture_input">
-                            <img 
-                                id="profile_picture" 
-                                src="{{ user.profile_picture.url }}" 
-                                class="img-fluid rounded-start img-sett pointer" 
-                                style="max-height: 200px; max-width: 200px;">
-                        </label>
-                        <input type="file" id="profile_picture_input" name="profile_picture" class="d-none" accept="image/*">
-                    </div>
-                
-                    <div class="mx-3">
-                        <div class="d-flexwrap">
-                            <!-- Username -->
-                            <div class="mb-2">
-                                <label for="username" class="form-label">Username:</label>
-                                <input type="text" class="form-control {% if form.username.errors %}is-invalid{% endif %}" id="username" name="username" value="{{ form.username.value }}" required autocomplete="on">
-                                {% if form.username.errors %}
-                                    <div class="invalid-feedback">
-                                        {% for error in form.username.errors %}
-                                            <p>{{ error }}</p>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                
-                            <!-- First Name -->
-                            <div class="mb-3">
-                                <label for="first_name" class="form-label">First Name:</label>
-                                <input type="text" class="form-control {% if form.first_name.errors %}is-invalid{% endif %}" id="first_name" name="first_name" value="{{ form.first_name.value }}" required autocomplete="on">
-                                {% if form.first_name.errors %}
-                                    <div class="invalid-feedback">
-                                        {% for error in form.first_name.errors %}
-                                            <p>{{ error }}</p>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                
-                            <!-- Last Name -->
-                            <div class="mb-3">
-                                <label for="last_name" class="form-label">Last Name:</label>
-                                <input type="text" class="form-control {% if form.last_name.errors %}is-invalid{% endif %}" id="last_name" name="last_name" value="{{ form.last_name.value }}" required autocomplete="on">
-                                {% if form.last_name.errors %}
-                                    <div class="invalid-feedback">
-                                        {% for error in form.last_name.errors %}
-                                            <p>{{ error }}</p>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
+                    <div class="col d-flex flex-column gap-3">
+                        
+                        <!-- First Name -->
+                        <div>
+                            <label for="first_name" class="form-label">First Name:</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}" required autocomplete="on">
                         </div>
-                
-                        <div class="d-flex">
-                            <div class="d-flex" style="min-width: 315px;">
-                                <!-- Email -->
-                                <div class="mb-2">
-                                    <label for="email" class="form-label">Email:</label>
-                                    <input type="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" id="email" name="email" value="{{ form.email.value }}" required autocomplete="on">
-                                    {% if form.email.errors %}
-                                        <div class="invalid-feedback">
-                                            {% for error in form.email.errors %}
-                                                <p>{{ error }}</p>
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                </div>                    
-                            </div>
-                            
-                            <!-- Messages -->
-                            {% if messages %}
-                                <div class="messages mx-auto mt-auto mb-2 w-100">
-                                    {% for message in messages %}
-                                        <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% endif %} mb-0">{{ message }}</div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-                        <!-- Submit -->
-                        <div class="center mt-auto mb-2 me-3 sub-btn">
-                            <button type="submit" class="btn btn-primary">Save</button>
+                        
+                        <!-- Last Name -->
+                        <div>
+                            <label for="last_name" class="form-label">Last Name:</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name }}" required autocomplete="on">
                         </div>
                     </div>
-                </form>                                    
+
+                    <div class="col d-flex flex-column gap-3">
+                        
+                        <!-- Date of Birth -->
+                        <div>
+                            <label for="date_of_birth" class="form-label">Date of Birth:</label>
+                            <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ user.date_of_birth|default_if_none:''|date:'Y-m-d' }}" autocomplete="on">
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+
+            <button type="submit" class="btn btn-primary w-25 mt-3">Save</button>
+
+            <p class="text-danger text-center mb-0 mt-2" id="username-error"></p>
+        </form>
+
         <div class="form-check form-switch d-flex justify-content-center gap-2">
             <input class="form-check-input" type="checkbox" role="switch" id="theme-switch">
-            <label class="form-check-label" for="theme-switch">{% if request.user.theme == 'dark' %}Light mode{% else %}Dark mode{% endif %}</label>
+            <label class="form-check-label" for="theme-switch">{% if user.theme == 'dark' %}Light mode{% else %}Dark mode{% endif %}</label>
         </div>
     </div>
 {% endblock content %}

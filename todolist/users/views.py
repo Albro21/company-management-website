@@ -1,45 +1,48 @@
 # Standard libs
 import calendar
 from datetime import date, timedelta
+from django.db import IntegrityError
 import pytz
 import json
 
 # Django
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth import get_user_model
 
 # Local apps
-from .forms import ProfileForm
 from common.decorators import parse_json_body
 
 
+User = get_user_model()
+
+@require_http_methods(['GET'])
 @login_required
 def settings(request):
-    if request.method == 'POST':
-        form = ProfileForm(request.POST, request.FILES, instance=request.user)
+    return render(request, 'users/settings.html')
 
-        if form.is_valid():
-            form.save()
+@require_http_methods(['POST'])
+@login_required
+def edit_user(request):
+    try:
+        user = request.user
+            
+        for key, value in request.POST.items():
+            if value:
+                setattr(user, key, value)
 
-            if 'profile_picture' in request.FILES:
-                profile = request.user
-                profile.profile_picture = request.FILES['profile_picture']
-                profile.save()
-
-            messages.success(request, 'Profile updated successfully!')
-            return redirect('settings')
-        else:
-            messages.error(request, 'Please correct the errors below.')
-    else:
-        form = ProfileForm(instance=request.user)
-
-    return render(request, 'users/settings.html', {'form': form})
-
+        for key, value in request.FILES.items():
+            if value:
+                setattr(user, key, value)
+        
+        user.save()
+        return JsonResponse({'success': True}, status=200)
+    except IntegrityError:
+        return JsonResponse({'success': False, 'error': 'The username already exists'}, status=400)
 
 @login_required
 def profile(request):
