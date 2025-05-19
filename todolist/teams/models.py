@@ -81,7 +81,7 @@ class Document(models.Model):
         return os.path.basename(self.file.name)
     
     def __str__(self):
-        return f"{self.user.full_name} - {self.document_type}"
+        return f"{self.user.get_full_name() } - {self.document_type}"
     
     def delete(self, *args, **kwargs):
         if self.file:

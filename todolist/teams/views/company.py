@@ -87,5 +87,5 @@ def kick_employee(request, employee_id):
         return redirect("teams:team")
 
     employee.leave_company()
-    messages.success(request, f"{employee.full_name} was kicked from the company.")
+    messages.success(request, f"{employee.get_full_name() } was kicked from the company.")
     return redirect("teams:team")

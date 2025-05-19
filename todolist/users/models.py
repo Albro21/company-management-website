@@ -67,10 +67,7 @@ class CustomUser(AbstractUser):
     # Settings
     theme = models.CharField(max_length=20, choices=THEMES, default='dark')
     timezone = models.CharField(max_length=32, choices=TIMEZONE_CHOICES, default='UTC')
-    
-    @property
-    def full_name(self):
-        return f"{self.first_name} {self.last_name}"
+
 
     @property
     def age(self):

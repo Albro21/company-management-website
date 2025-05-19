@@ -43,7 +43,7 @@ def project_weekly_report(request, project_id):
     grand_total = 0
 
     for employee in company_employees:
-        employee_full_name = employee.full_name
+        employee_full_name = employee.get_full_name()
         daily_hours = []
         employee_total = 0
 
@@ -106,7 +106,7 @@ def project_monthly_report(request, project_id):
     grand_total = 0
 
     for employee in company_employees:
-        employee_full_name = employee.full_name
+        employee_full_name = employee.get_full_name()
         daily_hours = []
         employee_total = 0
 

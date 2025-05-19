@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ employee.full_name }}{% endblock title %}
+{% block title %}{{ employee.get_full_name }}{% endblock title %}
 
 {% block styles %}
     <link rel="stylesheet" href="{% static 'css/employee_detail.css' %}">
@@ -78,7 +78,7 @@
                     <!-- Profile Card  -->
                     <div class="bg-2 rounded d-flex flex-column p-3 gap-3 align-items-center">
                         <img src="{{ employee.profile_picture.url }}" class="w-75 rounded-circle" alt="Profile Picture">
-                        <h2>{{ employee.full_name }}</h2>
+                        <h2>{{ employee.get_full_name }}</h2>
                     </div>
 
                     <!-- Contact Card -->
@@ -179,7 +179,7 @@
                     <!-- Edit Employee Offcanvas -->
                     <div class="offcanvas offcanvas-end" tabindex="-1" id="edit-employee-offcanvas">
                         <div class="offcanvas-header">
-                            <h5 class="offcanvas-title" id="offcanvasRightLabel">Edit {{ employee.full_name }}</h5>
+                            <h5 class="offcanvas-title" id="offcanvasRightLabel">Edit {{ employee.get_full_name }}</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                         </div>
                         <div class="offcanvas-body d-flex flex-column">
@@ -219,7 +219,7 @@
                                         {% for supervisor in employee.company.employees.all %}
                                             {% if supervisor != employee %}
                                                 <option value="{{ supervisor.id }}"{% if employee.supervisor == supervisor %}selected{% endif %}>
-                                                    {{ supervisor.full_name }}
+                                                    {{ supervisor.get_full_name }}
                                                 </option>
                                             {% endif %}
                                         {% endfor %}
@@ -382,7 +382,7 @@
                                 <div class="row">
                                     <div class="col">
                                         <span class="text-muted">Supervisor:</span><br>
-                                        {{ employee.supervisor.full_name|default_if_none:'' }}
+                                        {{ employee.supervisor.get_full_name }}
                                     </div>
                                     <div class="col">
                                         <span class="text-muted">Department:</span><br>

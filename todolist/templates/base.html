@@ -29,7 +29,7 @@
 			<span class="navbar-toggler-icon"></span>
 		</button>
 		<h5 class="my-auto text-nowrap overflow-hidden">
-			{{ user.full_name }}
+			{{ user.get_full_name }}
 		</h5>
 		<h5 class="ms-auto border rounded p-2 text-nowrap">
 			To-Do List
@@ -97,7 +97,7 @@
 						<div class="d-flex align-items-center dropdown-toggle pointer" data-bs-toggle="dropdown">
 							<img src="{{ user.profile_picture.url }}" alt="Profile picture" width="32" height="32"
 								class="rounded-circle me-2">
-							<strong>{{ user.full_name }}</strong>
+							<strong>{{ user.get_full_name }}</strong>
 						</div>
 						<div class="dropdown-menu">
 							<a class="dropdown-item" href="{% url 'teams:employee_detail' user.id %}?tab=information">Profile</a>
@@ -150,7 +150,7 @@
 					<div class="d-flex align-items-center gap-2 dropdown-toggle pointer" data-bs-toggle="dropdown">
 						<img src="{{ user.profile_picture.url }}" alt="Profile picture" width="32" height="32"
 							class="rounded-circle me-2">
-						<strong>{{ user.full_name }}</strong>
+						<strong>{{ user.get_full_name }}</strong>
 					</div>
 					<div class="dropdown-menu bg-2 mb-4" id="profile-dropdown">
 						<a class="dropdown-item" href="{% url 'teams:employee_detail' user.id %}?tab=information">Profile</a>

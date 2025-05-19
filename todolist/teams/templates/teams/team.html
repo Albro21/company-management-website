@@ -48,7 +48,7 @@
                             {% for join_request in company.join_requests.all %}
                                 <div class="bg-2 py-3 px-1 row rounded mx-0" id="join-request-{{ join_request.id }}">
                                     <div class="col-8 d-flex flex-column">
-                                        <h5>{{ join_request.user.full_name }}</h5>
+                                        <h5>{{ join_request.user.get_full_name }}</h5>
                                         {{ join_request.user.email }} 
                                         <br>
                                         @{{ join_request.user.username }}
@@ -83,7 +83,7 @@
                                 <div class="d-flex flex-column bg-2 p-2 rounded mx-0 gap-2" id="vacation-request-{{ vacation_request.id }}">
                                     <div>
                                         Employee:
-                                        <h5>{{ vacation_request.user.full_name }}</h5>
+                                        <h5>{{ vacation_request.user.get_full_name }}</h5>
                                     </div>
                                     <div>
                                         Period: 
@@ -125,7 +125,7 @@
             <div class="row py-2 w-100 list-item bg-2">
                 <div class="col">
                     <i class="bi {% if employee.is_online %}bi-circle-fill{% else %}bi-circle{% endif %} me-2" {% if employee.is_online %}style="color: green;"{% endif %}></i>
-                    {{ employee.full_name }} {% if employee == user %}(You){% endif %}
+                    {{ employee.get_full_name }} {% if employee == user %}(You){% endif %}
                 </div>
 
                 <div class="col text-center">
@@ -168,7 +168,7 @@
                 <!-- Assign Task Offcanvas -->
                 <div class="offcanvas offcanvas-end" tabindex="-1" id="assign-task-{{ employee.id }}">
                     <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="offcanvasRightLabel">Assign task to: {{ user.full_name }}</h5>
+                        <h5 class="offcanvas-title" id="offcanvasRightLabel">Assign task to: {{ user.get_full_name }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                     </div>
                     <div class="offcanvas-body">
