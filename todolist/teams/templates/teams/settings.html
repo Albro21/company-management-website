@@ -231,12 +231,6 @@
                 </div>
             {% endfor %}
         </div>
-
-        <!-- Leave Company Button -->
-        <form action="{% url 'teams:leave_company' %}" method="post">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Leave Company</button>
-        </form>
     </div>
     
 {% endblock content %}

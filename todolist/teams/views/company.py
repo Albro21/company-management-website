@@ -68,24 +68,3 @@ def settings(request):
     }
 
     return render(request, 'teams/settings.html', context)
-
-@require_http_methods(["POST"])
-@login_required
-def leave_company(request):
-    request.user.leave_company()
-    messages.success(request, "You have left the company.")
-    return redirect("teams:team")
-
-@require_http_methods(["POST"])
-@login_required
-@employer_required
-def kick_employee(request, employee_id):
-    employee = get_object_or_404(User, id=employee_id)
-    
-    if request.user == employee:
-        messages.error(request, "You cannot kick yourself.")
-        return redirect("teams:team")
-
-    employee.leave_company()
-    messages.success(request, f"{employee.get_full_name() } was kicked from the company.")
-    return redirect("teams:team")

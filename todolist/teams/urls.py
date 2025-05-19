@@ -9,6 +9,7 @@ urlpatterns = [
     
     path('employee/<int:employee_id>/assign-task/', employee.assign_task, name='assign_task'),
     path('employee/<int:employee_id>/edit/', employee.edit_employee, name='edit_employee'),
+    path('employee/<int:employee_id>/kick/', employee.kick_employee, name='kick_employee'),
     path('employee/<int:user_id>/', employee.employee_detail, name='employee_detail'),
     
     path('document/create/', document.create_document, name='create_document'),
@@ -24,8 +25,6 @@ urlpatterns = [
     
     path('company/create/', company.create_company, name='create_company'),
     path('company/settings/', company.settings, name='settings'),
-    path('company/leave/', company.leave_company, name='leave_company'),
-    path('company/kick/<int:employee_id>/', company.kick_employee, name='kick_employee'),
     
     path('join-request/create/', join_request.create_join_request, name='create_join_request'),
     path('join-request/<int:request_id>/accept/', join_request.accept_join_request, name='accept_join_request'),

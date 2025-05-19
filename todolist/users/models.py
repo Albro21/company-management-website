@@ -130,7 +130,27 @@ class CustomUser(AbstractUser):
     
     def leave_company(self):
         self.company = None
-        self.role = None
+        self.role = "employee"
+        self.job_title = None
+        self.contract_type = "full_time"
+        self.department = None
+        self.supervisor = None
+        self.employee_id = None
+        self.employee_status = "active"
+        self.date_of_joining = None
+        self.work_email = None
+        self.rate = 0.00
+        self.salary = 0.00
+        self.offline_location = None
+        self.offline_workstation_id = None
+        self.annual_vacation_days = 20
+        self.used_vacation_days = 0
+        self.probation_start_date = None
+        self.probation_end_date = None
+        self.termination_date = None
+        self.termination_reason = None
+        self.last_promotion_date = None
+        self.promotion_reason = None
         self.save()
     
     def switch_theme(self):

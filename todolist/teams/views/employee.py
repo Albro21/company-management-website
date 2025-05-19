@@ -1,15 +1,10 @@
-# Standard libs
-import calendar
-from collections import defaultdict
-from datetime import date, timedelta
-import json
-
 # Django
+from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseForbidden
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods
-from django.contrib.auth import get_user_model
 
 # Local apps
 from common.decorators import parse_json_body
@@ -64,8 +59,8 @@ def edit_employee(request, employee_id):
 @login_required
 def employee_detail(request, user_id):
     user = request.user
-    if user.id == user_id or user.is_employer:
-        employee = get_object_or_404(User, id=user_id)
+    employee = get_object_or_404(User, id=user_id)
+    if user.id == user_id or user.is_employer and user.company == employee.company:
         selected_tab = request.GET.get('tab', 'information')
         
         assigned_tasks = Task.objects.filter(
@@ -83,3 +78,12 @@ def employee_detail(request, user_id):
         
         return render(request, 'teams/employee_detail.html', context)
     return HttpResponseForbidden("You do not have permission to view this page.")
+
+@require_http_methods(["POST"])
+@login_required
+def kick_employee(request, employee_id):
+    employee = get_object_or_404(User, id=employee_id, company=request.user.company)
+
+    employee.leave_company()
+    messages.success(request, f"{employee.get_full_name() } was kicked from the company.")
+    return redirect("teams:team")
