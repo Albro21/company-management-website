@@ -4,7 +4,7 @@
     <div class="btn-group" id="filter-buttons">
         <!-- Today -->
         <a href="?filter=today" class="btn 
-                {% if request.user.theme == 'dark' %}
+                {% if user.theme == 'dark' %}
                     btn-outline-light
                 {% else %}
                     btn-outline-dark
@@ -16,7 +16,7 @@
         </a>
         <!-- Tommorrow -->
         <a href="?filter=tomorrow" class="btn 
-                {% if request.user.theme == 'dark' %}
+                {% if user.theme == 'dark' %}
                     btn-outline-light
                 {% else %}
                     btn-outline-dark
@@ -28,7 +28,7 @@
         </a>
         <!-- This week -->
         <a href="?filter=this_week" class="btn 
-                {% if request.user.theme == 'dark' %}
+                {% if user.theme == 'dark' %}
                     btn-outline-light
                 {% else %}
                     btn-outline-dark
@@ -40,7 +40,7 @@
         </a>
         <!-- Next week -->
         <a href="?filter=next_week" class="btn 
-                {% if request.user.theme == 'dark' %}
+                {% if user.theme == 'dark' %}
                     btn-outline-light
                 {% else %}
                     btn-outline-dark
@@ -52,7 +52,7 @@
         </a>
         <!-- All time -->
         <a href="?filter=all_time" class="btn 
-                {% if request.user.theme == 'dark' %}
+                {% if user.theme == 'dark' %}
                     btn-outline-light
                 {% else %}
                     btn-outline-dark

@@ -13,7 +13,7 @@
     <div class="d-flex justify-content-between align-items-center bg-2 rounded p-3 mb-4">
         <h4>{{ company.name }}</h4> 
         <div class="d-flex gap-3">
-            {% if request.user.is_employer %}
+            {% if user.is_employer %}
                 <!-- Settings -->
                 <a href="{% url 'teams:settings' %}" class="btn btn-secondary">Settings</a>
                 
@@ -116,7 +116,7 @@
             <div class="col">Name Surname</div>
             <div class="col text-center">Email</div>
             <div class="col text-center">Job Title</div>
-            {% if request.user.is_employer %}
+            {% if user.is_employer %}
                 <div class="col text-center">Billable Rate</div>
             {% endif %}
             <div class="col text-center">Actions</div>
@@ -125,7 +125,7 @@
             <div class="row py-2 w-100 list-item bg-2">
                 <div class="col">
                     <i class="bi {% if employee.is_online %}bi-circle-fill{% else %}bi-circle{% endif %} me-2" {% if employee.is_online %}style="color: green;"{% endif %}></i>
-                    {{ employee.full_name }} {% if employee == request.user %}(You){% endif %}
+                    {{ employee.full_name }} {% if employee == user %}(You){% endif %}
                 </div>
 
                 <div class="col text-center">
@@ -136,26 +136,26 @@
                     {{ employee.job_title|default_if_none:"" }}
                 </div>
 
-                {% if request.user.is_employer %}
+                {% if user.is_employer %}
                     <div class="col text-center">{{ employee.rate }}</div>
                 {% endif %}
 
                 <div class="col d-flex justify-content-center gap-3 action-icons">
-                    {% if request.user.is_employer or employee == request.user %}
+                    {% if user.is_employer or employee == user %}
                         <!-- employee Details -->
                         <a href="{% url 'teams:employee_detail' employee.id %}?tab=information">
                             <i class="bi-info-circle" data-bs-toggle="tooltip" title="View employee Details"></i>
                         </a>
                     {% endif %}
                     
-                    {% if request.user.is_employer %}
+                    {% if user.is_employer %}
                         <!-- Assign Task -->
                         <a data-bs-toggle="offcanvas" data-bs-target="#assign-task-{{ employee.id }}">
                             <i class="bi bi-plus-square" data-bs-toggle="tooltip" title="Assign Task"></i>
                         </a>
                     {% endif %}
                     
-                    {% if employee == request.user %}
+                    {% if employee == user %}
                         <!-- Request Vacation -->
                         <a data-bs-toggle="offcanvas" data-bs-target="#request-vacation-{{ employee.id }}">
                             <i class="bi bi-question-square" data-bs-toggle="tooltip" title="Request Vacation"></i>
@@ -164,7 +164,7 @@
                 </div>
             </div>
             
-            {% if request.user.is_employer %}
+            {% if user.is_employer %}
                 <!-- Assign Task Offcanvas -->
                 <div class="offcanvas offcanvas-end" tabindex="-1" id="assign-task-{{ employee.id }}">
                     <div class="offcanvas-header">
@@ -192,7 +192,7 @@
                                 <label for="id_project">Project</label>
                                 <select class="form-select" id="id_project" name="project" required>
                                     <option value="" selected>Select a project</option>
-                                    {% for project in request.user.company_projects.all %}
+                                    {% for project in user.company_projects.all %}
                                         <option value="{{ project.id }}">
                                             {{ project.title }}
                                         </option>
@@ -226,7 +226,7 @@
                 </div>
             {% endif %}
 
-            {% if employee == request.user %}
+            {% if employee == user %}
                 <!-- Request Vacation Offcanvas -->
                 <div class="offcanvas offcanvas-end" tabindex="-1" id="request-vacation-{{ employee.id }}">
                     <div class="offcanvas-header">
@@ -269,7 +269,7 @@
     <h3 class="mb-2 d-flex align-items-center justify-content-center">
         Projects
         
-        {% if request.user.is_employer %}
+        {% if user.is_employer %}
             <!-- Project Creation Button -->
             <button class="ms-3 btn btn-primary rounded-3 shadow-lg d-flex justify-content-center align-items-center"
                 style="width: 30px; height: 30px;"
@@ -280,7 +280,7 @@
         {% endif %}
     </h3>
 
-    {% if request.user.is_employer %}
+    {% if user.is_employer %}
         <!-- Project Creation Offcanvas -->
         <div class="offcanvas offcanvas-end" tabindex="-1" id="projectCreationOffcanvas">
             <div class="offcanvas-header">
@@ -338,7 +338,7 @@
                     <div class="col text-center">Client</div>
                     <div class="col text-center">Status</div>
                     <div class="col text-center">Tracked</div>
-                    {% if request.user.is_employer %}
+                    {% if user.is_employer %}
                         <div class="col text-center">Actions</div>
                     {% endif %}
                 </div>
@@ -353,7 +353,7 @@
                         <div class="col text-center">{% if project.client %}{{ project.client }}{% else %}N/A{% endif %}</div>
                         <div class="col text-center">{{ project.get_status_display }}</div>
                         <div class="col text-center">{{ project.total_tracked_time }}</div>
-                        {% if request.user.is_employer %}
+                        {% if user.is_employer %}
                             <!-- Action icons -->
                             <div class="col d-flex gap-3 action-icons justify-content-center">
 
@@ -376,7 +376,7 @@
                     </div>
                 </div>
                 
-                {% if request.user.is_employer %}
+                {% if user.is_employer %}
                     <!-- Delete Project Modal -->
                     <div class="modal fade" id="delete-project-modal-{{ project.id }}" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
@@ -475,7 +475,7 @@
             <label 
                 class="
                 btn
-                {% if request.user.theme == 'dark' %}
+                {% if user.theme == 'dark' %}
                     btn-outline-light
                 {% else %}
                     btn-outline-dark
@@ -488,7 +488,7 @@
             <label 
                 class="
                 btn
-                {% if request.user.theme == 'dark' %}
+                {% if user.theme == 'dark' %}
                     btn-outline-light
                 {% else %}
                     btn-outline-dark
@@ -501,7 +501,7 @@
             <label 
                 class="
                 btn
-                {% if request.user.theme == 'dark' %}
+                {% if user.theme == 'dark' %}
                     btn-outline-light
                 {% else %}
                     btn-outline-dark
@@ -514,7 +514,7 @@
             <label 
                 class="
                 btn
-                {% if request.user.theme == 'dark' %}
+                {% if user.theme == 'dark' %}
                     btn-outline-light
                 {% else %}
                     btn-outline-dark
@@ -527,7 +527,7 @@
             <label 
                 class="
                 btn
-                {% if request.user.theme == 'dark' %}
+                {% if user.theme == 'dark' %}
                     btn-outline-light
                 {% else %}
                     btn-outline-dark

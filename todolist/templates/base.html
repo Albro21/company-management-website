@@ -13,7 +13,7 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 	<link rel="stylesheet" href="{% static 'css/base.css' %}">
 
-	{% if request.user.theme == "dark" %}
+	{% if user.theme == "dark" %}
 		<link rel="stylesheet" href="{% static 'css/dark_theme.css' %}">
 	{% else %}
 		<link rel="stylesheet" href="{% static 'css/light_theme.css' %}">
@@ -29,7 +29,7 @@
 			<span class="navbar-toggler-icon"></span>
 		</button>
 		<h5 class="my-auto text-nowrap overflow-hidden">
-			{{ request.user.full_name }}
+			{{ user.full_name }}
 		</h5>
 		<h5 class="ms-auto border rounded p-2 text-nowrap">
 			To-Do List
@@ -61,7 +61,7 @@
 					<a href="{% url 'teams:team' %}" class="nav-link">
 						<i class="bi bi-people me-2"></i>Team
 					</a>
-					{% if request.user %}
+					{% if user %}
 						<a href="{% url 'teams:calendar' %}" class="nav-link">
 							<i class="bi bi-calendar me-2"></i>Calendar
 						</a>
@@ -81,7 +81,7 @@
 						My Projects
 					</button>
 					<div class="collapse list-group" id="dashboard-collapse">
-						{% for project in request.user.all_projects %}
+						{% for project in user.all_projects %}
 						<a href="{% url 'project_detail' project.id %}"
 							class="list-group-item text-center link-dark text-decoration-none rounded">
 							{{ project.title}}
@@ -97,7 +97,7 @@
 						<div class="d-flex align-items-center dropdown-toggle pointer" data-bs-toggle="dropdown">
 							<img src="{{ user.profile_picture.url }}" alt="Profile picture" width="32" height="32"
 								class="rounded-circle me-2">
-							<strong>{{ request.user.full_name }}</strong>
+							<strong>{{ user.full_name }}</strong>
 						</div>
 						<div class="dropdown-menu">
 							<a class="dropdown-item" href="{% url 'teams:employee_detail' user.id %}?tab=information">Profile</a>
@@ -131,7 +131,7 @@
 				<a href="{% url 'teams:team' %}" class="nav-link py-2 px-4 rounded">
 					<i class="bi bi-people me-2"></i>Team
 				</a>
-				{% if request.user %}
+				{% if user %}
 					<a href="{% url 'teams:calendar' %}" class="nav-link py-2 px-4 rounded">
 						<i class="bi bi-calendar me-2"></i>Calendar
 					</a>
@@ -150,7 +150,7 @@
 					<div class="d-flex align-items-center gap-2 dropdown-toggle pointer" data-bs-toggle="dropdown">
 						<img src="{{ user.profile_picture.url }}" alt="Profile picture" width="32" height="32"
 							class="rounded-circle me-2">
-						<strong>{{ request.user.full_name }}</strong>
+						<strong>{{ user.full_name }}</strong>
 					</div>
 					<div class="dropdown-menu bg-2 mb-4" id="profile-dropdown">
 						<a class="dropdown-item" href="{% url 'teams:employee_detail' user.id %}?tab=information">Profile</a>
@@ -180,14 +180,14 @@
 		integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
 		crossorigin="anonymous"></script>
 	<script>
-		const textColor = "{% if request.user.theme == 'dark' %}white{% else %}black{% endif %}";
-		const gridColor = "{% if request.user.theme == 'dark' %}#333{% else %}#ccc{% endif %}";
+		const textColor = "{% if user.theme == 'dark' %}white{% else %}black{% endif %}";
+		const gridColor = "{% if user.theme == 'dark' %}#333{% else %}#ccc{% endif %}";
 	</script>
 	<script src="{% static 'js/utils.js' %}"></script>
 	<script>
 		// Set user timezone
 		const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-		const serverTimezone = "{{ request.user.timezone }}";
+		const serverTimezone = "{{ user.timezone }}";
 		if (userTimeZone !== serverTimezone) {
 			sendRequest('/set-timezone/', 'PATCH', JSON.stringify({ timezone: userTimeZone }));
 		}

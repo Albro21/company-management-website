@@ -17,7 +17,7 @@
 		<!-- Category and high priority filters -->
 		<div class="d-flex justify-content-center gap-2 gap-md-3 flex-wrap">
 			<!-- Category filters -->
-			{% for category in request.user.categories.all %}
+			{% for category in user.categories.all %}
 				<span 
 					class="badge shadow-sm pointer align-self-center bg-1"
 					style="border: 3px solid {{ category.color }};"
@@ -137,7 +137,7 @@
 						<label for="id_project">Project</label>
 						<select class="form-select" id="id_project" name="project">
 							<option value="" selected>Select a project</option>
-							{% for project in request.user.all_projects %}
+							{% for project in user.all_projects %}
 								<option value="{{ project.id }}">
 									{{ project.title }}
 								</option>
@@ -149,7 +149,7 @@
 					<div class="d-flex flex-column">
 						<span class="text-center fw-bold">Categories</span>
 						<div class="d-flex flex-column">
-							{% for category in request.user.categories.all %}
+							{% for category in user.categories.all %}
 								<div class="form-check">
 									<input 
 										class="form-check-input" 

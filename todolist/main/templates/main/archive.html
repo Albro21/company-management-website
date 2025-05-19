@@ -63,7 +63,7 @@
 			</div>
 
 			<!-- Project list -->
-			{% if request.user.personal_projects %}
+			{% if user.personal_projects %}
 				<div class="d-flex flex-column mb-5">
 					<!-- Table Header -->
 					<div class="p-0 w-100 d-flex">
@@ -77,7 +77,7 @@
 						</div>
 					</div>
 
-					{% for project in request.user.personal_projects.all %}
+					{% for project in user.personal_projects.all %}
 						<!-- Project -->
 						<div 
 							class="list-item d-flex w-100 bg-2" 
@@ -181,7 +181,7 @@
 			{% endif %}
 
 			<!-- Company projects -->
-			{% if request.user.company_projects %}
+			{% if user.company_projects %}
 				<h3 class="mb-2 text-center">Company projects</h3>
 
 				<!-- Project list -->
@@ -199,7 +199,7 @@
 						</div>
 					</div>
 
-					{% for project in request.user.company_projects.all %}
+					{% for project in user.company_projects.all %}
 						<!-- Project -->
 						<div 
 							class="list-item d-flex w-100 bg-2" 
@@ -289,7 +289,7 @@
 					</div>
 				</div>
 
-				{% for category in request.user.categories.all %}
+				{% for category in user.categories.all %}
 					<!-- Category -->
 					<div 
 						class="list-item d-flex w-100 bg-2" 

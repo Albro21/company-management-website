@@ -185,7 +185,7 @@
                         <div class="offcanvas-body d-flex flex-column">
                             <form method="POST" class="d-flex flex-column" id="edit-employee-form" data-id="{{ employee.id }}" enctype="multipart/form-data">
                                 {% csrf_token %}
-                                {% if request.user.is_employer %}
+                                {% if user.is_employer %}
                                     <h3 class="text-center py-2">Work Information</h3>
 
                                     <!-- Role -->
@@ -269,7 +269,7 @@
                                     <input type="number" step="1" min="0" class="form-control mb-3" id="id_annual_vacation_days" name="annual_vacation_days" value="{{ employee.annual_vacation_days|default_if_none:'' }}">
                                 {% endif %}
                                 
-                                {% if request.user == employee %}
+                                {% if user == employee %}
                                     <h3 class="text-center py-3 border-top">Contact Information</h3>
                                     
                                     <!-- Mobile Phone -->
@@ -315,7 +315,7 @@
                                     <textarea name="skills" id="id_skills" placeholder="Skills" class="form-control mb-3">{{ employee.skills|default_if_none:'' }}</textarea>
                                 {% endif %}
                                 
-                                {% if request.user.is_employer %}
+                                {% if user.is_employer %}
                                     <h3 class="text-center py-3 border-top">Probation</h3>
 
                                     <!-- Probation Start Date -->
@@ -568,23 +568,23 @@
                 
                         <!-- This week -->
                         <input type="radio" class="btn-check" name="timeRange" id="week" autocomplete="off" checked>
-                        <label class="btn {% if request.user.theme == 'dark' %}btn-outline-light{% else %}btn-outline-dark{% endif %}" for="week">This week</label>
+                        <label class="btn {% if user.theme == 'dark' %}btn-outline-light{% else %}btn-outline-dark{% endif %}" for="week">This week</label>
                 
                         <!-- Last week -->
                         <input type="radio" class="btn-check" name="timeRange" id="lastWeek" autocomplete="off">
-                        <label class="btn {% if request.user.theme == 'dark' %}btn-outline-light{% else %}btn-outline-dark{% endif %}" for="lastWeek">Last week</label>
+                        <label class="btn {% if user.theme == 'dark' %}btn-outline-light{% else %}btn-outline-dark{% endif %}" for="lastWeek">Last week</label>
                 
                         <!-- This month -->
                         <input type="radio" class="btn-check" name="timeRange" id="month" autocomplete="off">
-                        <label class="btn {% if request.user.theme == 'dark' %}btn-outline-light{% else %}btn-outline-dark{% endif %}" for="month">This month</label>
+                        <label class="btn {% if user.theme == 'dark' %}btn-outline-light{% else %}btn-outline-dark{% endif %}" for="month">This month</label>
                 
                         <!-- Last month -->
                         <input type="radio" class="btn-check" name="timeRange" id="lastMonth" autocomplete="off">
-                        <label class="btn {% if request.user.theme == 'dark' %}btn-outline-light{% else %}btn-outline-dark{% endif %}" for="lastMonth">Last month</label>
+                        <label class="btn {% if user.theme == 'dark' %}btn-outline-light{% else %}btn-outline-dark{% endif %}" for="lastMonth">Last month</label>
                 
                         <!-- All time -->
                         <input type="radio" class="btn-check" name="timeRange" id="allTime" autocomplete="off">
-                        <label class="btn {% if request.user.theme == 'dark' %}btn-outline-light{% else %}btn-outline-dark{% endif %}" for="allTime">All time</label>
+                        <label class="btn {% if user.theme == 'dark' %}btn-outline-light{% else %}btn-outline-dark{% endif %}" for="allTime">All time</label>
                     </div>
                     
                     <h3 class="text-center mt-3">Time Spent Analytics</h3>
@@ -653,7 +653,7 @@
                 <!-- Documents Header -->
                 <h3 class="mb-2 d-flex align-items-center justify-content-center mt-3">
                     Documents
-                    {% if request.user == employee %}
+                    {% if user == employee %}
                         <!-- Document Upload Button -->
                         <button class="ms-3 btn btn-primary rounded-3 shadow-lg d-flex justify-content-center align-items-center"
                             style="width: 30px; height: 30px;"
@@ -664,7 +664,7 @@
                     {% endif %}
                 </h3>
     
-                {% if request.user == employee %}
+                {% if user == employee %}
                     <!-- Document Upload Offcanvas -->
                     <div class="offcanvas offcanvas-end" tabindex="-1" id="documentUploadOffcanvas">
                         <div class="offcanvas-header">
@@ -719,7 +719,7 @@
                                 </div>
     
                                 <div class="col d-flex justify-content-center gap-3 action-icons">
-                                    {% if request.user == employee %}
+                                    {% if user == employee %}
                                         <!-- Edit Document -->
                                         <a data-bs-toggle="offcanvas" data-bs-target="#edit-document-{{ document.id }}">
                                             <i class="bi bi-pencil" data-bs-toggle="tooltip" title="Edit"></i>
@@ -733,7 +733,7 @@
                                 </div>
                             </div>
                             
-                            {% if request.user == employee %}
+                            {% if user == employee %}
                                 <!-- Edit Document Offcanvas -->
                                 <div class="offcanvas offcanvas-end" tabindex="-1" id="edit-document-{{ document.id }}">
                                     <div class="offcanvas-header">
@@ -796,7 +796,7 @@
                 <!-- Expenses Header -->
                 <h3 class="mb-2 d-flex align-items-center justify-content-center mt-3">
                     Expenses
-                    {% if request.user == employee %}
+                    {% if user == employee %}
                         <!-- Expense Upload Button -->
                         <button class="ms-3 btn btn-primary rounded-3 shadow-lg d-flex justify-content-center align-items-center"
                             style="width: 30px; height: 30px;"
@@ -807,7 +807,7 @@
                     {% endif %}
                 </h3>
     
-                {% if request.user == employee %}
+                {% if user == employee %}
                     <!-- Expense Upload Offcanvas -->
                     <div class="offcanvas offcanvas-end" tabindex="-1" id="expenseUploadOffcanvas">
                         <div class="offcanvas-header">
@@ -880,7 +880,7 @@
                                 </div>
     
                                 <div class="col d-flex justify-content-center gap-3 action-icons">
-                                    {% if request.user == employee %}
+                                    {% if user == employee %}
                                         <!-- Edit Expense -->
                                         <a data-bs-toggle="offcanvas" data-bs-target="#edit-expense-{{ expense.id }}">
                                             <i class="bi bi-pencil" data-bs-toggle="tooltip" title="Edit"></i>
@@ -894,7 +894,7 @@
                                 </div>
                             </div>
                             
-                            {% if request.user == employee %}
+                            {% if user == employee %}
                                 <!-- Edit Expense Offcanvas -->
                                 <div class="offcanvas offcanvas-end" tabindex="-1" id="edit-expense-{{ expense.id }}">
                                     <div class="offcanvas-header">
