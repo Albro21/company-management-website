@@ -7,7 +7,6 @@ urlpatterns = [
     path('team/', general.team, name='team'),
     path('calendar/', general.calendar, name='calendar'),
     
-    path('employee/<int:employee_id>/analytics/', employee.employee_analytics, name='employee_analytics'),
     path('employee/<int:employee_id>/assign-task/', employee.assign_task, name='assign_task'),
     path('employee/<int:employee_id>/edit/', employee.edit_employee, name='edit_employee'),
     path('employee/<int:user_id>/', employee.employee_detail, name='employee_detail'),

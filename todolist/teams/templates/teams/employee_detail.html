@@ -24,7 +24,21 @@
                 onclick="updateTab('information')">
                 Information
             </div>
-            
+
+            <!-- Analytics Nav -->
+            <div 
+                class="nav-link {% if request.GET.tab == 'analytics' %}active{% endif %}"
+                id="nav-analytics-tab" 
+                data-bs-toggle="tab" 
+                data-bs-target="#nav-analytics" 
+                type="button"
+                role="tab" 
+                aria-controls="nav-analytics" 
+                aria-selected="true"
+                onclick="updateTab('analytics')">
+                Analytics
+            </div>
+
             <!-- Documents Nav -->
             <div 
                 class="nav-link {% if request.GET.tab == 'documents' %}active{% endif %}" 
@@ -38,7 +52,7 @@
                 onclick="updateTab('documents')">
                 Documents
             </div>
-            
+
             <!-- Expenses Nav -->
             <div 
                 class="nav-link {% if request.GET.tab == 'expenses' %}active{% endif %}" 
@@ -544,6 +558,93 @@
                 </div>
             </div>
         </div>
+
+        <!-- Analytics Tab -->
+        <div class="tab-pane fade {% if request.GET.tab == 'analytics' %}show active{% endif %}" id="nav-analytics" role="tabpanel" aria-labelledby="nav-analytics-tab" tabindex="0">
+            <div class="d-flex flex-column align-items-center pt-4">
+                <div class="d-flex flex-column gap-3 mb-5 w-100">
+                    <!-- Time range selection -->
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Time range selection">
+                
+                        <!-- This week -->
+                        <input type="radio" class="btn-check" name="timeRange" id="week" autocomplete="off" checked>
+                        <label class="btn {% if request.user.theme == 'dark' %}btn-outline-light{% else %}btn-outline-dark{% endif %}" for="week">This week</label>
+                
+                        <!-- Last week -->
+                        <input type="radio" class="btn-check" name="timeRange" id="lastWeek" autocomplete="off">
+                        <label class="btn {% if request.user.theme == 'dark' %}btn-outline-light{% else %}btn-outline-dark{% endif %}" for="lastWeek">Last week</label>
+                
+                        <!-- This month -->
+                        <input type="radio" class="btn-check" name="timeRange" id="month" autocomplete="off">
+                        <label class="btn {% if request.user.theme == 'dark' %}btn-outline-light{% else %}btn-outline-dark{% endif %}" for="month">This month</label>
+                
+                        <!-- Last month -->
+                        <input type="radio" class="btn-check" name="timeRange" id="lastMonth" autocomplete="off">
+                        <label class="btn {% if request.user.theme == 'dark' %}btn-outline-light{% else %}btn-outline-dark{% endif %}" for="lastMonth">Last month</label>
+                
+                        <!-- All time -->
+                        <input type="radio" class="btn-check" name="timeRange" id="allTime" autocomplete="off">
+                        <label class="btn {% if request.user.theme == 'dark' %}btn-outline-light{% else %}btn-outline-dark{% endif %}" for="allTime">All time</label>
+                    </div>
+                    
+                    <h3 class="text-center mt-3">Time Spent Analytics</h3>
+
+                    <div class="d-flex" style="height: 350px;">
+                        <!-- Donut time chart -->
+                        <div class="d-flex flex-column justify-content-between align-items-center" style="height: 350px; width: 350px;">
+                            <div style="height: 310px; width: 310px;">
+                                <canvas id="donutTimeChart"></canvas>
+                            </div>
+                            <h4 class="text-center" id="totalTime"></h4>
+                        </div>
+                        
+                        <!-- Bar time chart -->
+                        <div class="flex-grow-1">
+                            <canvas id="barTimeChart"></canvas>
+                        </div>
+                    </div>
+
+                    <h3 class="text-center mt-3">Task Completion Analytics</h3>
+
+                    <div class="d-flex" style="height: 350px;">
+                        <!-- Donut task chart -->
+                        <div class="d-flex flex-column justify-content-between align-items-center" style="height: 350px; width: 350px;">
+                            <div style="height: 310px; width: 310px;">
+                                <canvas id="donutTaskChart"></canvas>
+                            </div>
+                            <h4 class="text-center" id="totalTasks"></h4>
+                        </div>
+                        
+                        <!-- Bar task chart -->
+                        <div class="flex-grow-1">
+                            <canvas id="barTaskChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="mb-2 text-center">Assigned tasks</h2>
+                <div class="d-flex flex-column w-100">
+                    <!-- Task group header -->
+                    <div class="d-flex justify-content-center">
+                        <div style="width: 5px;"></div>
+                        <div class="row py-2 w-100">
+                            <div class="fs-6 col-9">Name</div>
+                            <div class="col-1 text-center">Project</div>
+                            <div class="col-1 text-center" style="white-space: nowrap;">Due Date</div>
+                            <div class="col-1 text-center">Actions</div>
+                        </div>
+                    </div>
+                    {% for task in assigned_tasks %}
+    
+                        <!-- Task item -->
+                        {% include "main/task_item.html" %}
+                        
+                        <!-- Edit Task Offcanvas -->
+                        {% include "main/task_editing_form.html" %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
         
         <!-- Documents Tab -->
         <div class="tab-pane fade {% if request.GET.tab == 'documents' %}show active{% endif %}" id="nav-documents" role="tabpanel" aria-labelledby="nav-documents-tab" tabindex="0">
@@ -861,7 +962,14 @@
 {% endblock content %}
 
 {% block scripts %}
+    <script>
+        const userId = "{{ employee.id }}";
+    </script>
     <script src="{% static 'js/employee_detail.js' %}"></script>
+    <script src="{% static 'js/user_analytics.js' %}"></script>
     <script src="{% static 'js/document.js' %}"></script>
     <script src="{% static 'js/expense.js' %}"></script>
+    <script src="{% static 'js/task.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 {% endblock scripts %}

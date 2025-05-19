@@ -153,11 +153,6 @@
                         <a data-bs-toggle="offcanvas" data-bs-target="#assign-task-{{ employee.id }}">
                             <i class="bi bi-plus-square" data-bs-toggle="tooltip" title="Assign Task"></i>
                         </a>
-                        
-                        <!-- Analytics -->
-                        <a href="{% url 'teams:employee_analytics' employee.id %}">
-                            <i class="bi bi-graph-up" data-bs-toggle="tooltip" title="View employee Analytics"></i>
-                        </a>
                     {% endif %}
                     
                     {% if employee == request.user %}

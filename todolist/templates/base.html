@@ -66,7 +66,7 @@
 							<i class="bi bi-calendar me-2"></i>Calendar
 						</a>
 					{% endif %}
-					<a href="{% url 'profile' %}" class="nav-link">
+					<a href="{% url 'teams:employee_detail' user.id %}?tab=information" class="nav-link">
 						<i class="bi bi-person me-2"></i>Profile
 					</a>
 					<a href="{% url 'settings' %}" class="nav-link">
@@ -100,7 +100,7 @@
 							<strong>{{ request.user.full_name }}</strong>
 						</div>
 						<div class="dropdown-menu">
-							<a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
+							<a class="dropdown-item" href="{% url 'teams:employee_detail' user.id %}?tab=information">Profile</a>
 							<a class="dropdown-item" href="{% url 'settings' %}">Settings</a>
 							<hr class="dropdown-divider">
 							<form class="dropdown-item" method="post" action="{% url 'logout' %}">
@@ -136,7 +136,7 @@
 						<i class="bi bi-calendar me-2"></i>Calendar
 					</a>
 				{% endif %}
-				<a href="{% url 'profile' %}" class="nav-link py-2 px-4 rounded">
+				<a href="{% url 'teams:employee_detail' user.id %}?tab=information" class="nav-link py-2 px-4 rounded">
 					<i class="bi bi-person me-2"></i>Profile
 				</a>
 				<a href="{% url 'settings' %}" class="nav-link py-2 px-4 rounded">
@@ -153,7 +153,7 @@
 						<strong>{{ request.user.full_name }}</strong>
 					</div>
 					<div class="dropdown-menu bg-2 mb-4" id="profile-dropdown">
-						<a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
+						<a class="dropdown-item" href="{% url 'teams:employee_detail' user.id %}?tab=information">Profile</a>
 						<a class="dropdown-item" href="{% url 'settings' %}">Settings</a>
 						<hr class="dropdown-divider">
 						<form class="dropdown-item" method="post" action="{% url 'logout' %}">

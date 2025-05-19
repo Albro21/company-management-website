@@ -1,5 +1,6 @@
 # Standard libs
 import calendar
+from collections import defaultdict
 from datetime import date, timedelta
 from django.db import IntegrityError
 import pytz
@@ -10,12 +11,14 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import get_user_model
 
 # Local apps
 from common.decorators import parse_json_body
+from timetracker.models import TimeEntry
+from main.models import Task
 
 
 User = get_user_model()
@@ -43,37 +46,6 @@ def edit_user(request):
         return JsonResponse({'success': True}, status=200)
     except IntegrityError:
         return JsonResponse({'success': False, 'error': 'The username already exists'}, status=400)
-
-@login_required
-def profile(request):
-    tasks = request.user.tasks.all()
-
-    completed_tasks = tasks.filter(is_completed=True).count()
-    overdue_tasks = tasks.filter(is_completed=False, due_date__lt=date.today()).count()
-    remaining_tasks = tasks.filter(is_completed=False).count()
-
-    project_labels = []
-    project_data = []
-    project_colors = []
-
-    for project in request.user.all_projects:
-        completed_task_count = project.tasks.filter(is_completed=True).count()
-        project_labels.append(project.title)
-        project_data.append(completed_task_count)
-        project_colors.append(project.color)
-
-    context = {
-        'completed_tasks': completed_tasks,
-        'overdue_tasks': overdue_tasks,
-        'remaining_tasks': remaining_tasks,
-        'project_data': project_data,
-        'project_labels': project_labels,
-        'project_data': project_data,
-        'project_colors': project_colors,
-    }
-    
-    return render(request, 'users/profile.html', context)
-
 
 @login_required
 def filter_chart(request):
@@ -158,3 +130,221 @@ def set_timezone(request):
             request.user.save()
             return JsonResponse({"success": True})
     return JsonResponse({"success": False, "error": "User not authenticated"}, status=400)
+
+def get_date_range_from_filter(filter_option, all_time_first_entry):
+    today = date.today()
+
+    if filter_option == "week":
+        start_date = today - timedelta(days=today.weekday())
+        end_date = start_date + timedelta(days=6)
+    elif filter_option == "lastWeek":
+        start_date = today - timedelta(days=today.weekday() + 7)
+        end_date = start_date + timedelta(days=6)
+    elif filter_option == "month":
+        start_date = today.replace(day=1)
+        end_date = today
+    elif filter_option == "lastMonth":
+        current_year = today.year
+        current_month = today.month
+        if current_month == 1:
+            start_date = date(current_year - 1, 12, 1)
+        else:
+            start_date = date(current_year, current_month - 1, 1)
+        _, last_day = calendar.monthrange(start_date.year, start_date.month)
+        end_date = start_date.replace(day=last_day)
+    elif filter_option == "allTime":
+        start_date = all_time_first_entry.start_time.date()
+        end_date = today
+
+    return start_date, end_date
+
+def process_donut_time_chart(user, start_date, end_date):
+    project_time = defaultdict(int)
+    
+    current_date = start_date
+    while current_date <= end_date:
+        daily_data = user.hours_spent_by_projects(current_date, user.company.projects.all())
+        for project_title, duration in daily_data.items():
+            project_time[project_title] += duration
+        current_date += timedelta(days=1)
+    
+    labels = list(project_time.keys())
+    data = list(project_time.values())
+    
+    project_color_map = {
+        project.title: project.color
+        for project in user.company.projects.filter(title__in=labels)
+    }
+
+    datasets = [{
+        "data": data,
+        "backgroundColor": [project_color_map.get(title, "#000000") for title in labels],
+        "borderWidth": 1
+    }]
+    
+    return {
+        "labels": labels,
+        "datasets": datasets
+    }
+
+def process_bar_time_chart(user, start_date, end_date):
+    date_labels = []
+    project_time_by_date = defaultdict(lambda: defaultdict(int))
+    current_date = start_date
+    while current_date <= end_date:
+        date_str = current_date.strftime("%d/%m/%y")
+        date_labels.append(date_str)
+        daily_data = user.hours_spent_by_projects(current_date, user.company.projects.all())
+        for project_title, duration in daily_data.items():
+            project_time_by_date[project_title][date_str] += duration
+        current_date += timedelta(days=1)
+
+    project_titles = list(project_time_by_date.keys())
+
+    project_color_map = {
+        project.title: project.color
+        for project in user.company.projects.filter(title__in=project_titles)
+    }
+
+    datasets = []
+    for project_title in project_titles:
+        data = [project_time_by_date[project_title].get(day, 0) for day in date_labels]
+        datasets.append({
+            "label": project_title,
+            "data": data,
+            "backgroundColor": project_color_map.get(project_title, "#000000")
+        })
+
+    return {
+        "labels": date_labels,
+        "datasets": datasets
+    }
+
+def process_donut_task_chart(user, start_date, end_date):
+    project_task_count = defaultdict(int)
+
+    tasks = Task.objects.filter(
+        user=user,
+        project__in=user.company.projects.all(),
+        completed_at__gte=start_date,
+        completed_at__lte=end_date
+    )
+
+    for task in tasks:
+        project_task_count[task.project.title] += 1
+
+    labels = list(project_task_count.keys())
+    data = list(project_task_count.values())
+
+    project_color_map = {
+        project.title: project.color
+        for project in user.company.projects.filter(title__in=labels)
+    }
+
+    datasets = [{
+        "data": data,
+        "backgroundColor": [project_color_map.get(title, "#000000") for title in labels],
+        "borderWidth": 1
+    }]
+
+    return {
+        "labels": labels,
+        "datasets": datasets
+    }
+
+def process_bar_task_chart(user, start_date, end_date):
+    date_labels = []
+    project_tasks_by_date = defaultdict(lambda: defaultdict(int))
+
+    current_date = start_date
+    while current_date <= end_date:
+        date_str = current_date.strftime("%d/%m/%y")
+        date_labels.append(date_str)
+
+        tasks = Task.objects.filter(
+            user=user,
+            project__in=user.company.projects.all(),
+            completed_at=current_date
+        )
+
+        for task in tasks:
+            project_tasks_by_date[task.project.title][date_str] += 1
+
+        current_date += timedelta(days=1)
+
+    project_titles = list(project_tasks_by_date.keys())
+
+    project_color_map = {
+        project.title: project.color
+        for project in user.company.projects.filter(title__in=project_titles)
+    }
+
+    datasets = []
+    for project_title in project_titles:
+        data = [project_tasks_by_date[project_title].get(day, 0) for day in date_labels]
+        datasets.append({
+            "label": project_title,
+            "data": data,
+            "backgroundColor": project_color_map.get(project_title, "#000000")
+        })
+
+    return {
+        "labels": date_labels,
+        "datasets": datasets
+    }
+
+def calculate_total_time(user, start_date, end_date):
+    time_entries = TimeEntry.objects.filter(
+        user=user,
+        task__project__in=user.company.projects.all(),
+        start_time__date__gte=start_date,
+        start_time__date__lte=end_date
+    )
+
+    total_seconds = int(sum(entry.duration.total_seconds() for entry in time_entries))
+
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+    seconds = total_seconds % 60
+    return f"{hours}h {minutes}m {seconds}s"
+
+def calculate_total_tasks(user, start_date, end_date):
+    tasks = Task.objects.filter(
+        user=user,
+        project__in=user.company.projects.all(),
+        completed_at__gte=start_date,
+        completed_at__lte=end_date
+    )
+
+    return tasks.count()
+
+@require_http_methods(["POST"])
+@login_required
+@parse_json_body
+def user_analytics(request, user_id):
+    user = get_object_or_404(User, id=user_id, company=request.user.company)
+    
+    data = request.json_data
+    filter_option = data.get("filter")
+    
+    all_time_first_entry = user.time_entries.filter(task__project__in=user.company.projects.all()).order_by('start_time').first()
+    start_date, end_date = get_date_range_from_filter(filter_option, all_time_first_entry)
+    
+    donut_time_chart_data = process_donut_time_chart(user, start_date, end_date)
+    bar_time_chart_data = process_bar_time_chart(user, start_date, end_date)
+    donut_task_chart_data = process_donut_task_chart(user, start_date, end_date)
+    bar_task_chart_data = process_bar_task_chart(user, start_date, end_date)
+    
+    total_time = calculate_total_time(user, start_date, end_date)
+    total_tasks = calculate_total_tasks(user, start_date, end_date)
+    
+    context = {
+        'donut_time_chart_data': donut_time_chart_data,
+        'bar_time_chart_data': bar_time_chart_data,
+        'donut_task_chart_data': donut_task_chart_data,
+        'bar_task_chart_data': bar_task_chart_data,
+        'total_time': total_time,
+        'total_tasks': total_tasks,
+    }
+    
+    return JsonResponse({'success': True, 'data': context}, status=200)
