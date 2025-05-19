@@ -324,6 +324,9 @@ def calculate_total_tasks(user, start_date, end_date):
 def user_analytics(request, user_id):
     user = get_object_or_404(User, id=user_id, company=request.user.company)
     
+    if not user.company:
+        return JsonResponse({'success': False, 'error': 'Current user does not belong to any company.'}, status=400)
+    
     data = request.json_data
     filter_option = data.get("filter")
     

@@ -60,24 +60,29 @@ def edit_employee(request, employee_id):
 def employee_detail(request, user_id):
     user = request.user
     employee = get_object_or_404(User, id=user_id)
-    if user.id == user_id or user.is_employer and user.company == employee.company:
-        selected_tab = request.GET.get('tab', 'information')
-        
-        assigned_tasks = Task.objects.filter(
-            user=employee,
-            is_completed=False,
-            project__in=employee.company.projects.all()
-        )
-        
-        context = {
-            'employee': employee,
-            'assigned_tasks': assigned_tasks,
-            'selected_tab': selected_tab,
-            'document_types': Document.DOCUMENT_TYPES
-        }
-        
-        return render(request, 'teams/employee_detail.html', context)
-    return HttpResponseForbidden("You do not have permission to view this page.")
+
+    # Authorization check
+    if not (user.id == user_id or (user.is_employer and user.company == employee.company)):
+        return HttpResponseForbidden("You do not have permission to view this page.")
+
+    selected_tab = request.GET.get('tab', 'information')
+
+    # Only query tasks if the employee has a company
+    assigned_tasks = Task.objects.filter(
+        user=employee,
+        is_completed=False,
+        project__company=employee.company
+    ) if employee.company else Task.objects.none()
+
+    context = {
+        'employee': employee,
+        'assigned_tasks': assigned_tasks,
+        'selected_tab': selected_tab,
+        'document_types': Document.DOCUMENT_TYPES
+    }
+
+    return render(request, 'teams/employee_detail.html', context)
+
 
 @require_http_methods(["POST"])
 @login_required

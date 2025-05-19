@@ -1,12 +1,22 @@
-const totalTimeElement = document.getElementById("totalTime");
-const totalTasksElement = document.getElementById("totalTasks");
-
-const donutTimeChartCTX = document.getElementById("donutTimeChart").getContext("2d");
-const barTimeChartCTX = document.getElementById("barTimeChart").getContext("2d");
-const donutTaskChartCTX = document.getElementById("donutTaskChart").getContext("2d");
-const barTaskChartCTX = document.getElementById("barTaskChart").getContext("2d");
 
 document.addEventListener("DOMContentLoaded", function () {
+    const totalTimeElement = document.getElementById("totalTime");
+    const totalTasksElement = document.getElementById("totalTasks");
+    
+    const donutTimeChart = document.getElementById("donutTimeChart");
+    const barTimeChart = document.getElementById("barTimeChart");
+    const donutTaskChart = document.getElementById("donutTaskChart");
+    const barTaskChart = document.getElementById("barTaskChart");
+
+    if (!donutTimeChart || !barTimeChart || !donutTaskChart || !barTaskChart) {
+        return;
+    }
+    
+    const donutTimeChartCTX = donutTimeChart.getContext("2d");
+    const barTimeChartCTX = barTimeChart.getContext("2d");
+    const donutTaskChartCTX = donutTaskChart.getContext("2d");
+    const barTaskChartCTX = barTaskChart.getContext("2d");
+    
     Chart.register(ChartDataLabels);
 
     let DonutTimeChart = new Chart(donutTimeChartCTX, {
