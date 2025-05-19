@@ -539,15 +539,18 @@
             >All time</label>
         </div>
         
-        <div class="d-flex gap-3" style="height: 350px;">
-            <!-- Donut chart -->
-            <div class="d-flex flex-column justify-content-between" style="height: 350px; width: 350px;">
-                <canvas id="companyDonutChart" style="height: 310px; width: 310px;"></canvas>
-                <h4 class="text-center" id="total_time"></h4>
+        <div class="d-flex" style="height: 350px;">
+
+            <!-- Donut time chart -->
+            <div class="d-flex flex-column justify-content-between align-items-center" style="height: 350px; width: 350px;">
+                <div style="height: 310px; width: 310px;">
+                    <canvas id="companyDonutChart"></canvas>
+                </div>
+                <h4 class="text-center" id="totalTime"></h4>
             </div>
             
-            <!-- Stacked Bar chart -->
-            <div style="width: 100%;">
+            <!-- Bar time chart -->
+            <div class="flex-grow-1">
                 <canvas id="companyStackedBarChart"></canvas>
             </div>
         </div>

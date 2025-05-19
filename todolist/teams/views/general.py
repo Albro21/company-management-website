@@ -1,4 +1,5 @@
 # Standard libs
+from calendar import monthrange
 from collections import defaultdict
 from datetime import date, timedelta
 import json
@@ -34,7 +35,7 @@ def get_date_range_from_filter(filter_option, all_time_first_entry):
             start_date = date(current_year - 1, 12, 1)
         else:
             start_date = date(current_year, current_month - 1, 1)
-        _, last_day = calendar.monthrange(start_date.year, start_date.month)
+        _, last_day = monthrange(start_date.year, start_date.month)
         end_date = start_date.replace(day=last_day)
     elif filter_option == "allTime":
         start_date = all_time_first_entry.start_time.date()

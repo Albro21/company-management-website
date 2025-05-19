@@ -1,4 +1,4 @@
-const totalTimeElement = document.getElementById("total_time");
+const totalTimeElement = document.getElementById("totalTime");
 
 document.addEventListener("DOMContentLoaded", function () {
     const stackedBarCanvas = document.getElementById("companyStackedBarChart");

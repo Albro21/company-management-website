@@ -3,19 +3,6 @@
 
 {% block title %}Team{% endblock title %}
 
-{% block styles %}
-<style>
-    #main-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin-top: 0px !important;
-        margin-bottom: 0px !important;
-    }
-</style>
-{% endblock styles %}
-
 {% block content %}
     <form class="w-100 d-flex flex-column gap-3 p-4 bg-2 rounded" method="post" enctype="multipart/form-data">
         {% csrf_token %}
