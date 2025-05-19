@@ -1,8 +1,7 @@
 # Django
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect, render
-from django.views.decorators.http import require_http_methods
+from django.shortcuts import redirect, render
 from django.contrib.auth import get_user_model
 
 # Local apps
@@ -68,3 +67,9 @@ def settings(request):
     }
 
     return render(request, 'teams/settings.html', context)
+
+@login_required
+@employer_required
+def expenses(request):
+    expenses = request.user.company.expenses.all()
+    return render(request, 'teams/expenses.html', {'expenses': expenses})

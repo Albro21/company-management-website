@@ -15,7 +15,10 @@
         <div class="d-flex gap-3">
             {% if user.is_employer %}
                 <!-- Settings -->
-                <a href="{% url 'teams:settings' %}" class="btn btn-secondary">Settings</a>
+                <a href="{% url 'teams:settings' %}" class="btn btn-primary">Settings</a>
+                
+                <!-- Expenses -->
+                <a href="{% url 'teams:expenses' %}" class="btn btn-primary">Expenses</a>
                 
                 <!-- Join Requests -->
                 <a class="btn btn-primary position-relative" style="white-space: nowrap;" data-bs-toggle="offcanvas" data-bs-target="#join-requests">

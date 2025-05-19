@@ -24,6 +24,7 @@ urlpatterns = [
     path('project-monthly-report/<int:project_id>/', reports.project_monthly_report, name='project_monthly_report'),
     
     path('company/create/', company.create_company, name='create_company'),
+    path('company/expenses/', company.expenses, name='expenses'),
     path('company/settings/', company.settings, name='settings'),
     
     path('join-request/create/', join_request.create_join_request, name='create_join_request'),
