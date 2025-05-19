@@ -343,18 +343,20 @@
                         </div>
                     </div>
 
-                    {% if user == employee %}
-                        <!-- Leave Company Button -->
-                        <form class="d-flex justify-content-center" action="{% url 'teams:kick_employee' employee.id %}" method="post">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger p-3 w-100"><h3>Leave Company</h3></button>
-                        </form>
-                    {% elif user.is_employer %}
-                        <!-- Kick Employee Button -->
-                        <form class="d-flex justify-content-center" action="{% url 'teams:kick_employee' employee.id %}" method="post">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger p-3 w-100"><h3>Kick Employee</h3></button>
-                        </form>
+                    {% if user.company %}
+                        {% if user == employee %}
+                            <!-- Leave Company Button -->
+                            <form class="d-flex justify-content-center" action="{% url 'teams:kick_employee' employee.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger p-3 w-100"><h3>Leave Company</h3></button>
+                            </form>
+                        {% elif user.is_employer %}
+                            <!-- Kick Employee Button -->
+                            <form class="d-flex justify-content-center" action="{% url 'teams:kick_employee' employee.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger p-3 w-100"><h3>Kick Employee</h3></button>
+                            </form>
+                        {% endif %}
                     {% endif %}
                 </div>
 
