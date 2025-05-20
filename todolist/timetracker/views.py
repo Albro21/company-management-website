@@ -215,20 +215,20 @@ def update_time_entry_times(request, time_entry_id):
 
     time_entry = get_object_or_404(TimeEntry, id=time_entry_id, user__in=request.user.company.employees.all())
 
-    def combine_date_and_time(existing_datetime, time_str):
+    def combine_date_and_time(base_datetime, time_str):
         new_time = datetime.strptime(str(time_str), "%H:%M").time()
-        naive_dt = datetime.combine(existing_datetime.date(), new_time)
+        naive_dt = datetime.combine(base_datetime.date(), new_time)
         aware_dt = timezone.make_aware(naive_dt, timezone.get_current_timezone())
         return aware_dt
 
     new_start = combine_date_and_time(time_entry.start_time, data.get('start_time'))
-    new_end = combine_date_and_time(time_entry.end_time, data.get('end_time'))
+    new_end = combine_date_and_time(time_entry.start_time, data.get('end_time'))
 
-    if new_start is not None:
-        time_entry.start_time = new_start
-    if new_end is not None:
-        time_entry.end_time = new_end
+    if new_end <= new_start:
+        new_end += timedelta(days=1)
 
+    time_entry.start_time = new_start
+    time_entry.end_time = new_end
     time_entry.save()
 
     return JsonResponse({'success': True}, status=200)

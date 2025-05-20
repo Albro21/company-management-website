@@ -22,11 +22,11 @@
 
         <!-- Table Header -->
         <div class="row py-2 w-100 m-0">
-            <div class="col-3">Projects</div>
+            <div class="col-4">Projects</div>
             {% for date in week_dates %}
-                <div class="col text-center">{{ date|date:"D, M j" }}</div>
+                <div class="col-1 text-center">{{ date|date:"D, M j" }}</div>
             {% endfor %}
-            <div class="col text-center">Total</div>
+            <div class="col-1 text-center">Total</div>
         </div>
 
         <!-- Table Body --> 
@@ -41,17 +41,17 @@
                         data-bs-toggle="collapse" 
                         data-bs-target="#date-collapse-{{ project.id }}" 
                         id="project-row-{{ project.id }}">
-                        <div class="col-3">
+                        <div class="col-4">
                             {{ project.title }}
                         </div>
-                        <div class="col text-center" data-project-id="{{ project.id }}" data-day="0">00:00</div>
-                        <div class="col text-center" data-project-id="{{ project.id }}" data-day="1">00:00</div>
-                        <div class="col text-center" data-project-id="{{ project.id }}" data-day="2">00:00</div>
-                        <div class="col text-center" data-project-id="{{ project.id }}" data-day="3">00:00</div>
-                        <div class="col text-center" data-project-id="{{ project.id }}" data-day="4">00:00</div>
-                        <div class="col text-center" data-project-id="{{ project.id }}" data-day="5">00:00</div>
-                        <div class="col text-center" data-project-id="{{ project.id }}" data-day="6">00:00</div>
-                        <div class="col text-center project-total" data-project-id="{{ project.id }}">00:00</div>
+                        <div class="col-1 text-center" data-project-id="{{ project.id }}" data-day="0">00:00</div>
+                        <div class="col-1 text-center" data-project-id="{{ project.id }}" data-day="1">00:00</div>
+                        <div class="col-1 text-center" data-project-id="{{ project.id }}" data-day="2">00:00</div>
+                        <div class="col-1 text-center" data-project-id="{{ project.id }}" data-day="3">00:00</div>
+                        <div class="col-1 text-center" data-project-id="{{ project.id }}" data-day="4">00:00</div>
+                        <div class="col-1 text-center" data-project-id="{{ project.id }}" data-day="5">00:00</div>
+                        <div class="col-1 text-center" data-project-id="{{ project.id }}" data-day="6">00:00</div>
+                        <div class="col-1 text-center project-total" data-project-id="{{ project.id }}">00:00</div>
                     </div>
                 </div>
 
@@ -59,38 +59,34 @@
                     <div class="d-flex flex-column">
                         <!-- Dates List -->
                         {% for date, time_entries in date_dict.items %}
-                            <div class="row py-2 list-item bg-3 mx-0 date-row" data-bs-toggle="collapse" data-bs-target="#time-entry-collapse-{{ project.id }}-{{ date|date:'Y-m-d' }}" id="date-row-{{ project.id }}-{{ date|date:'Y-m-d' }}">
-                                <div class="col-3">{{ date|date:"D, M j" }}</div>
-                                <div class="col"></div>
-                                <div class="col"></div>
-                                <div class="col"></div>
-                                <div class="col"></div>
-                                <div class="col"></div>
-                                <div class="col text-center">Start Time</div>
-                                <div class="col text-center">End Time</div>
-                                <div class="col text-center date-total" data-date="{{ date|date:'Y-m-d' }}" data-project-id="{{ project.id }}">00:00</div>
+                            <div class="d-flex w-100 list-item">
+                                <div style="background-color: {{ project.color }}; width: 5px"></div>
+                                <div class="row py-2 bg-3 w-100 align-items-center mx-0 date-row" data-bs-toggle="collapse" data-bs-target="#time-entry-collapse-{{ project.id }}-{{ date|date:'Y-m-d' }}" id="date-row-{{ project.id }}-{{ date|date:'Y-m-d' }}">
+                                    <div class="col-2">{{ date|date:"D, M j" }}</div>
+                                    <div class="col-9"></div>
+                                    <div class="col-1 text-center date-total" data-date="{{ date|date:'Y-m-d' }}" data-project-id="{{ project.id }}">00:00</div>
+                                </div>
                             </div>
                             <div class="collapse w-100" id="time-entry-collapse-{{ project.id }}-{{ date|date:'Y-m-d' }}">
                                 <div class="d-flex flex-column">
                                     <!-- Time Entries -->
                                     {% for time_entry in time_entries %}
-                                        <div class="row py-2 list-item bg-4 mx-0 align-items-center time-entry-row" 
+                                    <div class="d-flex w-100 list-item">
+                                        <div style="background-color: {{ project.color }}; width: 5px"></div>
+                                        <div class="row py-2 bg-4 w-100 mx-0 align-items-center time-entry-row" 
                                             data-project-id="{{ project.id }}" 
                                             data-date="{{ date|date:'Y-m-d' }}">
-                                            <div class="col">{{ time_entry.user.get_full_name }}</div>
-                                            <div class="col-3">{{ time_entry.name }}</div>
-                                            <div class="col"></div>
-                                            <div class="col"></div>
-                                            <div class="col"></div>
-                                            <div class="col"></div>
-                                            <div class="col text-center">
+                                            <div class="col-2">{{ time_entry.user.get_full_name }}</div>
+                                            <div class="col-7">{{ time_entry.name }}</div>
+                                            <div class="col-1 text-center">
                                                 <input type="time" class="time-input" name="start_time" id="start-time-{{ time_entry.id }}" value="{{ time_entry.start_time|time:'H:i' }}" data-project-id="{{ project.id }}" data-date="{{ date|date:'Y-m-d' }}">
                                             </div>
-                                            <div class="col text-center">
+                                            <div class="col-1 text-center">
                                                 <input type="time" class="time-input" name="end_time" id="end-time-{{ time_entry.id }}" value="{{ time_entry.end_time|time:'H:i' }}" data-project-id="{{ project.id }}" data-date="{{ date|date:'Y-m-d' }}">
                                             </div>
-                                            <div class="col text-center entry-duration" id="total-time-{{ time_entry.id }}" data-entry-id="{{ time_entry.id }}" data-project-id="{{ project.id }}" data-date="{{ date|date:'Y-m-d' }}">00:00</div>
+                                            <div class="col-1 text-center entry-duration" id="total-time-{{ time_entry.id }}" data-entry-id="{{ time_entry.id }}" data-project-id="{{ project.id }}" data-date="{{ date|date:'Y-m-d' }}">00:00</div>
                                         </div>
+                                    </div>
                                     {% endfor %}
                                 </div>
                             </div>

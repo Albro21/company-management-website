@@ -57,10 +57,9 @@ document.addEventListener("DOMContentLoaded", () => {
         return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     }
 
-    // Convert date string (e.g. '2025-05-20') to Monday=0 ... Sunday=6
     function getMondayBasedDayIndex(dateString) {
         const date = new Date(dateString);
-        const jsDay = date.getDay(); // Sunday=0 ... Saturday=6
+        const jsDay = date.getDay();
         return jsDay === 0 ? 6 : jsDay - 1;
     }
 
@@ -79,21 +78,15 @@ document.addEventListener("DOMContentLoaded", () => {
             const end = parseTime(endInput?.value);
             let duration = 0;
 
-            // Reset invalid classes first
-            startInput.classList.remove('invalid');
-            endInput.classList.remove('invalid');
-            totalTimeElement.classList.remove('invalid');
-
             if (start > 0 && end > 0) {
-                if (end > start) {
+                if (end >= start) {
                     duration = end - start;
-                    if (changedInput === startInput || changedInput === endInput) {
-                        updateTimeEntryTimes(entryId, startInput?.value, endInput?.value);
-                    }
                 } else {
-                    startInput.classList.add('invalid');
-                    endInput.classList.add('invalid');
-                    totalTimeElement.classList.add('invalid');
+                    duration = (24 * 60 - start) + end;
+                }
+                
+                if (changedInput === startInput || changedInput === endInput) {
+                    updateTimeEntryTimes(entryId, startInput?.value, endInput?.value);
                 }
             }
 
@@ -135,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!projectRow) return;
 
             for (let i = 0; i < 7; i++) {
-                const dayCol = projectRow.querySelector(`.col.text-center[data-day="${i}"]`);
+                const dayCol = projectRow.querySelector(`.col-1.text-center[data-day="${i}"]`);
                 if (dayCol) {
                     dayCol.textContent = formatDuration(dayTotals[i] || 0);
                     if (!dayTotals[i]) {
