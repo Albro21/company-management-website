@@ -6,6 +6,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 # Django
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.forms import ValidationError
 from django.utils import timezone as tz
 from .choices import *
 
@@ -22,6 +23,7 @@ class CustomUser(AbstractUser):
     profile_picture = models.ImageField(upload_to='profile_pics/', default='profile_pics/default.jpg')
     date_of_birth = models.DateField(null=True, blank=True)
     mobile_phone = PhoneNumberField(region='GB', blank=True, null=True)
+    email = models.EmailField(unique=True)
     personal_email = models.EmailField(blank=True, null=True)
     
     # Work
@@ -68,6 +70,17 @@ class CustomUser(AbstractUser):
     theme = models.CharField(max_length=20, choices=THEMES, default='dark')
     timezone = models.CharField(max_length=32, choices=TIMEZONE_CHOICES, default='UTC')
 
+    
+    def clean(self):
+        super().clean()
+
+        # Ensure username is unique (excluding current instance)
+        if self.username and CustomUser.objects.exclude(pk=self.pk).filter(username=self.username).exists():
+            raise ValidationError({'username': 'This username is already taken.'})
+
+        # Ensure email is unique (excluding current instance)
+        if self.email and CustomUser.objects.exclude(pk=self.pk).filter(email=self.email).exists():
+            raise ValidationError({'email': 'This email is already taken.'})
 
     @property
     def age(self):

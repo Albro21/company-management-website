@@ -27,13 +27,21 @@ document.getElementById('edit-user-form').addEventListener('submit', async (e) =
     formData.delete('csrfmiddlewaretoken');
 
     const data = await sendRequest(url, 'POST', formData);
+
     if (data.success) {
         window.location.reload();
     } else {
-        usernameError = document.getElementById('username-error');
-        usernameError.textContent = data.error;
+        const errorElement = document.getElementById('error');
+        let errors = data.error;
 
-        usernameInput = document.getElementById('username');
-        usernameInput.classList.add('is-invalid');
+        if (errors.some(msg => msg.includes("username"))) {
+            document.getElementById('username').classList.add('is-invalid');
+        }
+
+        if (errors.some(msg => msg.includes("email"))) {
+            document.getElementById('email').classList.add('is-invalid');
+        }
+
+        errorElement.textContent = errors.join('\n');
     }
 });

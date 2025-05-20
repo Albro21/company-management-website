@@ -2,7 +2,6 @@
 import calendar
 from collections import defaultdict
 from datetime import date, timedelta
-from django.db import IntegrityError
 import pytz
 import json
 
@@ -10,6 +9,7 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
+from django.forms import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_http_methods
@@ -42,10 +42,11 @@ def edit_user(request):
             if value:
                 setattr(user, key, value)
         
+        user.full_clean()
         user.save()
         return JsonResponse({'success': True}, status=200)
-    except IntegrityError:
-        return JsonResponse({'success': False, 'error': 'The username already exists'}, status=400)
+    except ValidationError as error:
+        return JsonResponse({'success': False, 'error': error.messages}, status=400)
 
 @login_required
 def filter_chart(request):
