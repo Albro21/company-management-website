@@ -10,6 +10,10 @@
     background-color: var(--bg-3);
 }
 
+.bg-4 {
+    background-color: var(--bg-4);
+}
+
 body {
     overflow-x: hidden;
     max-width: 100vw;
