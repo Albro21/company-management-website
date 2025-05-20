@@ -72,10 +72,15 @@ document.addEventListener("DOMContentLoaded", () => {
             const entryId = cell.dataset.entryId;
             const startInput = document.querySelector(`#start-time-${entryId}`);
             const endInput = document.querySelector(`#end-time-${entryId}`);
-            const totalTimeElement = document.getElementById(`total-time-${entryId}`);
 
-            const start = parseTime(startInput?.value);
-            const end = parseTime(endInput?.value);
+            if (startInput.value && endInput.value) {
+                start = parseTime(startInput.value);
+                end = parseTime(endInput.value);
+            } else {
+                start = parseTime(startInput.textContent);
+                end = parseTime(endInput.textContent);
+            }
+
             let duration = 0;
 
             if (start > 0 && end > 0) {

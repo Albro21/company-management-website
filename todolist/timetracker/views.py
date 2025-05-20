@@ -165,7 +165,6 @@ def duplicate_time_entry(request, time_entry_id):
     return JsonResponse({'success': True}, status=200)
 
 @login_required
-@employer_required
 def timesheet(request):
     start_date_str = request.GET.get('start_date')
     
@@ -179,10 +178,16 @@ def timesheet(request):
     
     week_dates = [start_date + timedelta(days=i) for i in range(7)]
 
-    time_entries = TimeEntry.objects.filter(
-        project__in=request.user.company.projects.all(),
-        start_time__date__range=(start_date, end_date)
-    ).order_by('start_time')
+    if request.user.is_employer:
+        time_entries = TimeEntry.objects.filter(
+            project__in=request.user.company.projects.all(),
+            start_time__date__range=(start_date, end_date)
+        ).order_by('start_time')
+    else:
+        time_entries = TimeEntry.objects.filter(
+            user=request.user,
+            start_time__date__range=(start_date, end_date)
+        ).order_by('start_time')
     
     grouped_entries = defaultdict(lambda: defaultdict(list))
 
@@ -208,12 +213,14 @@ def timesheet(request):
 
 @require_http_methods(["PATCH"])
 @login_required
-@employer_required
 @parse_json_body
 def update_time_entry_times(request, time_entry_id):
     data = request.json_data
 
-    time_entry = get_object_or_404(TimeEntry, id=time_entry_id, user__in=request.user.company.employees.all())
+    if request.user.is_employer:
+        time_entry = get_object_or_404(TimeEntry, id=time_entry_id, user__in=request.user.company.employees.all())
+    else:
+        time_entry = get_object_or_404(TimeEntry, id=time_entry_id, user=request.user)
 
     def combine_date_and_time(base_datetime, time_str):
         new_time = datetime.strptime(str(time_str), "%H:%M").time()
