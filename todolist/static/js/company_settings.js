@@ -3,6 +3,7 @@ async function deleteJobTitle(jobTitleId) {
     const url = `/teams/job-title/${jobTitleId}/delete/`;
     const data = await sendRequest(url, "DELETE"); 
     if (data.success) {
+        queueToast('Job title deleted', 'success');
         document.getElementById(`job-title-${jobTitleId}`).remove();
     }
 };
@@ -20,6 +21,7 @@ if (createJobTitleForm) {
     
         const data = await sendRequest(url, 'POST', requestBody);
         if (data.success) {
+            queueToast('Job title created', 'success');
             window.location.reload();
         }
     });

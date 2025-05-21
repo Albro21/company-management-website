@@ -225,6 +225,7 @@ async function assignTask(employeeId, formData) {
     const data = await sendRequest(url, 'POST', requestBody);
 
     if (data.success) {
+        queueToast('Task assigned', 'success');
         window.location.reload();
     }
 }
@@ -245,6 +246,7 @@ async function acceptHolidayRequest(holidayId) {
     const data = await sendRequest(url, 'PATCH');
     if (data.success) {
         document.getElementById(`holiday-${holidayId}`).remove();
+        showToast('Holiday request accepted', 'success');
     }
 }
 
@@ -254,5 +256,6 @@ async function declineHolidayRequest(holidayId) {
     if (data.success) {
         element = document.getElementById(`holiday-${holidayId}`);
         element.remove();
+        showToast('Holiday request declined', 'success');
     }
 }

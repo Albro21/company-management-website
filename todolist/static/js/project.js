@@ -3,6 +3,7 @@ async function deleteProject(projectId) {
     const url = `/project/${projectId}/delete/`;
     const data = await sendRequest(url, 'DELETE');
     if (data.success) {
+        queueToast('Project deleted', 'success');
         window.location.reload();
     }
 }
@@ -13,6 +14,7 @@ async function editProject(projectId, formData) {
     const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
     const data = await sendRequest(url, 'PATCH', requestBody);
     if (data.success) {
+        queueToast('Project updated', 'success');
         window.location.reload();
     }
 }
@@ -42,6 +44,7 @@ if (createProjectForm) {
 
         const data = await sendRequest(url, 'POST', requestBody);
         if (data.success) {
+            queueToast('Project created', 'success');
             window.location.reload();
         }
     });

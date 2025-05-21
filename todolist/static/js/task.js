@@ -32,6 +32,7 @@ async function completeTask(taskId) {
 		if (taskElementParent.children.length === 1) {
 			taskElementParent.remove();
 		}
+        showToast('Task completed', 'success');
 	}
 }
 
@@ -48,6 +49,7 @@ async function editTask(taskId, formData) {
     
     const data = await sendRequest(url, 'PATCH', JSON.stringify(requestBody));
     if (data.success) {
+        queueToast('Task updated', 'success');
         window.location.reload();
     }
 }
@@ -84,6 +86,7 @@ if (createTaskForm) {
     
         const data = await sendRequest(url, 'POST', JSON.stringify(requestBody));
         if (data.success) {
+            queueToast('Task created', 'success');
             window.location.reload();
         }
     });

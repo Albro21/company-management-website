@@ -18,6 +18,7 @@ if (uploadDocumentForm) {
 
         const data = await sendRequest(url, 'POST', formData);
         if (data.success) {
+            queueToast('Expense uploaded', 'success');
             window.location.reload();
         }
     });
@@ -28,6 +29,7 @@ async function editExpense(expenseId, formData) {
     const url = `/teams/expense/${expenseId}/edit/`;
     const data = await sendRequest(url, 'POST', formData);
     if (data.success) {
+        queueToast('Expense updated', 'success');
         window.location.reload();
     }
 }

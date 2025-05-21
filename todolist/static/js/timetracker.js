@@ -78,11 +78,13 @@ document.querySelector('#tracker-form').addEventListener('submit', async functio
             nameInput.disabled = true;
             projectSelect.disabled = true;
             window.runningTimer = true
+            showToast('Timer started', 'success');
         }
     } else {
         const url = `/timetracker/stop/`;
         const data = await sendRequest(url, "POST");
         if (data.success) {
+            queueToast('Timer stopped', 'success');
             window.location.reload();
         }
     }
@@ -130,6 +132,7 @@ async function deleteTimeEntry(timeEntryId) {
                 grouperParent.remove();
             }
         }
+        showToast('Time entry deleted', 'success');
     }
 }
 
@@ -167,9 +170,10 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 async function duplicateTimeEntry(timeEntryId) {
-    const url = `/timetracker/time-entry/${timeEntryId}/duplicate/`;
+    const url = `/timetracker/time-entsry/${timeEntryId}/duplicate/`;
     const data = await sendRequest(url, 'POST');
     if (data.success) {
+        queueToast('Time entry duplicated', 'success');
         window.location.reload();
     }
 };

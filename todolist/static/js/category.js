@@ -3,6 +3,7 @@ async function deleteCategory(categoryId) {
     const url = `/category/${categoryId}/delete/`;
     const data = await sendRequest(url, 'DELETE');
     if (data.success) {
+        queueToast('Category deleted', 'success');
         window.location.reload();
     }
 }
@@ -13,6 +14,7 @@ async function editCategory(categoryId, formData) {
     const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
     const data = await sendRequest(url, 'PATCH', requestBody);
     if (data.success) {
+        queueToast('Category updated', 'success');
         window.location.reload();
     }
 }
@@ -42,6 +44,7 @@ if (createCategoryForm) {
 
         const data = await sendRequest(url, 'POST', requestBody);
         if (data.success) {
+            queueToast('Category created', 'success');
             window.location.reload();
         }
     });

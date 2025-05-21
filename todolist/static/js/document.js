@@ -3,6 +3,7 @@ async function deleteDocument(documentId) {
     const url = `/teams/document/${documentId}/delete/`;
     const data = await sendRequest(url, 'DELETE');
     if (data.success) {
+        queueToast('Document deleted', 'success');
         window.location.reload();
     }
 }
@@ -18,6 +19,7 @@ if (uploadDocumentForm) {
 
         const data = await sendRequest(url, 'POST', formData);
         if (data.success) {
+            queueToast('Document uploaded', 'success');
             window.location.reload();
         }
     });
@@ -28,6 +30,7 @@ async function editDocument(documentId, formData) {
     const url = `/teams/document/${documentId}/edit/`;
     const data = await sendRequest(url, 'POST', formData);
     if (data.success) {
+        queueToast('Document updated', 'success');
         window.location.reload();
     }
 }

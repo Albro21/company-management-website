@@ -19,9 +19,10 @@ if (editEmployeeForm) {
     
         const data = await sendRequest(url, 'PATCH', requestBody);
         if (data.success) {
+            queueToast('Employee updated', 'success');
             window.location.reload();
         } else {
-            alert(data.error);
+            showToast(data.error, 'danger');
         }
     });
 }

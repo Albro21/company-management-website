@@ -40,6 +40,10 @@ async function updateTimeEntryTimes(timeEntryId, startTime, endTime) {
     const url = `/timetracker/time-entry/${timeEntryId}/update-times/`;
     const requestBody = JSON.stringify({ start_time: startTime, end_time: endTime });
     const data = await sendRequest(url, 'PATCH', requestBody);
+
+    if (data.success) {
+        showToast('Durations updated', 'success');
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -147,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
     calculateDurations();
 
     document.querySelectorAll('input.time-input').forEach(input => {
-        input.addEventListener('change', () => calculateDurations(input));
+        input.addEventListener('blur', () => calculateDurations(input));
     });
 
 });

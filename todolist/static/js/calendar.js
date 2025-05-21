@@ -115,8 +115,10 @@ document.getElementById('holiday-form').addEventListener('submit', async (e) => 
     const data = await sendRequest(url, 'POST', requestBody);
 
     if (data.success) {
+        queueToast('Holiday created', 'success');
         window.location.reload();
     } else {
         errorElement.textContent = data.error;
+        showToast('Error creating holiday', 'danger');
     }
 })

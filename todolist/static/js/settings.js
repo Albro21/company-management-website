@@ -15,6 +15,7 @@ document.getElementById('theme-switch').addEventListener('change', async functio
     const data = await sendRequest(url, 'PATCH');
 
     if (data.success) {
+        queueToast('Theme changed', 'success');
         window.location.reload();
     }
 });
@@ -29,6 +30,7 @@ document.getElementById('edit-user-form').addEventListener('submit', async (e) =
     const data = await sendRequest(url, 'POST', formData);
 
     if (data.success) {
+        queueToast('User settings updated', 'success');
         window.location.reload();
     } else {
         const errorElement = document.getElementById('error');
