@@ -63,6 +63,13 @@
 					</a>
 					<a href="{% url 'teams:team' %}" class="nav-link">
 						<i class="bi bi-people me-2"></i>Company
+						{% if user.is_employer %}
+							{% with total_requests=user.company.pending_holidays.count|add:user.company.join_requests.count %}
+								{% if total_requests > 0 %}
+									<span class="badge rounded-circle bg-danger ms-3">{{ total_requests }}</span>
+								{% endif %}
+							{% endwith %}
+						{% endif %}
 					</a>
 					<a href="{% url 'teams:calendar' %}" class="nav-link">
 						<i class="bi bi-calendar me-2"></i>Calendar
@@ -134,6 +141,13 @@
 				</a>
 				<a href="{% url 'teams:team' %}" class="nav-link py-2 px-4 rounded">
 					<i class="bi bi-people me-2"></i>Company
+					{% if user.is_employer %}
+						{% with total_requests=user.company.pending_holidays.count|add:user.company.join_requests.count %}
+							{% if total_requests > 0 %}
+								<span class="badge rounded-circle bg-danger ms-3">{{ total_requests }}</span>
+							{% endif %}
+						{% endwith %}
+					{% endif %}
 				</a>
 				<a href="{% url 'teams:calendar' %}" class="nav-link py-2 px-4 rounded">
 					<i class="bi bi-calendar me-2"></i>Calendar
@@ -172,7 +186,7 @@
 			{% block content %}{% endblock content %}
 		</div>
 	</div>
-	
+
 	<!-- Toasts -->
 	<div class="toast-container position-fixed bottom-0 end-0 p-3" id="toast-container"></div>
 	

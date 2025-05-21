@@ -85,6 +85,10 @@
                             {% for holiday in company.pending_holidays.all %}
                                 <div class="d-flex flex-column bg-2 p-2 rounded mx-0 gap-2" id="holiday-{{ holiday.id }}">
                                     <div>
+                                        Type:
+                                        <h5>{{ holiday.get_type_display }}</h5>
+                                    </div>
+                                    <div>
                                         Employee:
                                         <h5>{{ holiday.user.get_full_name }}</h5>
                                     </div>
