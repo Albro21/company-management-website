@@ -6,4 +6,4 @@ from .job_title import *
 from .join_request import *
 from .employee import *
 from .reports import *
-from .vacation_request import *
+from .holiday import *

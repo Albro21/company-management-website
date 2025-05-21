@@ -20,8 +20,8 @@ class ExpenseInline(admin.TabularInline):
     model = Expense
     extra = 0
 
-class VacationRequestInline(admin.StackedInline):
-    model = VacationRequest
+class HolidayInline(admin.StackedInline):
+    model = Holiday
     extra = 0
 
 @admin.register(Company)
@@ -33,6 +33,6 @@ class CompanyAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at',)
     inlines = [JobTitleInline, ExpenseInline, EmployeeInline]
 
-admin.site.register(VacationRequest)
+admin.site.register(Holiday)
 admin.site.register(Document)
 admin.site.register(Expense)

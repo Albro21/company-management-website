@@ -151,22 +151,22 @@
                         </div>
                     </div>
 
-                    <!-- Vacation Card -->
+                    <!-- Holiday Card -->
                     <div class="bg-2 rounded d-flex flex-column p-3 gap-3">
-                        <h3 class="text-center">Vacations</h3>
+                        <h3 class="text-center">Holidays</h3>
                         <div class="d-flex flex-column">
 
                             <div class="row">
-                                <div class="col-8">Annual vacation Days:</div>
-                                <div class="col-4 text-center">{{ employee.annual_vacation_days }}</div>
+                                <div class="col-8">Annual holiday Days:</div>
+                                <div class="col-4 text-center">{{ employee.annual_holidays }}</div>
                             </div>
                             <div class="row">
-                                <div class="col-8">Used vacation Days:</div>
-                                <div class="col-4 text-center">{{ employee.used_vacation_days }}</div>
+                                <div class="col-8">Used holiday Days:</div>
+                                <div class="col-4 text-center">{{ employee.used_holidays }}</div>
                             </div>
                             <div class="row">
-                                <div class="col-8">Remaining vacation Days:</div>
-                                <div class="col-4 text-center">{{ employee.remaining_vacation_days }}</div>
+                                <div class="col-8">Remaining holiday Days:</div>
+                                <div class="col-4 text-center">{{ employee.remaining_holidays }}</div>
                             </div>
                         </div>
                     </div>
@@ -264,9 +264,9 @@
                                     <label for="id_date_of_joining">Date of Joining:</label>
                                     <input type="date" class="form-control mb-3" id="id_date_of_joining" name="date_of_joining" value="{{ employee.date_of_joining|date:'Y-m-d' }}">
                                     
-                                    <!-- Annual Vacation Days -->
-                                    <label for="id_annual_vacation_days">Annual Vacation Days:</label>
-                                    <input type="number" step="1" min="0" class="form-control mb-3" id="id_annual_vacation_days" name="annual_vacation_days" value="{{ employee.annual_vacation_days|default_if_none:'' }}">
+                                    <!-- Annual Holiday Days -->
+                                    <label for="id_annual_holidays">Annual Holiday Days:</label>
+                                    <input type="number" step="1" min="0" class="form-control mb-3" id="id_annual_holidays" name="annual_holidays" value="{{ employee.annual_holidays|default_if_none:'' }}">
                                 {% endif %}
                                 
                                 {% if user == employee %}

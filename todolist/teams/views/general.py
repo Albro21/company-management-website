@@ -11,9 +11,10 @@ from django.http import JsonResponse
 from django.shortcuts import render
 
 # Local apps
-from teams.models import VacationRequest
+from teams.models import Holiday
 from main.forms import ProjectForm, TaskForm
 from timetracker.models import TimeEntry
+from teams.choices import HOLIDAY_TYPES
 
 
 def get_date_range_from_filter(filter_option, all_time_first_entry):
@@ -177,27 +178,51 @@ def team(request):
     
     return render(request, 'teams/team.html', {'company': request.user.company})
 
+color_map_self = {
+    'holiday': '#99d1ff',
+    'bank_holiday': '#9999ff',
+    'sick_day': '#ffdd99',
+}
+
+color_map_others = {
+    'holiday': 'rgba(153, 209, 255, 0.4)',
+    'bank_holiday': 'rgba(153, 153, 255, 0.4)',
+    'sick_day': 'rgba(255, 221, 153, 0.4)',
+}
+
 @login_required
 def calendar(request):
-    vacations = VacationRequest.objects.filter(company=request.user.company, status='approved')
+    holidays = Holiday.objects.filter(company=request.user.company, status='approved')
 
-    events = []
-    for vacation in vacations:
-        events.append({
-            'title': f"Vacation – {vacation.user.get_full_name() or vacation.user.username}",
-            'start': str(vacation.start_date),
-            'end': str(vacation.end_date + timedelta(days=1)),
+    all_holidays = []
+    for holiday in holidays:
+        all_holidays.append({
+            'title': f"{holiday.user.get_full_name()}",
+            'start': str(holiday.start_date),
+            'end': str(holiday.end_date + timedelta(days=1)),
+            'color': color_map_self.get(holiday.type, '#cccccc') if holiday.user == request.user else color_map_others.get(holiday.type, '#cccccc'),
+            'textColor': 'black',
             'extendedProps': {
-                'type': 'Vacation',
-                'employee': vacation.user.get_full_name(),
-                'start_date': vacation.start_date.strftime('%d/%m/%y'),
-                'end_date': vacation.end_date.strftime('%d/%m/%y'),
-                'days': vacation.number_of_days(),
-                'reason': vacation.reason
+                'type': holiday.get_type_display(),
+                'user': holiday.user.get_full_name(),
+                'start_date': holiday.start_date.strftime('%d/%m/%y'),
+                'end_date': holiday.end_date.strftime('%d/%m/%y'),
+                'days': holiday.number_of_days,
             }
         })
+    
+    user_holidays = request.user.holidays.all()
+    
+    holidays = [date.strftime('%Y-%m-%d') for event in user_holidays.filter(type='holiday') for date in event.dates]
+    bank_holidays = [date.strftime('%Y-%m-%d') for event in user_holidays.filter(type='bank_holiday') for date in event.dates]
+    sick_days = [date.strftime('%Y-%m-%d') for event in user_holidays.filter(type='sick_day') for date in event.dates]
 
     context = {
-        'events_json': json.dumps(events, cls=DjangoJSONEncoder)
+        'all_holidays_json': json.dumps(all_holidays, cls=DjangoJSONEncoder),
+        'user_holidays': user_holidays,
+        'holiday_types': HOLIDAY_TYPES,
+        'holidays': holidays,
+        'bank_holidays': bank_holidays,
+        'sick_days': sick_days
     }
     return render(request, 'teams/calendar.html', context)

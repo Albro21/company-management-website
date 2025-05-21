@@ -2,19 +2,126 @@
     min-width: 350px !important;
 }
 
-.fc-scrollgrid, .fc-theme-standard td, .fc-theme-standard th {
+.fc-scrollgrid,
+.fc-theme-standard td,
+.fc-theme-standard th {
     border-color: #666 !important;
 }
 
 #calendar .fc-day-today {
-    background-color: var(--bg-3) !important;
+    background-color: #536e2b;
+    border-left: 3px solid #536e2b !important;
+    border-right:3px solid #536e2b !important;
+    border-top: 3px solid #536e2b !important;
+    border-bottom: 3px solid #536e2b !important;
 }
 
 #calendar a {
-    color: white !important;
-    text-decoration: none !important;
+    color: white;
+    text-decoration: none;
 }
 
 #calendar .fc-day-today a {
-    color: #0275d8 !important;
+    font-weight: bold !important;
+}
+
+.fc-button.fc-todayLabel-button,
+.fc-button.fc-holidayLabel-button,
+.fc-button.fc-bankHolidayLabel-button,
+.fc-button.fc-sickDayLabel-button {
+    pointer-events: none;
+    color: black;
+    font-weight: 600;
+    border: none;
+    box-shadow: none;
+    cursor: default;
+    padding: 4px 10px;
+    margin-left: 5px;
+    border-radius: 0.375rem;
+    font-size: 0.85rem;
+}
+
+.fc-button.fc-todayLabel-button {
+    background-color: #536e2b;
+    border: 3px solid #536e2b;
+}
+.fc-button.fc-holidayLabel-button {
+    background-color: #99d1ff;
+}
+.fc-button.fc-bankHolidayLabel-button {
+    background-color: #9999ff;
+}
+.fc-button.fc-sickDayLabel-button {
+    background-color: #ffdd99;
+}
+
+#main-content {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+}
+
+#full-calendar {
+    overflow: visible;
+    line-height: normal;
+}
+
+#full-calendar .months-container .month-container {
+    flex: 1 0 25%;
+}
+
+#full-calendar .months-container .month-container {
+    display: flex;
+    justify-content: center;
+}
+
+#full-calendar table td, table th {
+    font-size: 9px;
+}
+
+#full-calendar table.month th.day-header {
+    font-size: 10px;
+}
+
+#full-calendar table.month th.month-title {
+    font-size: 12px;
+}
+
+#full-calendar.calendar {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+#full-calendar table.month {
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+#full-calendar table th, #full-calendar table td {
+    width: 17px;
+    height: 14px;
+}
+
+#full-calendar table.month td.day .day-content {
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+#full-calendar .months-container .month-container:hover {
+    cursor: pointer;
+    background-color: var(--bg-2);
+    border-radius: 5px;
+}
+
+#full-calendar table.month td.day:hover {
+    background-color: var(--bg-4);
+}
+
+#holiday-list {
+    overflow-y: auto;
+    overflow-x: hidden;
 }

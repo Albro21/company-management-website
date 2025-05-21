@@ -30,12 +30,12 @@
                     {% endif %}
                 </a>
 
-                <!-- Vacation Requests -->
-                <a class="btn btn-primary position-relative" style="white-space: nowrap;" data-bs-toggle="offcanvas" data-bs-target="#vacation-requests">
-                    Vacation requests
-                    {% if company.pending_vacation_requests.all %}
+                <!-- Holiday Requests -->
+                <a class="btn btn-primary position-relative" style="white-space: nowrap;" data-bs-toggle="offcanvas" data-bs-target="#holidays">
+                    Holiday requests
+                    {% if company.pending_holidays.all %}
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            {{ company.pending_vacation_requests.all.count }}
+                            {{ company.pending_holidays.all.count }}
                         </span>
                     {% endif %}
                 </a>
@@ -74,31 +74,31 @@
                     </div>
                 </div>
 
-                <!-- Vacation Requests Offcanvas -->
-                <div class="offcanvas offcanvas-end" tabindex="-1" id="vacation-requests">
+                <!-- Holiday Requests Offcanvas -->
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="holidays">
                     <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="offcanvasRightLabel">Vacation requests</h5>
+                        <h5 class="offcanvas-title" id="offcanvasRightLabel">Holiday requests</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                     </div>
                     <div class="offcanvas-body d-flex flex-column gap-3">
-                        {% if company.vacation_requests %}
-                            {% for vacation_request in company.pending_vacation_requests.all %}
-                                <div class="d-flex flex-column bg-2 p-2 rounded mx-0 gap-2" id="vacation-request-{{ vacation_request.id }}">
+                        {% if company.holidays %}
+                            {% for holiday in company.pending_holidays.all %}
+                                <div class="d-flex flex-column bg-2 p-2 rounded mx-0 gap-2" id="holiday-{{ holiday.id }}">
                                     <div>
                                         Employee:
-                                        <h5>{{ vacation_request.user.get_full_name }}</h5>
+                                        <h5>{{ holiday.user.get_full_name }}</h5>
                                     </div>
                                     <div>
                                         Period: 
-                                        <h5>{{ vacation_request.start_date|date:"d/m/y" }} – {{ vacation_request.end_date|date:"d/m/y" }}</h5>
+                                        <h5>{{ holiday.start_date|date:"d/m/y" }} – {{ holiday.end_date|date:"d/m/y" }}</h5>
                                     </div>
                                     <div>
                                         Reason:
-                                        <p class="mb-0">{{ vacation_request.reason }}</p>
+                                        <p class="mb-0">{{ holiday.reason }}</p>
                                     </div>
                                     <div class="d-flex gap-2">
-                                        <button class="btn btn-primary w-100" onclick="acceptVacationRequest({{ vacation_request.id }})">Accept</button>
-                                        <button class="btn btn-danger w-100" onclick="declineVacationRequest({{ vacation_request.id }})">Decline</button>
+                                        <button class="btn btn-primary w-100" onclick="acceptHolidayRequest({{ holiday.id }})">Accept</button>
+                                        <button class="btn btn-danger w-100" onclick="declineHolidayRequest({{ holiday.id }})">Decline</button>
                                     </div>
                                 </div>
 
@@ -155,13 +155,6 @@
                         <!-- Assign Task -->
                         <a data-bs-toggle="offcanvas" data-bs-target="#assign-task-{{ employee.id }}">
                             <i class="bi bi-plus-square" data-bs-toggle="tooltip" title="Assign Task"></i>
-                        </a>
-                    {% endif %}
-                    
-                    {% if employee == user %}
-                        <!-- Request Vacation -->
-                        <a data-bs-toggle="offcanvas" data-bs-target="#request-vacation-{{ employee.id }}">
-                            <i class="bi bi-question-square" data-bs-toggle="tooltip" title="Request Vacation"></i>
                         </a>
                     {% endif %}
                 </div>
@@ -225,43 +218,6 @@
                             <!-- Submit Button -->
                             <button type="submit" class="btn btn-primary px-3">Save</button>
                         </form>                                
-                    </div>
-                </div>
-            {% endif %}
-
-            {% if employee == user %}
-                <!-- Request Vacation Offcanvas -->
-                <div class="offcanvas offcanvas-end" tabindex="-1" id="request-vacation-{{ employee.id }}">
-                    <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="offcanvasRightLabel">Request Vacation</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                    </div>
-                    <div class="offcanvas-body d-flex flex-column gap-4">
-                        <div class="d-flex flex-column gap-2">
-                            <div class="bg-2 rounded p-2"> Used vacation days: {{ employee.used_vacation_days }}</div>
-                            <div class="bg-2 rounded p-2"> Remaining vacation days: {{ employee.remaining_vacation_days }}</div>
-                        </div>
-
-                        <form method="post" class="d-flex flex-column request-vacation-form" data-employee-id="{{ employee.id }}">
-                            {% csrf_token %}
-                            
-                            <!-- Reason -->
-                            <label for="id_reason">Reason:</label>
-                            <textarea name="reason" id="id_reason" placeholder="Reason" class="form-control mb-2" id="id_reason" rows="4" required></textarea>
-                            
-                            <!-- Start Date -->
-                            <label for="id_start_date">Start Date:</label>
-                            <input type="date" name="start_date" id="id_start_date" class="form-control mb-2" required>
-                            
-                            <!-- End Date -->
-                            <label for="id_end_date">End Date:</label>
-                            <input type="date" name="end_date" id="id_end_date" class="form-control mb-2" required>
-                            
-                            <!-- Submit Button -->
-                            <button type="submit" class="btn btn-primary mb-2">Request Vacation</button>
-
-                            <div id="request-vacation-errors-{{ employee.id }}" class="text-center text-danger"></div>
-                        </form>
                     </div>
                 </div>
             {% endif %}

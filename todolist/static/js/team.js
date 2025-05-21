@@ -240,44 +240,19 @@ document.querySelectorAll('.assign-task-form').forEach(form => {
     });
 });
 
-async function requestVacation(employeeId, formData) {
-    const errorElement = document.getElementById(`request-vacation-errors-${employeeId}`);
-
-    const url = `/teams/vacation-request/create/`;
-    const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
-    const data = await sendRequest(url, 'POST', requestBody);
-
+async function acceptHolidayRequest(holidayId) {
+    const url = `/teams/holiday/${holidayId}/accept/`;
+    const data = await sendRequest(url, 'PATCH');
     if (data.success) {
-        window.location.reload();
-    } else {
-        errorElement.textContent = data.error;
+        document.getElementById(`holiday-${holidayId}`).remove();
     }
 }
 
-document.querySelectorAll('.request-vacation-form').forEach(form => {
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const employeeId = form.dataset.employeeId;
-        const formData = new FormData(form);
-        
-        await requestVacation(employeeId, formData);
-    });
-});
-
-async function acceptVacationRequest(vacationRequestId) {
-    const url = `/teams/vacation-request/${vacationRequestId}/accept/`;
+async function declineHolidayRequest(holidayId) {
+    const url = `/teams/holiday/${holidayId}/decline/`;
     const data = await sendRequest(url, 'PATCH');
     if (data.success) {
-        document.getElementById(`vacation-request-${vacationRequestId}`).remove();
-    }
-}
-
-async function declineVacationRequest(vacationRequestId) {
-    const url = `/teams/vacation-request/${vacationRequestId}/decline/`;
-    const data = await sendRequest(url, 'PATCH');
-    if (data.success) {
-        element = document.getElementById(`vacation-request-${vacationRequestId}`);
+        element = document.getElementById(`holiday-${holidayId}`);
         element.remove();
     }
 }

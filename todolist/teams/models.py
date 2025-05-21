@@ -1,4 +1,5 @@
 # Standard libs
+from datetime import timedelta
 import os
 
 # Django
@@ -41,8 +42,8 @@ class Company(models.Model):
     zip_code = models.CharField(max_length=10, blank=True)
     
     @property
-    def pending_vacation_requests(self):
-        return self.vacation_requests.filter(status="pending")
+    def pending_holidays(self):
+        return self.holidays.filter(status="pending")
 
     class Meta:
         ordering = ['name']
@@ -122,29 +123,43 @@ class Expense(models.Model):
         super().delete(*args, **kwargs)
 
 
-class VacationRequest(models.Model):
+class Holiday(models.Model):
+    HOLIDAY_TYPES = HOLIDAY_TYPES
+    
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('approved', 'Approved'),
         ('declined', 'Declined'),
     ]
     
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='vacation_requests')
-    user = models.ForeignKey("users.CustomUser", on_delete=models.CASCADE, related_name='vacation_requests', blank=True, null=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='holidays')
+    user = models.ForeignKey("users.CustomUser", on_delete=models.CASCADE, related_name='holidays', blank=True, null=True)
     start_date = models.DateField()
     end_date = models.DateField()
     reason = models.TextField(max_length=255)
+    type = models.CharField(max_length=50, choices=HOLIDAY_TYPES, default='other') 
+    
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     requested_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
         ordering = ['-requested_at']
     
+    @property
+    def dates(self):
+        current = self.start_date
+        dates_list = []
+        while current <= self.end_date:
+            dates_list.append(current)
+            current += timedelta(days=1)
+        return dates_list
+
+    @property
     def number_of_days(self):
         return (self.end_date - self.start_date).days + 1
 
     def __str__(self):
-        return f"{self.user.username} - {self.start_date} to {self.end_date} ({self.get_status_display()})"
+        return f"{self.user.get_full_name()} - {self.start_date} to {self.end_date} ({self.get_type_display()})"
 
 
 class JoinRequest(models.Model):

@@ -19,11 +19,10 @@ class JobTitleForm(forms.ModelForm):
         model = JobTitle
         fields = ['name']
 
-class VacationRequestForm(forms.ModelForm):
+class HolidayForm(forms.ModelForm):
     class Meta:
-        model = VacationRequest
-        fields = ['start_date', 'end_date', 'reason']
-
+        model = Holiday
+        fields = ['type', 'start_date', 'end_date', 'reason']
 
 class DocumentForm(forms.ModelForm):
     class Meta:

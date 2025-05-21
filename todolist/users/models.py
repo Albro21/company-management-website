@@ -48,8 +48,8 @@ class CustomUser(AbstractUser):
     offline_location = models.CharField(max_length=100, blank=True, null=True)
     offline_workstation_id = models.CharField(max_length=20, blank=True, null=True)
     
-    annual_vacation_days = models.PositiveIntegerField(default=20, blank=True)
-    used_vacation_days = models.PositiveIntegerField(default=0, blank=True)
+    annual_holidays = models.PositiveIntegerField(default=20, blank=True)
+    used_holidays = models.PositiveIntegerField(default=0, blank=True)
     
     probation_start_date = models.DateField(blank=True, null=True)
     probation_end_date = models.DateField(blank=True, null=True)
@@ -118,8 +118,8 @@ class CustomUser(AbstractUser):
         return self.role == "employee"
     
     @property
-    def remaining_vacation_days(self):
-        return self.annual_vacation_days - self.used_vacation_days
+    def remaining_holidays(self):
+        return self.annual_holidays - self.used_holidays
     
     def hours_spent_by_projects(self, target_date, projects):
         entries = self.time_entries.filter(
@@ -156,8 +156,8 @@ class CustomUser(AbstractUser):
         self.salary = 0.00
         self.offline_location = None
         self.offline_workstation_id = None
-        self.annual_vacation_days = 20
-        self.used_vacation_days = 0
+        self.annual_holidays = 20
+        self.used_holidays = 0
         self.probation_start_date = None
         self.probation_end_date = None
         self.termination_date = None

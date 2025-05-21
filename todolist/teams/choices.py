@@ -68,3 +68,9 @@ DOCUMENT_TYPES = [
     ('project_file', 'Project File'),
     ('other', 'Other'),
 ]
+
+HOLIDAY_TYPES = [
+    ('holiday', 'Holiday'),
+    ('bank_holiday', 'Bank Holiday'),
+    ('sick_day', 'Sick Day'),
+]

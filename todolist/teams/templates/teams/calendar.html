@@ -4,17 +4,107 @@
 {% block title %}Calendar{% endblock title %}
 
 {% block styles %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/js-year-calendar@latest/dist/js-year-calendar.min.css">
     <link rel="stylesheet" href="{% static 'css/calendar.css' %}">
 {% endblock styles %}
 
 {% block content %}
-    <div class="bg-2 rounded p-4">
-        <div id='calendar'></div>
+    <div class="row">
+        <div class="col-4 d-flex flex-column gap-3" style="padding-right: 20px; max-height: 870px;">
+            <div id="full-calendar"></div>
+            <div class="d-flex gap-2">
+                <div class="d-flex flex-column gap-2 flex-grow-1">
+                    <div class="bg-2 rounded py-2 px-3 row m-0">
+                        <div class="col-10">Annual Holidays Limit:</div>
+                        <div class="col-2 text-center">{{ user.annual_holidays }}</div>
+                    </div>
+                    <div class="bg-2 rounded py-2 px-3 row m-0">
+                        <div class="col-10">Used Holidays:</div>
+                        <div class="col-2 text-center">{{ user.used_holidays }}</div>
+                    </div>
+                    <div class="bg-2 rounded py-2 px-3 row m-0">
+                        <div class="col-10">Remaining Holidays:</div>
+                        <div class="col-2 text-center">{{ user.remaining_holidays }}</div>
+                    </div>
+                </div>
+                <button class="btn btn-primary h-100" data-bs-toggle="offcanvas" data-bs-target="#holiday-{{ user.id }}">Request Holiday</button>
+
+                <!-- Request Holiday Offcanvas -->
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="holiday-{{ user.id }}">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasRightLabel">Request Holiday</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body d-flex flex-column gap-4">
+                        <div class="d-flex flex-column gap-2">
+                            <div class="bg-2 rounded p-2"> Used holiday days: {{ user.used_holidays }}</div>
+                            <div class="bg-2 rounded p-2"> Remaining holiday days: {{ user.remaining_holidays }}</div>
+                        </div>
+
+                        <form method="post" class="d-flex flex-column" id="holiday-form">
+                            {% csrf_token %}
+
+                            <label for="id_type">Type:</label>
+                            <select name="type" class="form-control mb-2" id="id_type">
+                                <option value="">Select a type</option>
+                                {% for key, value in holiday_types %}
+                                    <option value="{{ key }}">{{ value }}</option>
+                                {% endfor %}
+                            </select>
+                            
+                            <!-- Reason -->
+                            <label for="id_reason">Reason:</label>
+                            <textarea name="reason" id="id_reason" placeholder="Reason" class="form-control mb-2" id="id_reason" rows="4" required></textarea>
+                            
+                            <!-- Start Date -->
+                            <label for="id_start_date">Start Date:</label>
+                            <input type="date" name="start_date" id="id_start_date" class="form-control mb-2" required>
+                            
+                            <!-- End Date -->
+                            <label for="id_end_date">End Date:</label>
+                            <input type="date" name="end_date" id="id_end_date" class="form-control mb-2" required>
+                            
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-primary mb-2">Request Holiday</button>
+
+                            <div id="holiday-errors" class="text-center text-danger"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex flex-column align-items-center" style="overflow: auto;">
+                <!-- Table Header -->
+                <div class="row py-2 w-100 m-0">
+                    <div class="col-3">User</div>
+                    <div class="col-6">Description</div>
+                    <div class="col-3 text-center">Status</div>
+                </div>
+                <div class="d-flex flex-column w-100" id="holiday-list">
+                    {% for holiday in user_holidays%}
+                        <!-- Table Header -->
+                        <div class="row py-2 w-100 mx-0 bg-2 list-item">
+                            <div class="col-3 text-truncate">{{ holiday.user.get_full_name }}</div>
+                            <div class="col-6 text-truncate">{{ holiday.reason }}</div>
+                            <div class="col-3 text-center">{{ holiday.get_status_display }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-8 ps-0 pe-3">
+            <div id='calendar'></div>
+        </div>
     </div>
 {% endblock content %}
 
 {% block scripts %}
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
-    <script>const eventsJson = {{ events_json|safe }}</script>
+    <script src="https://cdn.jsdelivr.net/npm/js-year-calendar@latest/dist/js-year-calendar.min.js"></script>
+    <script>
+        const allHolidaysJson = {{ all_holidays_json|safe }};
+        const holidays = {{ holidays|safe }};
+        const bankHolidays = {{ bank_holidays|safe }};
+        const sickDays = {{ sick_days|safe }};
+    </script>
     <script src="{% static 'js/calendar.js' %}"></script>
 {% endblock scripts %}

@@ -1,5 +1,5 @@
 from django.urls import path
-from teams.views import company, document, expense, general, job_title, join_request, employee, reports, vacation_request
+from teams.views import company, document, expense, general, job_title, join_request, employee, reports, holiday
 
 app_name = 'teams'
 
@@ -31,9 +31,9 @@ urlpatterns = [
     path('join-request/<int:request_id>/accept/', join_request.accept_join_request, name='accept_join_request'),
     path('join-request/<int:request_id>/decline/', join_request.decline_join_request, name='decline_join_request'),
     
-    path('vacation-request/create/', vacation_request.create_vacation_request, name='create_vacation_request'),
-    path('vacation-request/<int:request_id>/accept/', vacation_request.accept_vacation_request, name='accept_vacation_request'),
-    path('vacation-request/<int:request_id>/decline/', vacation_request.decline_vacation_request, name='decline_vacation_request'),
+    path('holiday/create/', holiday.create_holiday, name='create_holiday'),
+    path('holiday/<int:request_id>/accept/', holiday.accept_holiday, name='accept_holiday'),
+    path('holiday/<int:request_id>/decline/', holiday.decline_holiday, name='decline_holiday'),
     
     path('job-title/create/', job_title.create_job_title, name='create_job_title'),
     path('job-title/<int:job_title_id>/delete/', job_title.delete_job_title, name='delete_job_title'),
