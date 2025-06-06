@@ -122,7 +122,7 @@ def process_company_charts(request):
 
     all_time_first_entry = (
         TimeEntry.objects
-        .filter(task__project__in=request.user.company.projects.all())
+        .filter(project__in=request.user.company_projects.all())
         .order_by('start_time')
         .first()
     )
