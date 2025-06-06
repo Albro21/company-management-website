@@ -9,21 +9,24 @@ async function deleteDocument(documentId) {
 }
 
 // Upload Document
-uploadDocumentForm = document.getElementById('upload-document-form');
-if (uploadDocumentForm) {
-    uploadDocumentForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const url = '/teams/document/create/';
-        const formData = new FormData(e.target);
+document.addEventListener('DOMContentLoaded', () => {
+    uploadDocumentForm = document.getElementById('upload-document-form');
+    if (uploadDocumentForm) {
+        uploadDocumentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const employeeId = uploadDocumentForm.dataset.employeeId;
+            const url = `/teams/document/create/${employeeId}/`;
+            const formData = new FormData(e.target);
 
-        const data = await sendRequest(url, 'POST', formData);
-        if (data.success) {
-            queueToast('Document uploaded', 'success');
-            window.location.reload();
-        }
-    });
-}
+            const data = await sendRequest(url, 'POST', formData);
+            if (data.success) {
+                queueToast('Document uploaded', 'success');
+                window.location.reload();
+            }
+        });
+    }
+});
 
 // Edit Document
 async function editDocument(documentId, formData) {

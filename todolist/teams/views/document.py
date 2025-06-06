@@ -1,4 +1,6 @@
 # Django
+from django.core.exceptions import PermissionDenied
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -9,13 +11,18 @@ from teams.forms import DocumentForm
 from teams.models import Document
 
 
+User = get_user_model()
+
 @require_http_methods(["POST"])
 @login_required
-def create_document(request):
+def create_document(request, employee_id):
+    if request.user.id != employee_id and not request.user.is_employer:
+        return JsonResponse({'success': False, 'error': 'You are not allowed to create a document for this employee.'}, status=403)
+    
     form = DocumentForm(request.POST, request.FILES)
     if form.is_valid():
         document = form.save(commit=False)
-        document.user = request.user
+        document.user = User.objects.get(id=employee_id)
         document.save()
 
         return JsonResponse({'success': True, 'id': document.id}, status=201)
@@ -25,14 +32,21 @@ def create_document(request):
 @require_http_methods(["DELETE"])
 @login_required
 def delete_document(request, document_id):
-    document = get_object_or_404(Document, id=document_id, user=request.user)
+    if request.user.is_employer:
+        document = get_object_or_404(Document, id=document_id, user__company=request.user.company)
+    else:
+        raise PermissionDenied("You do not have permission to delete this document.")
+    
     document.delete()
     return JsonResponse({'success': True}, status=200)
 
 @require_http_methods(["POST"])
 @login_required
 def edit_document(request, document_id):
-    document = get_object_or_404(Document, id=document_id, user=request.user)
+    if request.user.is_employer:
+        document = get_object_or_404(Document, id=document_id, user__company=request.user.company)
+    else:
+        raise PermissionDenied("You do not have permission to edit this document.")
     
     if 'file' not in request.FILES:
         form = DocumentForm(request.POST, instance=document)

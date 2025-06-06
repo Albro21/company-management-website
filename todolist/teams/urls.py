@@ -12,7 +12,7 @@ urlpatterns = [
     path('employee/<int:employee_id>/kick/', employee.kick_employee, name='kick_employee'),
     path('employee/<int:user_id>/', employee.employee_detail, name='employee_detail'),
     
-    path('document/create/', document.create_document, name='create_document'),
+    path('document/create/<int:employee_id>/', document.create_document, name='create_document'),
     path('document/<int:document_id>/delete/', document.delete_document, name='delete_document'),
     path('document/<int:document_id>/edit/', document.edit_document, name='edit_document'),
     

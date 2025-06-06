@@ -675,7 +675,7 @@
                 <!-- Documents Header -->
                 <h3 class="mb-2 d-flex align-items-center justify-content-center mt-3">
                     Documents
-                    {% if user == employee %}
+                    {% if user == employee or user.is_employer %}
                         <!-- Document Upload Button -->
                         <button class="ms-3 btn btn-primary rounded-3 shadow-lg d-flex justify-content-center align-items-center"
                             style="width: 30px; height: 30px;"
@@ -686,7 +686,7 @@
                     {% endif %}
                 </h3>
     
-                {% if user == employee %}
+                {% if user == employee or user.is_employer %}
                     <!-- Document Upload Offcanvas -->
                     <div class="offcanvas offcanvas-end" tabindex="-1" id="documentUploadOffcanvas">
                         <div class="offcanvas-header">
@@ -694,7 +694,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                         </div>
                         <div class="offcanvas-body">
-                            <form method="post" class="d-flex flex-column gap-2" id="upload-document-form" enctype="multipart/form-data">
+                            <form method="post" class="d-flex flex-column gap-2" id="upload-document-form" enctype="multipart/form-data" data-employee-id="{{ employee.id }}">
                                 {% csrf_token %}
                                 
                                 <!-- Document Type -->
@@ -711,7 +711,7 @@
     
                                 <!-- Submit Button -->
                                 <button type="submit" class="btn btn-primary">Save</button>
-                            </form>                                 
+                            </form>
                         </div>
                     </div>
                 {% endif %}
@@ -723,7 +723,9 @@
                         <div class="col">Document Type</div>
                         <div class="col text-center">Uploadet at</div>
                         <div class="col text-center">document</div>
-                        <div class="col text-center">Actions</div>
+                        {% if user.is_employer %}
+                            <div class="col text-center">Actions</div>
+                        {% endif %}
                     </div>
                     <div class="d-flex flex-column align-items-center mb-4 w-100">
                         {% for document in employee.documents.all %}
@@ -740,22 +742,22 @@
                                     <a href="{{ document.file.url }}" target="_blank">{{ document.document_name }}</a>
                                 </div>
     
-                                <div class="col d-flex justify-content-center gap-3 action-icons">
-                                    {% if user == employee %}
+                                {% if user.is_employer %}
+                                    <div class="col d-flex justify-content-center gap-3 action-icons">
                                         <!-- Edit Document -->
                                         <a data-bs-toggle="offcanvas" data-bs-target="#edit-document-{{ document.id }}">
                                             <i class="bi bi-pencil" data-bs-toggle="tooltip" title="Edit"></i>
                                         </a>
-    
+
                                         <!-- Delete Document -->
                                         <a data-bs-toggle="modal" data-bs-target="#delete-document-modal-{{ document.id }}">
                                             <i class="bi bi-trash" data-bs-toggle="tooltip" title="Delete"></i>
                                         </a>
-                                    {% endif %}
-                                </div>
+                                    </div>
+                                {% endif %}
                             </div>
                             
-                            {% if user == employee %}
+                            {% if user.is_employer %}
                                 <!-- Edit Document Offcanvas -->
                                 <div class="offcanvas offcanvas-end" tabindex="-1" id="edit-document-{{ document.id }}">
                                     <div class="offcanvas-header">
