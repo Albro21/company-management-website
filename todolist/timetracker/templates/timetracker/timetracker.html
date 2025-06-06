@@ -13,26 +13,16 @@
 
 		<!-- Top row -->
 		<div class="row">
-			<!-- Task select -->
-			<div class="col">
-				<select name="task" class="form-select" id="task-select">
-					<option value="" selected>Select a task</option>
-					{% for task in tasks %}
-					<option value="{{ task.id }}" data-title="{{ task.title }}" data-project-id="{{ task.project.id }}">{{ task.title }}</option>
-					{% endfor %}
-				</select>
-			</div>
-	
 			<!-- Name -->
 			<div class="col">
-				<input type="text" name="name" class="form-control" placeholder="What are you working on?" required id="name-input">
+				<input type="text" name="name" class="form-control" placeholder="What are you working on?" id="name-input" required>
 			</div>
 	
 			<!-- Project select -->
 			<div class="col">
-				<select name="project" class="form-select" id="project-select">
+				<select name="project" class="form-select" id="project-select" required>
 					<option value="" selected>Select a project</option>
-					{% for project in user.all_projects %}
+					{% for project in user.company_projects.all %}
 						<option value="{{ project.id }}">{{ project.title }}</option>
 					{% endfor %}
 				</select>
@@ -51,201 +41,122 @@
 			</div>
 		</div>
 	</form>
+	
+	<div class="d-flex justify-content-between mt-4">
+        <h3>Timesheet</h3>
+        <div class="btn-group w-25">
+            <button class="btn btn-dark w-100 bg-3" id="weekly-date-display">{{ start_date|date:"M d, Y" }} - {{ end_date|date:"M d, Y" }}</button>
+            <button class="btn btn-dark bg-3" onclick="previousWeek()"><i class="bi bi-chevron-left"></i></button>
+            <button class="btn btn-dark bg-3" onclick="nextWeek()"><i class="bi bi-chevron-right"></i></button>
+        </div>  
+    </div>
 
-	<!-- Time entries -->
-	<div class="d-flex flex-column my-4 gap-4">
-		{% for date, name_groups in grouped_time_entries.items %}
-			<div>
-				<div class="time-entry-header">
-					<div class="row w-100 py-2">
-						<div class="fs-6 col-7">
-							{{ date }}
-						</div>
-						<div class="col-2 text-center">
-							Time Range
-						</div>
-						<div class="fs-6 col-2 text-center">
-							Total: {{ name_groups.date_total_duration }}
-						</div>
-						<div class="col-1 text-center">
-							Actions
-						</div>
-					</div>
-				</div>
-				{% for name, group_data in name_groups.items %}
-					{% if name != 'date_total_duration' %}
-						{% with group_data.time_entries|first as first_entry %}
-							{% with group_data.time_entries|last as last_entry %}
+    {% if grouped_entries %}
+        <div class="d-flex flex-column mt-4">
 
-								<!-- Time entry grouper -->
-								<div 
-									class="d-flex pointer grouper"
-									role="button"
-									data-bs-toggle="collapse"
-									data-bs-target="#time-entry-collapse-{{ first_entry.id }}"
-									id="time-entry-grouper-{{ first_entry.id }}">
-			
-									<!-- Project Color -->
-									<div class="project-color" {% if first_entry.project.color %}style="background-color: {{ first_entry.project.color }}"{% endif %}></div>
-									
-									<div class="row py-2 w-100 m-0">
-										<div class="col-7 d-flex align-items-center ">
-											<span class="badge text-bg-primary">{{ group_data.time_entries|length }}</span>
-											<!-- Name -->
-											<span class="time-entry-title mx-2">{{ first_entry.name }}</span>
-											<!-- Project -->
-											{% if time_entry.project %}
-												<span class="project-title">{{ first_entry.project }}</span>
-											{% endif %}
-										</div>
-						
-										<!-- Start time and End time -->
-										<div class="col-2 text-center ">
-											{{ last_entry.start_time|time:"H:i" }} - {{ first_entry.end_time|time:"H:i" }}
-										</div>
-						
-										<!-- Duration -->
-										<div class="col-2 text-center ">
-											{{ group_data.total_duration }}
-										</div>
-										<div class="col-1 action-icons d-flex justify-content-center">
-											<i class="bi bi-chevron-down"></i>
-										</div>
-									</div>
-								</div>
+            <!-- Table Header -->
+            <div class="row py-2 w-100 m-0">
+                <div class="col-4">Projects / Tasks</div>
+                {% for date in week_dates %}
+                    <div class="col-1 text-center">{{ date|date:"D, M j" }}</div>
+                {% endfor %}
+                <div class="col-1 text-center">Total</div>
+            </div>
+            
+            <!-- Table Body --> 
+            <div class="d-flex flex-column align-items-center w-100">
 
-								<!-- Time entry collapse -->
-								<div class="collapse" id="time-entry-collapse-{{ first_entry.id }}">
-									{% for time_entry in group_data.time_entries %}
+                <!-- Project List -->
+                {% for project, date_dict in grouped_entries.items %}
+                    <div class="d-flex w-100 list-item">
+                        <div style="background-color: {{ project.color }}; width: 5px"></div>
+                        <div class="row py-2 bg-2 project-row w-100 mx-0 align-items-center" 
+                            data-project-id="{{ project.id }}"
+                            data-bs-toggle="collapse" 
+                            data-bs-target="#date-collapse-{{ project.id }}" 
+                            id="project-row-{{ project.id }}">
+                            <div class="col-4">
+                                <span style="color: {{ project.color }};">{{ project.title }}</span>
+								<span class="ms-2 text-muted">{{ project.client }}</span>
+                            </div>
+                            <div class="col-1 text-center" data-project-id="{{ project.id }}" data-day="0">00:00</div>
+                            <div class="col-1 text-center" data-project-id="{{ project.id }}" data-day="1">00:00</div>
+                            <div class="col-1 text-center" data-project-id="{{ project.id }}" data-day="2">00:00</div>
+                            <div class="col-1 text-center" data-project-id="{{ project.id }}" data-day="3">00:00</div>
+                            <div class="col-1 text-center" data-project-id="{{ project.id }}" data-day="4">00:00</div>
+                            <div class="col-1 text-center" data-project-id="{{ project.id }}" data-day="5">00:00</div>
+                            <div class="col-1 text-center" data-project-id="{{ project.id }}" data-day="6">00:00</div>
+                            <div class="col-1 text-center project-total" data-project-id="{{ project.id }}">00:00</div>
+                        </div>
+                    </div>
 
-										<!-- Time Entry -->
-										<div 
-											class="time-entry d-flex pointer" 
-											data-time-entry-parent="time-entry-collapse-{{ first_entry.id }}" 
-											data-time-entry-grouper="time-entry-grouper-{{ first_entry.id }}" 
-											data-offcanvas="edit-time-entry-{{ time_entry.id }}" 
-											id="time-entry-{{ time_entry.id }}">
-											
-											<!-- Project Color -->
-											<div class="project-color" {% if time_entry.project.color %}style=" background-color: {{ time_entry.project.color }}"{% endif %}></div>
-											
-											<div class="row py-2 w-100 m-0">
-												<div class="col-7 d-flex align-items-center ">
-													<!-- Name -->
-													<span class="time-entry-title mx-2">{{ time_entry.name }}</span>
-													<!-- Project -->
-													{% if time_entry.project %}
-														<span class="project-title">{{ time_entry.project }}</span>
-													{% endif %}
-												</div>
-												
-												<!-- Start time and End time -->
-												<div class="col-2 text-center ">
-													{{ time_entry.start_time|time:"H:i" }} - {{ time_entry.end_time|time:"H:i" }}
-												</div>
-												
-												<!-- Duration -->
-												<div class="col-2 text-center ">
-													{{ time_entry.duration_formatted }}
-												</div>
+                    <div class="collapse w-100" id="date-collapse-{{ project.id }}">
+                        <div class="d-flex flex-column">
+                            <!-- Dates List -->
+                            {% for date, time_entries in date_dict.items %}
+                                <div class="d-flex w-100 list-item">
+                                    <div style="background-color: {{ project.color }}; width: 5px"></div>
+                                    <div class="row py-2 bg-3 w-100 align-items-center mx-0 date-row" data-bs-toggle="collapse" data-bs-target="#time-entry-collapse-{{ project.id }}-{{ date|date:'Y-m-d' }}" id="date-row-{{ project.id }}-{{ date|date:'Y-m-d' }}">
+                                        <div class="col-2">{{ date|date:"l, M j" }}</div>
+                                        <div class="col-9"></div>
+                                        <div class="col-1 text-center date-total" data-date="{{ date|date:'Y-m-d' }}" data-project-id="{{ project.id }}">00:00</div>
+                                    </div>
+                                </div>
+                                <div class="collapse w-100" id="time-entry-collapse-{{ project.id }}-{{ date|date:'Y-m-d' }}">
+                                    <div class="d-flex flex-column">
+                                        <!-- Time Entries -->
+                                        {% for time_entry in time_entries %}
+                                        <div class="d-flex w-100 list-item">
+                                            <div style="background-color: {{ project.color }}; width: 5px"></div>
+                                            <div class="row py-2 bg-4 w-100 mx-0 align-items-center time-entry-row" 
+                                                data-project-id="{{ project.id }}" 
+                                                data-date="{{ date|date:'Y-m-d' }}">
 
-												<div class="col-1 d-flex gap-3 action-icons justify-content-center">
-													
-													<!-- Delete Time Entry -->
-													<i class="bi bi-trash" onclick="deleteTimeEntry({{ time_entry.id }})"></i>
-													
-													<!-- Edit Time Entry -->
-													<a data-bs-toggle="offcanvas" data-bs-target="#edit-time-entry-{{ time_entry.id }}">
-														<i class="bi bi-pencil"></i>
-													</a>
-													
-													<!-- Duplicate Time Entry -->
-													<i class="bi bi-copy" onclick="duplicateTimeEntry({{ time_entry.id }})"></i>
-												</div>
-											</div>
-										</div>
+												<div class="col-9">{{ time_entry.name }}</div>
+                                                {% if user.is_employer %}
+                                                    <div class="col-1 text-center">
+                                                        <input type="time" class="time-input" name="start_time" id="start-time-{{ time_entry.id }}" value="{{ time_entry.start_time|time:'H:i' }}" data-project-id="{{ project.id }}" data-date="{{ date|date:'Y-m-d' }}">
+                                                    </div>
+                                                    <div class="col-1 text-center">
+                                                        <input type="time" class="time-input" name="end_time" id="end-time-{{ time_entry.id }}" value="{{ time_entry.end_time|time:'H:i' }}" data-project-id="{{ project.id }}" data-date="{{ date|date:'Y-m-d' }}">
+                                                    </div>
+                                                {% else %}
+                                                    <div class="col-1 text-center">
+                                                        <div class="time-input" id="start-time-{{ time_entry.id }}" data-project-id="{{ project.id }}" data-date="{{ date|date:'Y-m-d' }}">{{ time_entry.start_time|time:'H:i' }}</div>
+                                                    </div>
+                                                    <div class="col-1 text-center">
+                                                        <div class="time-input" id="end-time-{{ time_entry.id }}" data-project-id="{{ project.id }}" data-date="{{ date|date:'Y-m-d' }}">{{ time_entry.end_time|time:'H:i' }}</div>
+                                                    </div>
+                                                {% endif %}
+                                                
+                                                <div class="col-1 text-center entry-duration" id="total-time-{{ time_entry.id }}" data-entry-id="{{ time_entry.id }}" data-project-id="{{ project.id }}" data-date="{{ date|date:'Y-m-d' }}">00:00</div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
 
-										<!-- Edit Time Entry Offcanvas -->
-										<div class="offcanvas offcanvas-end" tabindex="-1" id="edit-time-entry-{{ time_entry.id }}">
-											<div class="offcanvas-header">
-												<h4 class="offcanvas-title text-center">Edit Time Entry</h4>
-												<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-											</div>
-											<div class="offcanvas-body">
-												<form method="post" class="d-flex flex-column gap-2 time-entry-form" data-time-entry-id="{{ time_entry.id }}">
-													{% csrf_token %}
-													
-													<!-- Task select -->
-													<div class="row align-items-center px-3">
-														<label for="task-{{ time_entry.id }}" class="col-3 p-0">Task: </label>
-														<select class="form-select col" id="task-{{ time_entry.id }}" name="task">
-															<option value="" {% if not time_entry.task %}disabled selected{% endif %}>No assigned task</option>
-															{% for task in tasks %}
-																<option 
-																	value="{{ task.id }}" 
-																	{% if time_entry.task.id == task.id %}selected{% endif %}
-																	data-task-name="{{ task.title }}" 
-																	data-task-project-id="{{ task.project.id }}"
-																>
-																	{{ task.title }}
-																</option>
-															{% endfor %}
-														</select>
-													</div>
-
-													<!-- name -->
-													<div class="row align-items-center px-3">
-														<label for="name-{{ time_entry.id }}" class="col-3 p-0">Name: </label>
-														<input type="text" name="name" id="name-{{ time_entry.id }}" class="form-control col" placeholder="Name" required maxlength="50" value="{{ time_entry.name }}">
-													</div>
-													
-													<!-- Project -->
-													<div class="row align-items-center px-3">
-														<label class="col-3 p-0" for="project-{{ time_entry.id }}">Project: </label>
-														<select class="form-select col" id="project-{{ time_entry.id }}" name="project">
-															<option value="" disabled {% if not time_entry.project %}selected{% endif %}>Select a Project</option>
-															{% for project in user.all_projects %}
-																<option value="{{ project.id }}" {% if time_entry.project.id == project.id %}selected{% endif %}>
-																	{{ project.title }}
-																</option>
-															{% endfor %}
-														</select>
-													</div>
-													
-													<!-- Start time -->
-													<div class="row align-items-center px-3">
-														<label class="col-3 p-0" for="start-time-{{ time_entry.id }}">From: </label>
-														<input type="time" class="form-control col" name="start_time" id="start-time-{{ time_entry.id }}" value="{{ time_entry.start_time|time:'H:i' }}">
-													</div>
-													
-													<!-- End time -->
-													<div class="row align-items-center px-3">
-														<label class="col-3 p-0" for="end-time-{{ time_entry.id }}">To: </label>
-														<input type="time" class="form-control col" name="end_time" id="end-time-{{ time_entry.id }}" value="{{ time_entry.end_time|time:'H:i' }}">
-													</div>
-													
-													<!-- Date -->
-													<div class="row align-items-center px-3">
-														<label class="col-3 p-0" for="date-{{ time_entry.id }}">Date: </label>
-														<input type="date" class="form-control col" name="date" id="date-{{ time_entry.id }}" value="{{ time_entry.end_time|date:'Y-m-d' }}">
-													</div>
-													
-													<input type="hidden" name="time_entry_id" value="{{ time_entry.id }}">
-													
-													<!-- Submit Button -->
-													<button type="submit" class="btn btn-primary px-3">Save</button>
-												</form>                                
-											</div>
-										</div>	
-									{% endfor %}
-								</div>
-							{% endwith %}
-						{% endwith %}
-					{% endif %}
-				{% endfor %}		
-			</div>
-		{% endfor %}
-	</div>
+			<!-- Totals -->
+            <div class="row py-2 w-100 m-0" style="padding-left: 5px;">
+                <div class="col-4 fw-bold">Total this week:</div>
+                <div class="col-1 text-center fw-bold total" data-day="0">00:00</div>
+				<div class="col-1 text-center fw-bold total" data-day="1">00:00</div>
+				<div class="col-1 text-center fw-bold total" data-day="2">00:00</div>
+				<div class="col-1 text-center fw-bold total" data-day="3">00:00</div>
+				<div class="col-1 text-center fw-bold total" data-day="4">00:00</div>
+				<div class="col-1 text-center fw-bold total" data-day="5">00:00</div>
+				<div class="col-1 text-center fw-bold total" data-day="6">00:00</div>
+                <div class="col-1 text-center fw-bold" id="total-week">00:00</div>
+            </div>
+        </div>
+    {% else %}
+        <h4 class="text-center text-muted mt-4">No time entries for this week</h4>
+    {% endif %}
 {% endblock content %}
 
 {% block scripts %}
@@ -259,5 +170,6 @@
 		};
 	</script>
 {% endif %}
-<script src="{% static 'js/timetracker.js' %}"></script>
+	<script src="{% static 'js/timetracker.js' %}"></script>
+	<script src="{% static 'js/timesheet.js' %}"></script>
 {% endblock scripts %}

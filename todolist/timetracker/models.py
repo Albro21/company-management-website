@@ -6,7 +6,6 @@ from django.utils import timezone
 
 class TimeEntry(models.Model):
     user = models.ForeignKey("users.CustomUser", on_delete=models.CASCADE, related_name='time_entries')
-    task = models.ForeignKey("main.Task", on_delete=models.SET_NULL, blank=True, null=True, related_name='time_entries')
     name = models.CharField(max_length=200, blank=True)
     project = models.ForeignKey("main.Project", on_delete=models.SET_NULL, blank=True, null=True, related_name='time_entries')
     start_time = models.DateTimeField(default=timezone.now)

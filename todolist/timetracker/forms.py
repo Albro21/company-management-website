@@ -5,4 +5,4 @@ from .models import TimeEntry
 class TimeEntryForm(ModelForm):
     class Meta:
         model = TimeEntry
-        fields = ['task', 'name', 'project', 'start_time', 'end_time']
+        fields = ['name', 'project', 'start_time', 'end_time']

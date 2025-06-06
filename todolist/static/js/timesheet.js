@@ -77,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const startInput = document.querySelector(`#start-time-${entryId}`);
             const endInput = document.querySelector(`#end-time-${entryId}`);
 
+            let start, end;
             if (startInput.value && endInput.value) {
                 start = parseTime(startInput.value);
                 end = parseTime(endInput.value);
@@ -93,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else {
                     duration = (24 * 60 - start) + end;
                 }
-                
+
                 if (changedInput === startInput || changedInput === endInput) {
                     updateTimeEntryTimes(entryId, startInput?.value, endInput?.value);
                 }
@@ -146,6 +147,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         });
+
+        // Calculate total time per day across all projects
+        const totalPerDay = Array(7).fill(0);
+        Object.values(projectDayTotals).forEach(dayTotals => {
+            for (let i = 0; i < 7; i++) {
+                totalPerDay[i] += dayTotals[i] || 0;
+            }
+        });
+
+        // Update UI for total time per day
+        document.querySelectorAll('.total[data-day]').forEach(cell => {
+            const dayIndex = Number(cell.dataset.day);
+            const total = totalPerDay[dayIndex] || 0;
+            cell.textContent = formatDuration(total);
+
+            // Muted text for 0 totals
+            if (total === 0) {
+                cell.classList.add('text-muted');
+            } else {
+                cell.classList.remove('text-muted');
+            }
+        });
     }
 
     calculateDurations();
@@ -153,5 +176,4 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll('input.time-input').forEach(input => {
         input.addEventListener('blur', () => calculateDurations(input));
     });
-
 });

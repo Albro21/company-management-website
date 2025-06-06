@@ -1,4 +1,3 @@
-const taskSelect = document.getElementById('task-select');
 const nameInput = document.getElementById('name-input');
 const projectSelect = document.getElementById('project-select');
 const timerButton = document.getElementById('timer-button');
@@ -35,38 +34,15 @@ function startTimer(elapsedTime = 0) {
     setInterval(updateTimer, 1000);
 }
 
-taskSelect.addEventListener('change', function () {
-    const selectedOption = this.options[this.selectedIndex];
-    const taskId = this.value;
-
-    if (taskId) {
-        const taskTitle = selectedOption.dataset.title;
-        const projectId = selectedOption.dataset.projectId;
-
-        nameInput.value = taskTitle;
-        nameInput.disabled = true;
-
-        projectSelect.value = projectId;
-        projectSelect.disabled = true;
-    } else {
-        nameInput.value = '';
-        nameInput.disabled = false;
-
-        projectSelect.value = '';
-        projectSelect.disabled = false;
-    }
-});
-
 document.querySelector('#tracker-form').addEventListener('submit', async function (event) {
     event.preventDefault();
 
     if (!window.runningTimer) {
-        const taskId = taskSelect.value;
         const name = nameInput.value;
         const projectId = projectSelect.value;
 
         const url = `/timetracker/start/`;
-        const requestBody = JSON.stringify({ task_id: taskId, name: name, project_id: projectId });
+        const requestBody = JSON.stringify({ name: name, project_id: projectId });
 
         const data = await sendRequest(url, "POST", requestBody);
 
@@ -74,7 +50,6 @@ document.querySelector('#tracker-form').addEventListener('submit', async functio
             startTimer();
             timerButton.textContent = "Stop";
             timerButton.style.backgroundColor = "#ff0000";
-            taskSelect.disabled = true;
             nameInput.disabled = true;
             projectSelect.disabled = true;
             window.runningTimer = true
@@ -98,82 +73,10 @@ window.onload = function () {
         timerButton.textContent = "Stop";
         timerButton.style.backgroundColor = "#ff0000";
 
-        taskSelect.value = window.runningTimer.taskId;
         nameInput.value = window.runningTimer.name;
         projectSelect.value = window.runningTimer.projectId;
 
-        taskSelect.disabled = true;
         nameInput.disabled = true;
         projectSelect.disabled = true;
-    }
-};
-
-async function deleteTimeEntry(timeEntryId) {
-    const url = `/timetracker/time-entry/${timeEntryId}/delete/`;
-
-    const data = await sendRequest(url, 'DELETE');
-
-    if (data.success) {
-        const timeEntry = document.getElementById(`time-entry-${timeEntryId}`);
-        
-        timeEntry.remove();
-        document.getElementById(timeEntry.dataset.offcanvas).remove();
-        
-        const collapse = document.getElementById(timeEntry.dataset.timeEntryParent);
-        if (collapse.children.length === 0) {
-            collapse.remove();
-            
-            const grouper = document.getElementById(timeEntry.dataset.timeEntryGrouper);
-            const grouperParent = grouper.parentElement;
-            
-            grouper.remove();
-
-            if (grouperParent.children.length === 1) {
-                grouperParent.remove();
-            }
-        }
-        showToast('Time entry deleted', 'success');
-    }
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-	document.querySelectorAll(".time-entry-form").forEach(form => {
-		const id = form.getAttribute("data-time-entry-id");
-		const taskSelect = form.querySelector(`#task-${id}`);
-		const nameInput = form.querySelector(`#name-${id}`);
-		const projectSelect = form.querySelector(`#project-${id}`);
-
-		function toggleInputs() {
-			const selectedOption = taskSelect.options[taskSelect.selectedIndex];
-
-			if (taskSelect.value) {
-				nameInput.disabled = true;
-				projectSelect.disabled = true;
-
-				const taskName = selectedOption.getAttribute("data-task-name");
-				const taskProjectId = selectedOption.getAttribute("data-task-project-id");
-
-				if (taskName !== null) nameInput.value = taskName;
-				if (taskProjectId !== null) {
-					projectSelect.value = taskProjectId;
-				}
-			} else {
-				nameInput.disabled = false;
-				projectSelect.disabled = false;
-			}
-		}
-
-		toggleInputs();
-
-		taskSelect.addEventListener("change", toggleInputs);
-	});
-});
-
-async function duplicateTimeEntry(timeEntryId) {
-    const url = `/timetracker/time-entsry/${timeEntryId}/duplicate/`;
-    const data = await sendRequest(url, 'POST');
-    if (data.success) {
-        queueToast('Time entry duplicated', 'success');
-        window.location.reload();
     }
 };
