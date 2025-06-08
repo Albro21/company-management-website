@@ -4,6 +4,7 @@ from decouple import config, Csv
 DEBUG = config('DEBUG', default=False, cast=bool)
 SECRET_KEY = config('SECRET_KEY')
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
+SITE_DOMAIN = config("SITE_DOMAIN", default="127.0.0.1")
 
 # Email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
