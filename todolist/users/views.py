@@ -297,7 +297,7 @@ def process_bar_task_chart(user, start_date, end_date):
 def calculate_total_time(user, start_date, end_date):
     time_entries = TimeEntry.objects.filter(
         user=user,
-        task__project__in=user.company.projects.all(),
+        project__in=user.company.projects.all(),
         start_time__date__gte=start_date,
         start_time__date__lte=end_date
     )
@@ -331,7 +331,7 @@ def user_analytics(request, user_id):
     data = request.json_data
     filter_option = data.get("filter")
     
-    all_time_first_entry = user.time_entries.filter(task__project__in=user.company.projects.all()).order_by('start_time').first()
+    all_time_first_entry = user.time_entries.filter(project__in=user.company.projects.all()).order_by('start_time').first()
     start_date, end_date = get_date_range_from_filter(filter_option, all_time_first_entry)
     
     donut_time_chart_data = process_donut_time_chart(user, start_date, end_date)
