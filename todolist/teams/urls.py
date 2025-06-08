@@ -7,6 +7,7 @@ urlpatterns = [
     path('team/', general.team, name='team'),
     path('calendar/', general.calendar, name='calendar'),
     
+    path("employee/invite/", employee.invite_employee, name="invite_employee"),
     path('employee/<int:employee_id>/assign-task/', employee.assign_task, name='assign_task'),
     path('employee/<int:employee_id>/edit/', employee.edit_employee, name='edit_employee'),
     path('employee/<int:employee_id>/kick/', employee.kick_employee, name='kick_employee'),

@@ -36,8 +36,16 @@
                                 {% endfor %}
                             </div>
                         {% endif %}
-                        <input type="{{ form.email.field.widget.input_type }}" class="form-control {% if form.email.errors %}is-invalid{% endif %}" id="{{ form.email.id_for_label }}" name="{{ form.email.html_name }}" value="{{ form.email.value|default:'' }}">
+                        <input 
+                            type="email" 
+                            class="form-control {% if form.email.errors %}is-invalid{% endif %}" 
+                            id="{{ form.email.id_for_label }}" 
+                            name="{{ form.email.html_name }}" 
+                            value="{{ form.email.value|default:'' }}" 
+                            {% if invitation %}readonly{% endif %}
+                        >
                     </div>
+
                 </div>
 
                 <!-- First & Last Name -->
@@ -108,7 +116,10 @@
                         {% endfor %}
                     </div>
                 {% endif %}
-
+                
+                <!-- Invite token -->
+                <input type="hidden" name="invite_token" value="{{ invitation.token }}">
+                
                 <!-- Login button -->
                 <button type="submit" class="btn btn-primary w-100">Register</button>
             </form>

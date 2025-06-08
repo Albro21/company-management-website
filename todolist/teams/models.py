@@ -3,11 +3,14 @@ from datetime import timedelta
 import os
 
 # Django
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
 from .choices import *
 
+
+User = get_user_model()
 
 def document_upload_path(instance, filename):
     username = instance.user.username
@@ -171,3 +174,13 @@ class JoinRequest(models.Model):
     
     def __str__(self):
         return f"Join Request for {self.user.username} → {self.company.name}"
+
+
+class Invitation(models.Model):
+    email = models.EmailField(unique=True)
+    token = models.CharField(max_length=16, unique=True)
+    company = models.ForeignKey("teams.Company", on_delete=models.CASCADE)
+    invited_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"Invitation for {self.email} by {self.invited_by.email} to join {self.invited_by.company.name}"

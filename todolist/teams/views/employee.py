@@ -1,20 +1,60 @@
 # Django
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render, redirect
+from django.utils.crypto import get_random_string
+from django.core.mail import EmailMessage
 from django.views.decorators.http import require_http_methods
 
 # Local apps
 from common.decorators import parse_json_body
 from main.forms import TaskForm
 from main.models import Task
-from teams.models import Document, JobTitle
+from teams.models import Document, JobTitle, Invitation
 from teams.decorators import employer_required
 
 
 User = get_user_model()
+
+@require_http_methods(["POST"])
+def invite_employee(request):
+    if not request.user.is_employer:
+        return HttpResponseForbidden("You do not have permission to invite employees.")
+    
+    email = request.POST.get('email')
+
+    # Delete any existing invitation for the email, if any
+    Invitation.objects.filter(email=email).delete()
+
+    # Generate unique token
+    token = get_random_string(16)
+    while Invitation.objects.filter(token=token).exists():
+        token = get_random_string(16)
+
+    invite_url = request.build_absolute_uri(f"/accounts/register/?invite={token}")
+
+    subject = f"You're invited to join {request.user.company.name}"
+    message = (
+        f"You've been invited to join {request.user.company.name}.\n\n"
+        f"Click the link below to accept the invitation:\n{invite_url}\n\n"
+        "If you did not expect this invitation, please ignore this email."
+    )
+
+    email_message = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+    email_message.send()
+    
+    # Create and save the invitation
+    Invitation.objects.create(
+        email=email,
+        token=token,
+        company=request.user.company,
+        invited_by=request.user
+    )
+
+    return redirect("teams:team")
 
 @require_http_methods(["POST"])
 @login_required
@@ -82,7 +122,6 @@ def employee_detail(request, user_id):
     }
 
     return render(request, 'teams/employee_detail.html', context)
-
 
 @require_http_methods(["POST"])
 @login_required

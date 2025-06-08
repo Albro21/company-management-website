@@ -36,3 +36,4 @@ class CompanyAdmin(admin.ModelAdmin):
 admin.site.register(Holiday)
 admin.site.register(Document)
 admin.site.register(Expense)
+admin.site.register(Invitation)

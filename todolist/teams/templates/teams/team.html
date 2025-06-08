@@ -116,8 +116,41 @@
         </div>
     </div>
 
-    <!-- Employees -->
-    <h3 class="text-center mb-2">Employees</h3>
+    <!-- Employees header -->
+    <h3 class="mb-2 d-flex align-items-center justify-content-center">
+        Employees
+        
+        {% if user.is_employer %}
+            <!-- Employee Invitation Button -->
+            <button class="ms-3 btn btn-primary rounded-3 shadow-lg d-flex justify-content-center align-items-center"
+                style="width: 30px; height: 30px;"
+                data-bs-toggle="modal" 
+                data-bs-target="#inviteEmployeeModal">
+                <i class="bi bi-plus-lg" style="font-size: 20px; font-weight: bold;"></i>
+            </button>
+        {% endif %}
+    </h3>
+
+    <!-- Modal -->
+    <div class="modal fade" id="inviteEmployeeModal" tabindex="-1" aria-labelledby="inviteEmployeeLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-1">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="inviteEmployeeLabel">Invite an Employee</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'teams:invite_employee' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-body d-flex flex-column">
+                        <input type="email" name="email" id="id_email" class="form-control mb-3" placeholder="Employee email" required>
+                        <button type="submit" class="btn btn-primary">Send Invitation</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Employees list -->
 	<div class="d-flex flex-column align-items-center mb-4">
         <div class="row py-2 w-100">
             <div class="col">Name Surname</div>
