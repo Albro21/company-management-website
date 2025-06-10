@@ -259,3 +259,13 @@ async function declineHolidayRequest(holidayId) {
         showToast('Holiday request declined', 'success');
     }
 }
+
+// Delete Invitation
+async function deleteInvitation(invitationId) {
+    const url = `/teams/invitation/${invitationId}/delete/`;
+    const data = await sendRequest(url, 'DELETE');
+    if (data.success) {
+        queueToast('Invitation deleted', 'success');
+        window.location.reload();
+    }
+}

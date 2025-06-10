@@ -1,5 +1,5 @@
 from django.urls import path
-from teams.views import company, document, expense, general, job_title, join_request, employee, reports, holiday
+from teams.views import company, document, expense, general, job_title, join_request, employee, reports, holiday, invitation
 
 app_name = 'teams'
 
@@ -38,4 +38,6 @@ urlpatterns = [
     
     path('job-title/create/', job_title.create_job_title, name='create_job_title'),
     path('job-title/<int:job_title_id>/delete/', job_title.delete_job_title, name='delete_job_title'),
+    
+    path('invitation/<int:invitation_id>/delete/', invitation.delete_invitation, name='delete_invitation'),
 ]

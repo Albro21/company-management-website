@@ -2,6 +2,7 @@ from .company import *
 from .document import *
 from .expense import *
 from .general import *
+from .invitation import *
 from .job_title import *
 from .join_request import *
 from .employee import *

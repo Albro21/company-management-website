@@ -179,7 +179,7 @@ class JoinRequest(models.Model):
 class Invitation(models.Model):
     email = models.EmailField(unique=True)
     token = models.CharField(max_length=16, unique=True)
-    company = models.ForeignKey("teams.Company", on_delete=models.CASCADE)
+    company = models.ForeignKey("teams.Company", on_delete=models.CASCADE, related_name='invitations')
     invited_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):

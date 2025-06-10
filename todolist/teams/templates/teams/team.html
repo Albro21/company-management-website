@@ -259,6 +259,53 @@
                 </div>
             {% endif %}
         {% endfor %}
+        
+        {% for invitation in company.invitations.all %}
+            <div class="row py-2 w-100 list-item bg-2">
+                <div class="col text-muted">
+                    <i class="bi bi-circle-fill me-2" style="color: orange;"></i>
+                    (pending invitation)
+                </div>
+
+                <div class="col text-center">
+                    {{ invitation.email }}
+                </div>
+
+                <div class="col text-center">—</div>
+
+                {% if user.is_employer %}
+                    <div class="col text-center">—</div>
+                {% endif %}
+
+                <div class="col d-flex justify-content-center gap-3 action-icons">
+                    {% if user.is_employer %}
+                        <!-- Delete Invitation -->
+                        <a data-bs-toggle="modal" data-bs-target="#delete-invitation-{{ invitation.id }}">
+                            <i class="bi bi-x-lg" data-bs-toggle="tooltip" title="Delete Invitation"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if user.is_employer %}
+                <!-- Delete Invitation Modal -->
+                    <div class="modal fade" id="delete-invitation-{{ invitation.id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content bg-1">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure you want to delete the invitation for {{ invitation.email }}?</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-danger" onclick="deleteInvitation({{ invitation.id }})">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            {% endif %}
+        {% endfor %}
+            
 	</div>
 
     <!-- Project header -->
