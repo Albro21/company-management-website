@@ -17,6 +17,9 @@
                 <!-- Settings -->
                 <a href="{% url 'teams:settings' %}" class="btn btn-primary">Settings</a>
                 
+                <!-- Bank Holidays -->
+                <a href="{% url 'teams:bank_holidays' %}" class="btn btn-primary">Bank Holidays</a>
+
                 <!-- Expenses -->
                 <a href="{% url 'teams:expenses' %}" class="btn btn-primary">Expenses</a>
                 
@@ -90,7 +93,7 @@
                                     </div>
                                     <div>
                                         Employee:
-                                        <h5>{{ holiday.user.get_full_name }}</h5>
+                                        <h5>{{ holiday.users.first.get_full_name }}</h5>
                                     </div>
                                     <div>
                                         Period: 

@@ -5,11 +5,13 @@ function createTooltip(info) {
             <h5 class="text-center border-bottom py-1">${info.event.extendedProps.type}</h5>
             <div class="row p-2">
                 <div class="col-4 d-flex flex-column text-start">
-                    Employee:<br>
+                    Employees:<br>
+                    Reason:<br>
                     Period:
                 </div>
                 <div class="col-8 d-flex flex-column text-start justify-content-start">
-                    ${info.event.extendedProps.user}<br>
+                    ${info.event.extendedProps.users}<br>
+                    ${info.event.extendedProps.reason}<br>
                     ${info.event.extendedProps.start_date} – ${info.event.extendedProps.end_date} (${info.event.extendedProps.days} days)
                 </div>
             </div>
@@ -106,19 +108,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
 document.getElementById('holiday-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
-    const formData = new FormData(e.target);
-    const errorElement = document.getElementById(`holiday-errors`);
 
-    const url = `/teams/holiday/create/`;
+    const formData = new FormData(e.target);
+    const errorElement = document.getElementById('holiday-errors');
+
+    const url = '/teams/holiday/create/';
     const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
+
     const data = await sendRequest(url, 'POST', requestBody);
 
     if (data.success) {
         queueToast('Holiday created', 'success');
         window.location.reload();
-    } else {
+    } else if (data.error) {
         errorElement.textContent = data.error;
-        showToast('Error creating holiday', 'danger');
+        showToast(data.error, 'danger');
     }
-})
+});
+

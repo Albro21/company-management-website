@@ -48,7 +48,9 @@
                             <select name="type" class="form-control mb-2" id="id_type">
                                 <option value="">Select a type</option>
                                 {% for key, value in holiday_types %}
-                                    <option value="{{ key }}">{{ value }}</option>
+                                    {% if not key == "bank_holiday" %}
+                                        <option value="{{ key }}">{{ value }}</option>
+                                    {% endif %}
                                 {% endfor %}
                             </select>
                             
@@ -80,10 +82,10 @@
                     <div class="col-3 text-center">Status</div>
                 </div>
                 <div class="d-flex flex-column w-100" id="holiday-list">
-                    {% for holiday in user_holidays%}
+                    {% for holiday in user_holidays %}
                         <!-- Table Header -->
                         <div class="row py-2 w-100 mx-0 bg-2 list-item">
-                            <div class="col-3 text-truncate">{{ holiday.user.get_full_name }}</div>
+                            <div class="col-3 text-truncate">{{ request.user.get_full_name }}</div>
                             <div class="col-6 text-truncate">{{ holiday.reason }}</div>
                             <div class="col-3 text-center">{{ holiday.get_status_display }}</div>
                         </div>

@@ -1,8 +1,8 @@
 # Django
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
-from django.contrib.auth import get_user_model
 
 # Local apps
 from teams.decorators import employer_required

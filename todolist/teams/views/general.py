@@ -196,15 +196,25 @@ def calendar(request):
 
     all_holidays = []
     for holiday in holidays:
+        users = holiday.users.all()
+        
+        if users.count() == 1:
+            title = users[0].get_full_name()
+        elif request.user in users:
+            title = f'{request.user.get_full_name()} and {users.count() - 1} more'
+        else:
+            title = f'{users.first().get_full_name()} and {users.count() - 1} more'
+        
         all_holidays.append({
-            'title': f"{holiday.user.get_full_name()}",
+            'title': title,
             'start': str(holiday.start_date),
             'end': str(holiday.end_date + timedelta(days=1)),
-            'color': color_map_self.get(holiday.type, '#cccccc') if holiday.user == request.user else color_map_others.get(holiday.type, '#cccccc'),
+            'color': color_map_self.get(holiday.type, '#cccccc') if holiday.users.first() == request.user else color_map_others.get(holiday.type, '#cccccc'),
             'textColor': 'black',
             'extendedProps': {
                 'type': holiday.get_type_display(),
-                'user': holiday.user.get_full_name(),
+                'reason': holiday.reason,
+                'users': ', '.join([user.get_full_name() for user in holiday.users.all()]),
                 'start_date': holiday.start_date.strftime('%d/%m/%y'),
                 'end_date': holiday.end_date.strftime('%d/%m/%y'),
                 'days': holiday.number_of_days,

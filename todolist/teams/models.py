@@ -136,7 +136,7 @@ class Holiday(models.Model):
     ]
     
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='holidays')
-    user = models.ForeignKey("users.CustomUser", on_delete=models.CASCADE, related_name='holidays', blank=True, null=True)
+    users = models.ManyToManyField("users.CustomUser", related_name='holidays')
     start_date = models.DateField()
     end_date = models.DateField()
     reason = models.TextField(max_length=255)
@@ -162,7 +162,7 @@ class Holiday(models.Model):
         return (self.end_date - self.start_date).days + 1
 
     def __str__(self):
-        return f"{self.user.get_full_name()} - {self.start_date} to {self.end_date} ({self.get_type_display()})"
+        return f"{self.start_date} to {self.end_date} ({self.get_type_display()})"
 
 
 class JoinRequest(models.Model):
