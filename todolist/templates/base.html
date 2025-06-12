@@ -61,7 +61,7 @@
 					<a href="{% url 'teams:team' %}" class="nav-link">
 						<i class="bi bi-people me-2"></i>Company
 						{% if user.is_employer %}
-							{% with total_requests=user.company.pending_holidays.count|add:user.company.join_requests.count %}
+							{% with total_requests=user.company.total_pending_holidays|add:user.company.join_requests.count %}
 								{% if total_requests > 0 %}
 									<span class="badge rounded-circle bg-danger ms-3">{{ total_requests }}</span>
 								{% endif %}
@@ -136,7 +136,7 @@
 				<a href="{% url 'teams:team' %}" class="nav-link py-2 px-4 rounded">
 					<i class="bi bi-people me-2"></i>Company
 					{% if user.is_employer %}
-						{% with total_requests=user.company.pending_holidays.count|add:user.company.join_requests.count %}
+						{% with total_requests=user.company.total_pending_holidays|add:user.company.join_requests.count %}
 							{% if total_requests > 0 %}
 								<span class="badge rounded-circle bg-danger ms-3">{{ total_requests }}</span>
 							{% endif %}

@@ -241,25 +241,6 @@ document.querySelectorAll('.assign-task-form').forEach(form => {
     });
 });
 
-async function acceptHolidayRequest(holidayId) {
-    const url = `/teams/holiday/${holidayId}/accept/`;
-    const data = await sendRequest(url, 'PATCH');
-    if (data.success) {
-        document.getElementById(`holiday-${holidayId}`).remove();
-        showToast('Holiday request accepted', 'success');
-    }
-}
-
-async function declineHolidayRequest(holidayId) {
-    const url = `/teams/holiday/${holidayId}/decline/`;
-    const data = await sendRequest(url, 'PATCH');
-    if (data.success) {
-        element = document.getElementById(`holiday-${holidayId}`);
-        element.remove();
-        showToast('Holiday request declined', 'success');
-    }
-}
-
 // Delete Invitation
 async function deleteInvitation(invitationId) {
     const url = `/teams/invitation/${invitationId}/delete/`;

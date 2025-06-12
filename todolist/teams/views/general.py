@@ -229,7 +229,7 @@ def calendar(request):
 
     context = {
         'all_holidays_json': json.dumps(all_holidays, cls=DjangoJSONEncoder),
-        'user_holidays': user_holidays,
+        'user_holidays': user_holidays.exclude(type='bank_holiday'),
         'holiday_types': HOLIDAY_TYPES,
         'holidays': holidays,
         'bank_holidays': bank_holidays,

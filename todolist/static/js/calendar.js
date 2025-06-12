@@ -126,3 +126,39 @@ document.getElementById('holiday-form').addEventListener('submit', async (e) => 
     }
 });
 
+// Edit Holiday
+const editHolidayForms = document.querySelectorAll('.edit-holiday-form');
+editHolidayForms.forEach(form => {
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const holidayId = form.dataset.id;
+        const url = `/teams/holiday/${holidayId}/request-edit/`;
+
+        const formData = new FormData(form);
+        const formObj = Object.fromEntries(formData.entries());
+        const requestBody = JSON.stringify(formObj);
+
+        const data = await sendRequest(url, 'PATCH', requestBody);
+
+        if (data.success) {
+            queueToast('Requested holiday edit', 'success');
+            window.location.reload();
+        } else if (data.error) {
+            showToast(data.error, 'danger');
+        }
+    });
+});
+
+// Delete Holiday
+async function deleteHoliday(holidayId) {
+    const url = `/teams/holiday/${holidayId}/request-delete/`;
+    const data = await sendRequest(url, 'PATCH');
+    if (data.success) {
+        queueToast('Requested holiday deletion', 'success');
+        window.location.reload();
+    } else {
+        showToast(data.error, 'danger');
+    }
+}
+

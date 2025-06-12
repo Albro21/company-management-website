@@ -36,9 +36,9 @@
                 <!-- Holiday Requests -->
                 <a class="btn btn-primary position-relative" style="white-space: nowrap;" data-bs-toggle="offcanvas" data-bs-target="#holidays">
                     Holiday requests
-                    {% if company.pending_holidays.all %}
+                    {% if company.total_pending_holidays %}
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            {{ company.pending_holidays.all.count }}
+                            {{ company.total_pending_holidays }}
                         </span>
                     {% endif %}
                 </a>
@@ -78,40 +78,172 @@
                 </div>
 
                 <!-- Holiday Requests Offcanvas -->
-                <div class="offcanvas offcanvas-end" tabindex="-1" id="holidays">
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="holidays" style="width: 50vw;">
                     <div class="offcanvas-header">
                         <h5 class="offcanvas-title" id="offcanvasRightLabel">Holiday requests</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                     </div>
-                    <div class="offcanvas-body d-flex flex-column gap-3">
-                        {% if company.holidays %}
-                            {% for holiday in company.pending_holidays.all %}
-                                <div class="d-flex flex-column bg-2 p-2 rounded mx-0 gap-2" id="holiday-{{ holiday.id }}">
-                                    <div>
-                                        Type:
-                                        <h5>{{ holiday.get_type_display }}</h5>
-                                    </div>
-                                    <div>
-                                        Employee:
-                                        <h5>{{ holiday.users.first.get_full_name }}</h5>
-                                    </div>
-                                    <div>
-                                        Period: 
-                                        <h5>{{ holiday.start_date|date:"d/m/y" }} – {{ holiday.end_date|date:"d/m/y" }}</h5>
-                                    </div>
-                                    <div>
-                                        Reason:
-                                        <p class="mb-0">{{ holiday.reason }}</p>
-                                    </div>
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-primary w-100" onclick="acceptHolidayRequest({{ holiday.id }})">Accept</button>
-                                        <button class="btn btn-danger w-100" onclick="declineHolidayRequest({{ holiday.id }})">Decline</button>
-                                    </div>
+                    <div class="offcanvas-body d-flex flex-column">
+                        {% if company.total_pending_holidays %}
+                            
+                            <!-- Pending holidays -->
+                            {% if company.pending_holidays.all %}
+                                <h3 class="mt-4">New holiday requests</h3>
+                                <div class="row row-cols-2">
+                                    {% for holiday in company.pending_holidays.all %}
+                                        <div class="col">
+                                            <div class="d-flex flex-column bg-2 p-2 rounded mx-0 gap-2 mt-3" id="holiday-{{ holiday.id }}">
+                                                <div class="d-flex flex-column gap-2">
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            Employee:
+                                                            <h5>{{ holiday.users.first.get_full_name }}</h5>
+                                                        </div>
+                                                        <div class="col">
+                                                            Type:
+                                                            <h5>{{ holiday.get_type_display }}</h5>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            Start Date: 
+                                                            <h5>{{ holiday.start_date|date:"d/m/y" }}</h5>
+                                                        </div>
+                                                        <div class="col">
+                                                            End Date: 
+                                                            <h5>{{ holiday.end_date|date:"d/m/y" }}</h5>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        Reason:
+                                                        <p class="mb-0">{{ holiday.reason }}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex gap-2">
+                                                    <button class="btn btn-primary w-100" onclick="acceptHolidayRequest({{ holiday.id }})">Accept</button>
+                                                    <button class="btn btn-danger w-100" onclick="declineHolidayRequest({{ holiday.id }})">Decline</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
                                 </div>
-
-                            {% endfor %}
+                            {% endif %}
+                            
+                            <!-- Pending edits -->
+                            {% if company.pending_edit_holidays.all %}
+                                <h3 class="mt-4">Edit holiday requests</h3>
+                                {% for holiday in company.pending_edit_holidays.all %}
+                                    <div class="d-flex flex-column bg-2 p-2 rounded mx-0 gap-2 mt-3" id="holiday-{{ holiday.id }}">
+                                        <div class="row">
+                                            <div class="d-flex col-5 flex-column gap-2">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        Employee:
+                                                        <h5>{{ holiday.users.first.get_full_name }}</h5>
+                                                    </div>
+                                                    <div class="col">
+                                                        Type:
+                                                        <h5>{{ holiday.get_type_display }}</h5>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        Start Date: 
+                                                        <h5>{{ holiday.start_date|date:"d/m/y" }}</h5>
+                                                    </div>
+                                                    <div class="col">
+                                                        End Date: 
+                                                        <h5>{{ holiday.end_date|date:"d/m/y" }}</h5>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    Reason:
+                                                    <p class="mb-0">{{ holiday.reason }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="col d-flex align-items-center justify-content-center">
+                                                <i class="bi bi-arrow-bar-right fs-1"></i>
+                                            </div>
+                                            <div class="d-flex col-5 flex-column gap-2">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        Employee:
+                                                        <h5>{{ holiday.users.first.get_full_name }}</h5>
+                                                    </div>
+                                                    <div class="col">
+                                                        Type:
+                                                        <h5>{{ holiday.get_pending_type_display }}</h5>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        Start Date: 
+                                                        <h5>{{ holiday.pending_start_date|date:"d/m/y" }}</h5>
+                                                    </div>
+                                                    <div class="col">
+                                                        End Date: 
+                                                        <h5>{{ holiday.pending_end_date|date:"d/m/y" }}</h5>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    Reason:
+                                                    <p class="mb-0">{{ holiday.pending_reason }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-primary w-100" onclick="acceptEditHolidayRequest({{ holiday.id }})">Accept</button>
+                                            <button class="btn btn-danger w-100" onclick="declineEditHolidayRequest({{ holiday.id }})">Decline</button>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            
+                            <!-- Pending deletes -->
+                            {% if company.pending_delete_holidays.all %}
+                                <h3 class="mt-4">Delete holiday requests</h3>
+                                <div class="row row-cols-2">
+                                    {% for holiday in company.pending_delete_holidays.all %}
+                                        <div class="col">
+                                            <div class="d-flex flex-column bg-2 p-2 rounded mx-0 gap-2 mt-3" id="holiday-{{ holiday.id }}">
+                                                <div class="d-flex flex-column gap-2">
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            Employee:
+                                                            <h5>{{ holiday.users.first.get_full_name }}</h5>
+                                                        </div>
+                                                        <div class="col">
+                                                            Type:
+                                                            <h5>{{ holiday.get_type_display }}</h5>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            Start Date: 
+                                                            <h5>{{ holiday.start_date|date:"d/m/y" }}</h5>
+                                                        </div>
+                                                        <div class="col">
+                                                            End Date: 
+                                                            <h5>{{ holiday.end_date|date:"d/m/y" }}</h5>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        Reason:
+                                                        <p class="mb-0">{{ holiday.reason }}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex gap-2">
+                                                    <button class="btn btn-secondary w-100" onclick="declineDeleteHolidayRequest({{ holiday.id }})">Cancel</button>
+                                                    <button class="btn btn-danger w-100" onclick="acceptDeleteHolidayRequest({{ holiday.id }})">Delete</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            
                         {% else %}
-                            <p>No join requests</p>
+                            <p>No holiday requests</p>
                         {% endif %}
                     </div>
                 </div>
@@ -602,6 +734,7 @@
 
 {% block scripts %}
     <script src="{% static 'js/team.js' %}"></script>
+    <script src="{% static 'js/holiday_requests.js' %}"></script>
     <script src="{% static 'js/reports.js' %}"></script>
     <script src="{% static 'js/project.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
