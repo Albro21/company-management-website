@@ -27,12 +27,24 @@
                         <div class="col-2 text-center">{{ user.remaining_holidays }}</div>
                     </div>
                 </div>
-                <button class="btn btn-primary h-100" data-bs-toggle="offcanvas" data-bs-target="#holiday-{{ user.id }}">Request Holiday</button>
+                <button class="btn btn-primary h-100" data-bs-toggle="offcanvas" data-bs-target="#holiday-{{ user.id }}">
+                    {% if request.user.is_employer %}
+                        Add Holiday
+                    {% else %}
+                        Request Holiday
+                    {% endif %}
+                </button>
 
                 <!-- Request Holiday Offcanvas -->
                 <div class="offcanvas offcanvas-end" tabindex="-1" id="holiday-{{ user.id }}">
                     <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="offcanvasRightLabel">Request Holiday</h5>
+                        <h5 class="offcanvas-title" id="offcanvasRightLabel">
+                            {% if request.user.is_employer %}
+                                Add Holiday
+                            {% else %}
+                                Request Holiday
+                            {% endif %}
+                        </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                     </div>
                     <div class="offcanvas-body d-flex flex-column gap-4">
@@ -46,7 +58,6 @@
 
                             <label for="id_type">Type:</label>
                             <select name="type" class="form-control mb-2" id="id_type">
-                                <option value="">Select a type</option>
                                 {% for key, value in holiday_types %}
                                     {% if not key == "bank_holiday" %}
                                         <option value="{{ key }}">{{ value }}</option>
@@ -67,7 +78,13 @@
                             <input type="date" name="end_date" id="id_end_date" class="form-control mb-2" required>
                             
                             <!-- Submit Button -->
-                            <button type="submit" class="btn btn-primary mb-2">Request Holiday</button>
+                            <button type="submit" class="btn btn-primary mb-2">
+                                {% if request.user.is_employer %}
+                                    Save
+                                {% else %}
+                                    Request Holiday
+                                {% endif %}
+                            </button>
 
                             <div id="holiday-errors" class="text-center text-danger"></div>
                         </form>
@@ -82,10 +99,11 @@
                     <div class="col-3">Type</div>
                     <div class="col-3 text-center">Status</div>
                 </div>
+
+                <!-- Holiday List -->
                 <div class="d-flex flex-column w-100" id="holiday-list">
                     {% for holiday in user_holidays %}
-                        <!-- Table Header -->
-                        <div class="row py-2 w-100 mx-0 bg-2 list-item" data-bs-toggle="offcanvas" data-bs-target="#edit-holiday-{{ holiday.id }}">
+                        <div class="row py-2 w-100 mx-0 bg-2 list-item" {% if holiday.type != "bank_holiday" %}data-bs-toggle="offcanvas" data-bs-target="#edit-holiday-{{ holiday.id }}"{% else %}onclick="showToast('Bank holiday cannot be edited.', 'warning')"{% endif %}>
                             <div class="col-3 text-truncate">{{ request.user.get_full_name }}</div>
                             <div class="col-3 text-truncate">
                                 {% if holiday.status == "pending_edit" %}
@@ -105,38 +123,52 @@
                         </div>
 
                         <!-- Edit Holiday Offcanvas -->
-                        <div class="offcanvas offcanvas-end" tabindex="-1" id="edit-holiday-{{ holiday.id }}">
-                            <div class="offcanvas-header">
-                                <h5 class="offcanvas-title" id="offcanvasRightLabel">Edit Holiday:</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                            </div>
-                            <div class="offcanvas-body d-flex flex-column justify-content-between">
-                                <form method="PATCH" class="d-flex flex-column gap-3 mb-4 edit-holiday-form" data-id="{{ holiday.id }}">
-                                    {% csrf_token %}
-                                    <textarea name="reason" placeholder="Reason" class="form-control" rows="4">{% if holiday.status == "pending_edit" %}{{ holiday.pending_reason }}{% else %}{{ holiday.reason }}{% endif %}</textarea>
-                                    <select name="type" class="form-select">
-                                        {% for key, value in holiday_types %}
-                                            {% if not key == "bank_holiday" %}
-                                                <option value="{{ key }}" {% if holiday.status == "pending_edit" %}{% if holiday.pending_type == key %}selected{% endif %}{% else %}{% if holiday.type == key %}selected{% endif %}{% endif %}>{{ value }}</option>
+                        {% if holiday.type != "bank_holiday" %}
+                            <div class="offcanvas offcanvas-end" tabindex="-1" id="edit-holiday-{{ holiday.id }}">
+                                <div class="offcanvas-header">
+                                    <h5 class="offcanvas-title" id="offcanvasRightLabel">Edit Holiday:</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                                </div>
+                                <div class="offcanvas-body d-flex flex-column justify-content-between">
+                                    <form method="PATCH" class="d-flex flex-column gap-3 mb-4 edit-holiday-form" data-id="{{ holiday.id }}">
+                                        {% csrf_token %}
+                                        <textarea name="reason" placeholder="Reason" class="form-control" rows="4">{% if holiday.status == "pending_edit" %}{{ holiday.pending_reason }}{% else %}{{ holiday.reason }}{% endif %}</textarea>
+                                        <select name="type" class="form-select">
+                                            {% for key, value in holiday_types %}
+                                                {% if not key == "bank_holiday" %}
+                                                    <option value="{{ key }}" {% if holiday.status == "pending_edit" %}{% if holiday.pending_type == key %}selected{% endif %}{% else %}{% if holiday.type == key %}selected{% endif %}{% endif %}>{{ value }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                        <div class="d-flex gap-3">
+                                            <div class="d-flex flex-column w-100">
+                                                <label for="start_date" class="form-label">Start date:</label>
+                                                <input type="date" name="start_date" class="form-control" value="{% if holiday.status == 'pending_edit' %}{{ holiday.pending_start_date|date:'Y-m-d' }}{% else %}{{ holiday.start_date|date:'Y-m-d' }}{% endif %}">
+                                            </div>
+                                            <div class="d-flex flex-column w-100">
+                                                <label for="end_date" class="form-label">End date:</label>
+                                                <input type="date" name="end_date" class="form-control" value="{% if holiday.status == 'pending_edit' %}{{ holiday.pending_end_date|date:'Y-m-d' }}{% else %}{{ holiday.end_date|date:'Y-m-d' }}{% endif %}">
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">
+                                            {% if request.user.is_employer %}
+                                                Save
+                                            {% else %}
+                                                Request Edition
                                             {% endif %}
-                                        {% endfor %}
-                                    </select>
-                                    <div class="d-flex gap-3">
-                                        <div class="d-flex flex-column w-100">
-                                            <label for="start_date" class="form-label">Start date:</label>
-                                            <input type="date" name="start_date" class="form-control" value="{% if holiday.status == 'pending_edit' %}{{ holiday.pending_start_date|date:'Y-m-d' }}{% else %}{{ holiday.start_date|date:'Y-m-d' }}{% endif %}">
-                                        </div>
-                                        <div class="d-flex flex-column w-100">
-                                            <label for="end_date" class="form-label">End date:</label>
-                                            <input type="date" name="end_date" class="form-control" value="{% if holiday.status == 'pending_edit' %}{{ holiday.pending_end_date|date:'Y-m-d' }}{% else %}{{ holiday.end_date|date:'Y-m-d' }}{% endif %}">
-                                        </div>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Request Update</button>
-                                </form>
+                                        </button>
+                                    </form>
 
-                                <button type="button" class="btn btn-danger" onclick="deleteHoliday({{ holiday.id }})">Request Deletion</button>
+                                    <button type="button" class="btn btn-danger" onclick="deleteHoliday({{ holiday.id }})">
+                                        {% if request.user.is_employer %}
+                                            Delete
+                                        {% else %}
+                                            Request Deletion
+                                        {% endif %}
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
             </div>

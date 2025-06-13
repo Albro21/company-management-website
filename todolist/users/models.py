@@ -70,7 +70,6 @@ class CustomUser(AbstractUser):
     theme = models.CharField(max_length=20, choices=THEMES, default='dark')
     timezone = models.CharField(max_length=32, choices=TIMEZONE_CHOICES, default='UTC')
 
-    
     def clean(self):
         super().clean()
 
@@ -120,6 +119,13 @@ class CustomUser(AbstractUser):
     @property
     def remaining_holidays(self):
         return self.annual_holidays - self.used_holidays
+    
+    def has_enough_holidays(self, days_required):
+        return self.remaining_holidays >= days_required
+    
+    def adjust_holidays(self, days):
+        self.used_holidays = max(0, self.used_holidays + days)
+        self.save()
     
     def hours_spent_by_projects(self, target_date, projects):
         entries = self.time_entries.filter(

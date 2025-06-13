@@ -192,24 +192,37 @@ color_map_others = {
 
 @login_required
 def calendar(request):
-    holidays = Holiday.objects.filter(company=request.user.company, status='approved')
+    holidays = Holiday.objects.filter(company=request.user.company, status__in=['approved', 'pending', 'pending_edit', 'pending_delete'])
 
     all_holidays = []
     for holiday in holidays:
         users = holiday.users.all()
         
+        # Title
         if users.count() == 1:
-            title = users[0].get_full_name()
+            title = users.first().get_full_name()
+            if holiday.status == 'pending':
+                title = f'{title} (pending)'
+            elif holiday.status == 'pending_delete':
+                title = f'{title} (pending delete)'
+            elif holiday.status == 'pending_edit':
+                title = f'{title} (pending edit)'
         elif request.user in users:
             title = f'{request.user.get_full_name()} and {users.count() - 1} more'
         else:
             title = f'{users.first().get_full_name()} and {users.count() - 1} more'
         
+        # Color
+        if request.user in holiday.users.all():
+            color = color_map_self.get(holiday.type, '#cccccc')
+        else:
+            color = color_map_others.get(holiday.type, '#cccccc')
+        
         all_holidays.append({
             'title': title,
             'start': str(holiday.start_date),
             'end': str(holiday.end_date + timedelta(days=1)),
-            'color': color_map_self.get(holiday.type, '#cccccc') if holiday.users.first() == request.user else color_map_others.get(holiday.type, '#cccccc'),
+            'color': color,
             'textColor': 'black',
             'extendedProps': {
                 'type': holiday.get_type_display(),
@@ -229,7 +242,7 @@ def calendar(request):
 
     context = {
         'all_holidays_json': json.dumps(all_holidays, cls=DjangoJSONEncoder),
-        'user_holidays': user_holidays.exclude(type='bank_holiday'),
+        'user_holidays': user_holidays,
         'holiday_types': HOLIDAY_TYPES,
         'holidays': holidays,
         'bank_holidays': bank_holidays,

@@ -179,6 +179,21 @@ class Holiday(models.Model):
     @property
     def number_of_days(self):
         return (self.end_date - self.start_date).days + 1
+    
+    def clear_pending(self):
+        self.pending_start_date = None
+        self.pending_end_date = None
+        self.pending_reason = None
+        self.pending_type = None
+        self.save()
+
+    def apply_pending(self):
+        self.start_date = self.pending_start_date
+        self.end_date = self.pending_end_date
+        self.reason = self.pending_reason
+        self.type = self.pending_type
+        self.clear_pending()
+
 
     def __str__(self):
         return f"{self.start_date} to {self.end_date} ({self.get_type_display()})"

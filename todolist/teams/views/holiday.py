@@ -5,17 +5,29 @@ from datetime import datetime
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_http_methods
 
 # Local apps
 from teams.decorators import employer_required
-from teams.forms import HolidayForm
 from teams.models import Holiday
 from common.decorators import parse_json_body
 
 
 User = get_user_model()
+
+def get_validated_dates(data):
+    start = datetime.strptime(data['start_date'], '%Y-%m-%d').date()
+    end = datetime.strptime(data['end_date'], '%Y-%m-%d').date()
+    if start > end:
+        raise ValueError("Start date must be before end date.")
+    return start, end
+
+def calculate_days(start_date, end_date):
+    return (end_date - start_date).days + 1
+
+def get_days_diff(old_start, old_end, new_start, new_end):
+    return calculate_days(new_start, new_end) - calculate_days(old_start, old_end)
 
 @require_http_methods(["POST"])
 @login_required
@@ -24,20 +36,13 @@ def create_holiday(request):
     data = request.json_data
 
     try:
-        start_date = datetime.strptime(data['start_date'], '%Y-%m-%d').date()
-        end_date = datetime.strptime(data['end_date'], '%Y-%m-%d').date()
-    except (ValueError, KeyError):
-        return JsonResponse({'success': False, 'error': 'Invalid or missing start/end date.'}, status=400)
+        start_date, end_date = get_validated_dates(data)
+    except ValueError as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
-    if start_date > end_date:
-        return JsonResponse({'success': False, 'error': 'Start date must be before end date.'}, status=400)
-
-    days_requested = (end_date - start_date).days + 1
+    days_requested = calculate_days(start_date, end_date)
     holiday_type = data.get('type', 'other')
     reason = data.get('reason', '').strip()
-
-    def has_enough_holidays(user):
-        return user.remaining_holidays >= days_requested
 
     if holiday_type == 'bank_holiday':
         if not request.user.is_employer:
@@ -47,7 +52,7 @@ def create_holiday(request):
 
         insufficient_users = [
             f"{user.get_full_name() or user.username} ({user.remaining_holidays} days left)"
-            for user in users if not has_enough_holidays(user)
+            for user in users if not user.has_enough_holidays(days_requested)
         ]
         if insufficient_users:
             return JsonResponse({
@@ -57,7 +62,7 @@ def create_holiday(request):
 
     else:
         users = [request.user]
-        if not has_enough_holidays(request.user):
+        if not request.user.has_enough_holidays(days_requested):
             return JsonResponse({
                 'success': False,
                 'error': 'Your holiday exceeds your remaining annual holiday days.'
@@ -74,7 +79,7 @@ def create_holiday(request):
     holiday.users.set(users)
 
     for user in users:
-        user.used_holidays += days_requested
+        user.adjust_holidays(days_requested)
     User.objects.bulk_update(users, ['used_holidays'])
 
     return JsonResponse({'success': True, 'id': holiday.id}, status=201)
@@ -84,31 +89,20 @@ def create_holiday(request):
 @parse_json_body
 @employer_required
 def edit_holiday(request, holiday_id):
+    holiday = get_object_or_404(Holiday, id=holiday_id, company=request.user.company)
+
     data = request.json_data
-    
     try:
-        holiday = Holiday.objects.get(id=holiday_id, company=request.user.company)
-    except Holiday.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Holiday not found.'}, status=404)
-    
-    try:
-        start_date = datetime.strptime(data['start_date'], '%Y-%m-%d').date()
-        end_date = datetime.strptime(data['end_date'], '%Y-%m-%d').date()
-    except (ValueError, KeyError):
-        return JsonResponse({'success': False, 'error': 'Invalid or missing start/end date.'}, status=400)
+        start_date, end_date = get_validated_dates(data)
+    except ValueError as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
-    if start_date > end_date:
-        return JsonResponse({'success': False, 'error': 'Start date must be before end date.'}, status=400)
-
-    old_days = (holiday.end_date - holiday.start_date).days + 1
-    new_days = (end_date - start_date).days + 1
-    diff = new_days - old_days
+    diff = get_days_diff(holiday.start_date, holiday.end_date, start_date, end_date)
+    old_days = calculate_days(holiday.start_date, holiday.end_date)
+    new_days = calculate_days(start_date, end_date)
 
     holiday_type = data.get('type', 'other')
     reason = data.get('reason', '').strip()
-
-    def has_enough_holidays(user, needed_days):
-        return user.remaining_holidays >= needed_days
 
     if holiday_type == 'bank_holiday':
         if not request.user.is_employer:
@@ -118,7 +112,6 @@ def edit_holiday(request, holiday_id):
         new_users = set(User.objects.filter(id__in=new_user_ids, company=request.user.company))
         old_users = set(holiday.users.all())
 
-        removed_users = old_users - new_users
         added_users = new_users - old_users
         kept_users = new_users & old_users
 
@@ -126,12 +119,11 @@ def edit_holiday(request, holiday_id):
 
         if diff > 0:
             for user in kept_users:
-                if not has_enough_holidays(user, diff):
+                if not user.has_enough_holidays(diff):
                     insufficient_users.append(f"{user.get_full_name() or user.username} ({user.remaining_holidays} days left)")
 
-        # For added users, need to check if they have enough holidays for new_days
         for user in added_users:
-            if not has_enough_holidays(user, new_days):
+            if not user.has_enough_holidays(new_days):
                 insufficient_users.append(f"{user.get_full_name() or user.username} ({user.remaining_holidays} days left)")
 
         if insufficient_users:
@@ -145,36 +137,28 @@ def edit_holiday(request, holiday_id):
         old_users = {request.user}
         diff = new_days - old_days
 
-        if diff > 0 and not has_enough_holidays(request.user, diff):
+        if diff > 0 and not request.user.has_enough_holidays(diff):
             return JsonResponse({
                 'success': False,
                 'error': 'Your holiday exceeds your remaining annual holiday days.'
             }, status=400)
 
-    # Adjust used_holidays for users removed: subtract old_days
-    for user in removed_users:
-        user.used_holidays -= old_days
+    for user in old_users - new_users:
+        user.adjust_holidays(-old_days)
 
-    # Adjust used_holidays for kept users: add diff (positive or negative)
-    for user in kept_users:
-        user.used_holidays += diff
+    for user in new_users & old_users:
+        user.adjust_holidays(diff)
 
-    # Adjust used_holidays for newly added users: add new_days
-    for user in added_users:
-        user.used_holidays += new_days
+    for user in new_users - old_users:
+        user.adjust_holidays(new_days)
 
-    # Bulk update all affected users at once
-    User.objects.bulk_update(removed_users | kept_users | added_users, ['used_holidays'])
-
-    # Update holiday fields
     holiday.start_date = start_date
     holiday.end_date = end_date
     holiday.reason = reason
     holiday.type = holiday_type
-    holiday.status = 'approved' if request.user.is_employer else 'pending'
+    holiday.status = 'approved'
     holiday.save()
 
-    # Update holiday users
     holiday.users.set(new_users)
 
     return JsonResponse({'success': True, 'id': holiday.id}, status=200)
@@ -183,17 +167,13 @@ def edit_holiday(request, holiday_id):
 @login_required
 @employer_required
 def delete_holiday(request, holiday_id):
-    try:
-        holiday = Holiday.objects.get(id=holiday_id, company=request.user.company)
-    except Holiday.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Holiday not found.'}, status=404)
+    holiday = get_object_or_404(Holiday, id=holiday_id, company=request.user.company)
 
-    # Calculate the number of days for this holiday
-    days_to_return = (holiday.end_date - holiday.start_date).days + 1
+    days_to_return = holiday.number_of_days
 
     users = list(holiday.users.all())
     for user in users:
-        user.used_holidays = max(user.used_holidays - days_to_return, 0)  # Prevent negative values
+        user.adjust_holidays(-days_to_return)
 
     User.objects.bulk_update(users, ['used_holidays'])
 
@@ -213,28 +193,21 @@ def request_edit(request, holiday_id):
     data = request.json_data
 
     try:
-        start_date = datetime.strptime(data['start_date'], '%Y-%m-%d').date()
-        end_date = datetime.strptime(data['end_date'], '%Y-%m-%d').date()
-    except (KeyError, ValueError):
-        return JsonResponse({'success': False, 'error': 'Invalid dates.'}, status=400)
+        start_date, end_date = get_validated_dates(data)
+    except ValueError as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
-    if start_date > end_date:
-        return JsonResponse({'success': False, 'error': 'Start date must be before end date.'}, status=400)
+    diff = get_days_diff(holiday.start_date, holiday.end_date, start_date, end_date)
 
-    old_days = (holiday.end_date - holiday.start_date).days + 1
-    new_days = (end_date - start_date).days + 1
-    diff = new_days - old_days
-
-    if diff > 0 and diff > request.user.remaining_holidays:
+    if diff > 0 and not request.user.has_enough_holidays(diff):
         return JsonResponse({
             'success': False,
             'error': f'You do not have enough remaining holidays to extend this request. You need {diff} more days.'
         }, status=400)
 
-    # If employer, apply immediately
     if request.user.is_employer:
         user = holiday.users.first()
-        user.used_holidays = max(0, user.used_holidays + diff)
+        user.adjust_holidays(diff)
         user.save()
 
         holiday.start_date = start_date
@@ -243,10 +216,7 @@ def request_edit(request, holiday_id):
         holiday.type = data.get('type', holiday.type)
         holiday.status = "approved"
 
-        holiday.pending_start_date = None
-        holiday.pending_end_date = None
-        holiday.pending_reason = None
-        holiday.pending_type = None
+        holiday.clear_pending()
     else:
         holiday.pending_start_date = start_date
         holiday.pending_end_date = end_date
@@ -268,9 +238,8 @@ def request_delete(request, holiday_id):
 
     if request.user.is_employer:
         user = holiday.users.first()
-        if user:
-            user.used_holidays = max(0, user.used_holidays - holiday.number_of_days)
-            user.save()
+        user.adjust_holidays(-holiday.number_of_days)
+        user.save()
         holiday.delete()
     else:
         holiday.status = 'pending_delete'
@@ -282,67 +251,46 @@ def request_delete(request, holiday_id):
 @login_required
 @employer_required
 def accept_edit_holiday(request, request_id):
-    holiday = Holiday.objects.get(id=request_id)
+    holiday = get_object_or_404(Holiday, id=request_id, company=request.user.company)
 
-    old_days = (holiday.end_date - holiday.start_date).days + 1
-    new_days = (holiday.pending_end_date - holiday.pending_start_date).days + 1
-    diff = new_days - old_days
-
+    diff = get_days_diff(holiday.start_date, holiday.end_date, holiday.pending_start_date, holiday.pending_end_date)
+    
     user = holiday.users.first()
-    user.used_holidays = max(0, user.used_holidays + diff)
+    user.adjust_holidays(diff)
     user.save()
-
-    holiday.start_date = holiday.pending_start_date
-    holiday.end_date = holiday.pending_end_date
-    holiday.reason = holiday.pending_reason
-    holiday.type = holiday.pending_type
-
-    holiday.pending_start_date = None
-    holiday.pending_end_date = None
-    holiday.pending_reason = None
-    holiday.pending_type = None
-
+    
+    holiday.apply_pending()
     holiday.status = "approved"
     holiday.save()
-
+    
     return JsonResponse({'success': True, 'id': holiday.id}, status=200)
 
 @require_http_methods(["PATCH"])
 @login_required
 @employer_required
 def decline_edit_holiday(request, request_id):
-    holiday = Holiday.objects.get(id=request_id)
-
-    holiday.pending_start_date = None
-    holiday.pending_end_date = None
-    holiday.pending_reason = None
-    holiday.pending_type = None
-
+    holiday = get_object_or_404(Holiday, id=request_id, company=request.user.company)
+    holiday.clear_pending()
     holiday.status = "approved"
     holiday.save()
-
     return JsonResponse({'success': True, 'id': holiday.id}, status=200)
 
 @require_http_methods(["PATCH"])
 @login_required
 @employer_required
 def accept_delete_holiday(request, request_id):
-    holiday = Holiday.objects.get(id=request_id)
-
+    holiday = get_object_or_404(Holiday, id=request_id, company=request.user.company)
     user = holiday.users.first()
-    if user:
-        user.used_holidays = max(0, user.used_holidays - holiday.number_of_days)
-        user.save()
-        
+    user.adjust_holidays(-holiday.number_of_days)
+    user.save()
     holiday.delete()
-    
     return JsonResponse({'success': True}, status=200)
 
 @require_http_methods(["PATCH"])
 @login_required
 @employer_required
 def decline_delete_holiday(request, request_id):
-    holiday = Holiday.objects.get(id=request_id)
+    holiday = get_object_or_404(Holiday, id=request_id, company=request.user.company)
     holiday.status = "approved"
     holiday.save()
     return JsonResponse({'success': True, 'id': holiday.id}, status=200)
@@ -351,7 +299,7 @@ def decline_delete_holiday(request, request_id):
 @login_required
 @employer_required
 def accept_holiday(request, request_id):
-    holiday = Holiday.objects.get(id=request_id)
+    holiday = get_object_or_404(Holiday, id=request_id, company=request.user.company)
     holiday.status = "approved"
     holiday.save()
     return JsonResponse({'success': True, 'id': holiday.id}, status=200)
@@ -360,8 +308,8 @@ def accept_holiday(request, request_id):
 @login_required
 @employer_required
 def decline_holiday(request, request_id):
-    holiday = Holiday.objects.get(id=request_id)
-    holiday.users.first().used_holidays -= holiday.number_of_days
+    holiday = get_object_or_404(Holiday, id=request_id, company=request.user.company)
+    holiday.users.first().adjust_holidays(-holiday.number_of_days)
     holiday.users.first().save()
     holiday.delete()
     return JsonResponse({'success': True, 'id': holiday.id}, status=200)

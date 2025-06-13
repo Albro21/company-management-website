@@ -3,15 +3,23 @@ function createTooltip(info) {
         title: `
         <div class="d-flex flex-column">
             <h5 class="text-center border-bottom py-1">${info.event.extendedProps.type}</h5>
-            <div class="row p-2">
-                <div class="col-4 d-flex flex-column text-start">
-                    Employees:<br>
-                    Reason:<br>
-                    Period:
+            <div class="row pt-3">
+                <div class="col-4 text-start">Employees:</div>
+                <div class="col-8 text-start">
+                ${info.event.extendedProps.users}
                 </div>
-                <div class="col-8 d-flex flex-column text-start justify-content-start">
-                    ${info.event.extendedProps.users}<br>
-                    ${info.event.extendedProps.reason}<br>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-4 text-start">Reason:</div>
+                <div class="col-8 text-start">
+                ${info.event.extendedProps.reason}
+                </div>
+            </div>
+            <hr>
+            <div class="row pb-3">
+                <div class="col-4 text-start">Period:</div>
+                <div class="col-8 text-start">
                     ${info.event.extendedProps.start_date} – ${info.event.extendedProps.end_date} (${info.event.extendedProps.days} days)
                 </div>
             </div>
