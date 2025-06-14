@@ -626,7 +626,7 @@
                                 <button class="btn btn-dark bg-3" onclick="previousWeek({{ project.id }})"><i class="bi bi-chevron-left"></i></button>
                                 <button class="btn btn-dark bg-3" onclick="nextWeek({{ project.id }})"><i class="bi bi-chevron-right"></i></button>
                             </div>  
-                            <a href="{% url 'teams:project_weekly_report' project.id %}" id="generate-weekly-report-button-{{ project.id }}" class="btn btn-primary w-100" target="_blank">Generate weekly report</a>                    
+                            <a href="{% url 'teams:project_weekly_report' project.id %}" id="generate-weekly-report-button-{{ project.id }}" class="btn btn-primary w-100"><i class="bi bi-file-earmark-pdf"></i> Generate PDF</a>                    
                             
                             <!-- Monthly -->
                             <h4 class="text-center">Monthly</h4>
@@ -635,7 +635,10 @@
                                 <button class="btn btn-dark bg-3" onclick="previousMonth({{ project.id }})"><i class="bi bi-chevron-left"></i></button>
                                 <button class="btn btn-dark bg-3" onclick="nextMonth({{ project.id }})"><i class="bi bi-chevron-right"></i></button>
                             </div>  
-                            <a href="{% url 'teams:project_monthly_report' project.id %}" id="generate-monthly-report-button-{{ project.id }}" class="btn btn-primary w-100" target="_blank">Generate monthly report</a>                    
+                            <div class="d-flex gap-3">
+                                <a href="{% url 'teams:project_monthly_report_pdf' project.id %}" id="generate-monthly-report-button-{{ project.id }}-pdf" class="btn btn-primary w-100"><i class="bi bi-file-earmark-pdf"></i> Generate PDF</a>                    
+                                <a href="{% url 'teams:project_monthly_report_xlsx' project.id %}" id="generate-monthly-report-button-{{ project.id }}-xlsx" class="btn btn-primary w-100"><i class="bi bi-file-earmark-spreadsheet"></i> Generate Excel</a>                    
+                            </div>
                         </div>
                     </div>
                 {% endif %}
@@ -744,5 +747,10 @@
     <script>
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    </script>
+
+    <!-- Project IDs -->
+    <script>
+        const projectIds = [{% for project in company.projects.all %}{{ project.id }}{% if not forloop.last %}, {% endif %}{% endfor %}];
     </script>
 {% endblock scripts %}

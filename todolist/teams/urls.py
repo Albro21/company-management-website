@@ -22,7 +22,8 @@ urlpatterns = [
     path('expense/<int:expense_id>/edit/', expense.edit_expense, name='edit_expense'),
     
     path('project-weekly-report/<int:project_id>/', reports.project_weekly_report, name='project_weekly_report'),
-    path('project-monthly-report/<int:project_id>/', reports.project_monthly_report, name='project_monthly_report'),
+    path('project-monthly-report-pdf/<int:project_id>/', reports.project_monthly_report_pdf, name='project_monthly_report_pdf'),
+    path('project-monthly-report-xlsx/<int:project_id>/', reports.project_monthly_report_xlsx, name='project_monthly_report_xlsx'),
     
     path('company/create/', company.create_company, name='create_company'),
     path('company/expenses/', company.expenses, name='expenses'),

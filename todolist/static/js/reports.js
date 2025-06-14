@@ -56,46 +56,91 @@ function updateWeeklyUrl(projectId, startDate) {
 }
 
 // Monthly
-let currentMonthDate = new Date();
-
-function updateMonthlyDisplay(projectId, date) {
-    const displayElement = document.getElementById('monthly-date-display-' + projectId);
-    const now = new Date();
-    const thisMonth = now.getMonth();
-    const thisYear = now.getFullYear();
-    const targetMonth = date.getMonth();
-    const targetYear = date.getFullYear();
-
-    if (targetMonth === thisMonth && targetYear === thisYear) {
-        displayElement.textContent = "This month";
-    } else {
-        displayElement.textContent = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+function getLastSundayOfMonth(date) {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const lastDay = new Date(year, month + 1, 0);
+    while (lastDay.getDay() !== 0) {
+        lastDay.setDate(lastDay.getDate() - 1);
     }
+    return lastDay;
+}
+
+function getLastMondayOfMonth(date) {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const lastDay = new Date(year, month + 1, 0);
+    while (lastDay.getDay() !== 1) {
+        lastDay.setDate(lastDay.getDate() - 1);
+    }
+    return lastDay;
+}
+
+function getCurrentPeriodStart() {
+    const now = new Date();
+    const prevMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    return getLastMondayOfMonth(prevMonthDate);
+}
+
+let currentPeriodStart = getCurrentPeriodStart();
+
+document.addEventListener('DOMContentLoaded', () => {
+    projectIds.forEach(projectId => {
+        updateMonthlyDisplay(projectId, currentPeriodStart);
+        updateMonthlyUrl(projectId, currentPeriodStart);
+    });
+});
+
+function updateMonthlyDisplay(projectId, startDate) {
+    const displayElement = document.getElementById('monthly-date-display-' + projectId);
+
+    const endDate = getLastSundayOfMonth(new Date(startDate.getFullYear(), startDate.getMonth() + 1, 1));
+
+    const options = { month: 'long', year: 'numeric' };
+    const formattedMonthYear = endDate.toLocaleDateString(undefined, options);
+
+    displayElement.textContent = formattedMonthYear;
 }
 
 function previousMonth(projectId) {
-    currentMonthDate.setMonth(currentMonthDate.getMonth() - 1);
-    updateMonthlyDisplay(projectId, currentMonthDate);
-    updateMonthlyUrl(projectId, currentMonthDate);
+    const prevMonthDate = new Date(currentPeriodStart.getFullYear(), currentPeriodStart.getMonth() - 1, 1);
+    currentPeriodStart = getLastMondayOfMonth(prevMonthDate);
+
+    updateMonthlyDisplay(projectId, currentPeriodStart);
+    updateMonthlyUrl(projectId, currentPeriodStart);
 }
 
 function nextMonth(projectId) {
+    const nextMonthDate = new Date(currentPeriodStart.getFullYear(), currentPeriodStart.getMonth() + 1, 1);
+    const proposedStart = getLastMondayOfMonth(nextMonthDate);
+
     const now = new Date();
-    const temp = new Date(currentMonthDate);
-    temp.setMonth(temp.getMonth() + 1);
-    if (temp > now) return;
-    currentMonthDate.setMonth(currentMonthDate.getMonth() + 1);
-    updateMonthlyDisplay(projectId, currentMonthDate);
-    updateMonthlyUrl(projectId, currentMonthDate);
+    if (proposedStart > now) {
+        return;
+    }
+
+    currentPeriodStart = proposedStart;
+    updateMonthlyDisplay(projectId, currentPeriodStart);
+    updateMonthlyUrl(projectId, currentPeriodStart);
 }
 
-function updateMonthlyUrl(projectId, date) {
-    const start = new Date(date.getFullYear(), date.getMonth(), 1);
-    const end = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+function updateMonthlyUrl(projectId, startDate) {
+    const endDate = getLastSundayOfMonth(new Date(startDate.getFullYear(), startDate.getMonth() + 1, 1));
+    const pdfLink = document.getElementById(`generate-monthly-report-button-${projectId}-pdf`);
+    const xlsxLink = document.getElementById(`generate-monthly-report-button-${projectId}-xlsx`);
 
-    const link = document.getElementById(`generate-monthly-report-button-${projectId}`);
-    const url = new URL(link.href);
-    url.searchParams.set('start_date', formatDate(start));
-    url.searchParams.set('end_date', formatDate(end));
-    link.href = url.toString();
+    const pdfUrl = new URL(pdfLink.href);
+    const xlsxUrl = new URL(xlsxLink.href);
+
+    pdfUrl.searchParams.set('start_date', formatDate(startDate));
+    pdfUrl.searchParams.set('end_date', formatDate(endDate));
+    pdfLink.href = pdfUrl.toString();
+
+    xlsxUrl.searchParams.set('start_date', formatDate(startDate));
+    xlsxUrl.searchParams.set('end_date', formatDate(endDate));
+    xlsxLink.href = xlsxUrl.toString();
+}
+
+function formatDate(date) {
+    return date.toISOString().split('T')[0];
 }
