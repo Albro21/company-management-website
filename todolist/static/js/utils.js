@@ -16,11 +16,6 @@ window.sendRequest = async function(url, method, requestBody = null) {
 
         const response = await fetch(url, options);
         const data = await response.json();
-
-        if (!response.ok || !data.success) {
-            console.error(`Server error | Status: ${response.status} | Message: ${data.error}`);
-        }
-
         return data;
 
     } catch (error) {

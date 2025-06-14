@@ -2,16 +2,16 @@
 import calendar
 from collections import defaultdict
 from datetime import datetime, timedelta
-import io
+import os
 import requests
-import zipfile
 
 # Django
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
-
 
 # Third-party
 import openpyxl
@@ -155,7 +155,7 @@ def project_weekly_report(request, project_id):
 
     pdf_bytes = response.content
 
-    filename = f"Weekly_Report_{project.title}_{start_of_week.strftime('%Y-%m-%d')}.pdf"
+    filename = f"Weekly_Report_{project.title}_{start_of_week.strftime('%d-%m-%Y')}.pdf"
     response = HttpResponse(pdf_bytes, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     return response
@@ -178,7 +178,7 @@ def project_monthly_report_pdf(request, project_id):
         end_of_month = today.replace(day=last_day)
 
     current = start_of_month
-    week_pdfs = []
+    file_links = []
 
     while current <= end_of_month:
         start_of_week = current
@@ -192,30 +192,25 @@ def project_monthly_report_pdf(request, project_id):
                 "html": html,
                 "format": "A3",
                 "landscape": True,
-                "filename": f"week_{start_of_week.strftime('%Y-%m-%d')}",
+                "filename": f"week_{start_of_week.strftime('%d-%m-%Y')}",
                 "printBackground": True
             }
         )
 
         if api_response.status_code != 200:
-            return HttpResponse("PDF conversion failed.", status=500)
+            return JsonResponse({'success': False, 'error': 'PDF conversion failed'}, status=500)
 
-        week_pdfs.append((
-            f"Week_{start_of_week.strftime('%Y-%m-%d')}_to_{end_of_week.strftime('%Y-%m-%d')}.pdf",
-            api_response.content
-        ))
+        filename = f"Weekly_Report_{project.title}_{start_of_week.strftime('%d-%m-%Y')}_to_{end_of_week.strftime('%d-%m-%Y')}.pdf"
+        path = os.path.join('tmp', 'reports', filename)
+
+        default_storage.save(path, ContentFile(api_response.content))
+
+        file_url = default_storage.url(path)
+        file_links.append(file_url)
 
         current += timedelta(days=7)
 
-    zip_buffer = io.BytesIO()
-    with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
-        for filename, content in week_pdfs:
-            zip_file.writestr(filename, content)
-
-    zip_buffer.seek(0)
-    response = HttpResponse(zip_buffer.read(), content_type='application/zip')
-    response['Content-Disposition'] = f'attachment; filename="Weekly_Reports_{project.title}_{start_of_month.strftime("%Y-%m")}.zip"'
-    return response
+    return JsonResponse({'success': True, 'links': file_links})
 
 @login_required
 @employer_required

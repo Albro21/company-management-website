@@ -126,15 +126,16 @@ function nextMonth(projectId) {
 
 function updateMonthlyUrl(projectId, startDate) {
     const endDate = getLastSundayOfMonth(new Date(startDate.getFullYear(), startDate.getMonth() + 1, 1));
-    const pdfLink = document.getElementById(`generate-monthly-report-button-${projectId}-pdf`);
+
+    const pdfButton = document.getElementById(`generate-monthly-report-button-${projectId}-pdf`);
     const xlsxLink = document.getElementById(`generate-monthly-report-button-${projectId}-xlsx`);
 
-    const pdfUrl = new URL(pdfLink.href);
-    const xlsxUrl = new URL(xlsxLink.href);
+    const pdfUrl = new URL(pdfButton.dataset.url, window.location.origin);
+    const xlsxUrl = new URL(xlsxLink.href, window.location.origin);
 
     pdfUrl.searchParams.set('start_date', formatDate(startDate));
     pdfUrl.searchParams.set('end_date', formatDate(endDate));
-    pdfLink.href = pdfUrl.toString();
+    pdfButton.dataset.url = pdfUrl.toString();
 
     xlsxUrl.searchParams.set('start_date', formatDate(startDate));
     xlsxUrl.searchParams.set('end_date', formatDate(endDate));
@@ -143,4 +144,24 @@ function updateMonthlyUrl(projectId, startDate) {
 
 function formatDate(date) {
     return date.toISOString().split('T')[0];
+}
+
+async function downloadMonthlyReports(button) {
+    const url = button.dataset.url;
+
+    const data = await sendRequest(url, 'GET');
+
+    if (data.success) {
+        for (const link of data.links) {
+            const a = document.createElement('a');
+            a.href = link;
+            a.download = '';
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    } else {
+        showToast(data.error || 'Something went wrong.', 'danger');
+    }
 }
