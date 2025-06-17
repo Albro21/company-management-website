@@ -1,20 +1,27 @@
 const checkboxes = document.querySelectorAll('.employee-checkbox');
 
+function updateEmployeeHighlight(checkbox) {
+    const employeeEl = checkbox.closest('.employee');
+    if (!employeeEl) return;
+
+    if (checkbox.checked) {
+        employeeEl.classList.replace('bg-2', 'bg-3');
+    } else {
+        employeeEl.classList.replace('bg-3', 'bg-2');
+    }
+}
+
 checkboxes.forEach(checkbox => {
     checkbox.addEventListener('change', function () {
-        const employeeEl = this.closest('.employee');
-        if (!employeeEl) return;
-
-        if (this.checked) {
-            employeeEl.classList.replace('bg-2', 'bg-3');
-        } else {
-            employeeEl.classList.replace('bg-3', 'bg-2');
-        }
+        updateEmployeeHighlight(this);
     });
 });
 
 document.getElementById('select-all-employees').addEventListener('change', function () {
-    checkboxes.forEach(cb => cb.checked = this.checked);
+    checkboxes.forEach(cb => {
+        cb.checked = this.checked;
+        updateEmployeeHighlight(cb);
+    });
 });
 
 document.querySelectorAll('.holiday').forEach(holidayEl => {
@@ -24,25 +31,24 @@ document.querySelectorAll('.holiday').forEach(holidayEl => {
 
     if (!offcanvasEl) return;
 
-    // When holiday clicked (offcanvas is shown)
     offcanvasEl.addEventListener('show.bs.offcanvas', () => {
         userIds.forEach(id => {
             const userCheckbox = document.querySelector(`.employee[data-id="${id}"] input[type="checkbox"]`);
             if (userCheckbox) {
                 userCheckbox.checked = true;
-                // Mark it as auto-checked so we know to uncheck it later
                 userCheckbox.dataset.autoChecked = "true";
+                updateEmployeeHighlight(userCheckbox);
             }
         });
     });
 
-    // When offcanvas closes, uncheck only those we auto-checked
     offcanvasEl.addEventListener('hidden.bs.offcanvas', () => {
         userIds.forEach(id => {
             const userCheckbox = document.querySelector(`.employee[data-id="${id}"] input[type="checkbox"]`);
             if (userCheckbox && userCheckbox.dataset.autoChecked === "true") {
                 userCheckbox.checked = false;
                 delete userCheckbox.dataset.autoChecked;
+                updateEmployeeHighlight(userCheckbox);
             }
         });
     });
