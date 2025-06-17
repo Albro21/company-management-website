@@ -56,34 +56,43 @@ function updateWeeklyUrl(projectId, startDate) {
 }
 
 // Monthly
-function getLastSundayOfMonth(date) {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const lastDay = new Date(year, month + 1, 0);
-    while (lastDay.getDay() !== 0) {
-        lastDay.setDate(lastDay.getDate() - 1);
-    }
-    return lastDay;
+// --- ISO Week Helpers ---
+function getISOWeekStart(date) {
+    const day = date.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+    const diff = (day === 0 ? -6 : 1) - day;
+    const monday = new Date(date);
+    monday.setDate(date.getDate() + diff);
+    monday.setHours(0, 0, 0, 0);
+    return monday;
 }
 
-function getLastMondayOfMonth(date) {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const lastDay = new Date(year, month + 1, 0);
-    while (lastDay.getDay() !== 1) {
-        lastDay.setDate(lastDay.getDate() - 1);
-    }
-    return lastDay;
+function getISOWeekEnd(date) {
+    const monday = getISOWeekStart(date);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    sunday.setHours(23, 59, 59, 999);
+    return sunday;
+}
+
+function getFirstISOWeekStartOfMonth(date) {
+    const firstOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+    return getISOWeekStart(firstOfMonth);
+}
+
+function getLastISOWeekEndOfMonth(date) {
+    const lastOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    return getISOWeekEnd(lastOfMonth);
 }
 
 function getCurrentPeriodStart() {
     const now = new Date();
-    const prevMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    return getLastMondayOfMonth(prevMonthDate);
+    const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    return getFirstISOWeekStartOfMonth(prevMonth);
 }
 
 let currentPeriodStart = getCurrentPeriodStart();
 
+// --- Main DOM Ready Logic ---
 document.addEventListener('DOMContentLoaded', () => {
     projectIds.forEach(projectId => {
         updateMonthlyDisplay(projectId, currentPeriodStart);
@@ -91,10 +100,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// --- Display Logic ---
 function updateMonthlyDisplay(projectId, startDate) {
     const displayElement = document.getElementById('monthly-date-display-' + projectId);
-
-    const endDate = getLastSundayOfMonth(new Date(startDate.getFullYear(), startDate.getMonth() + 1, 1));
+    const endDate = getLastISOWeekEndOfMonth(new Date(startDate.getFullYear(), startDate.getMonth() + 1, 1));
 
     const options = { month: 'long', year: 'numeric' };
     const formattedMonthYear = endDate.toLocaleDateString(undefined, options);
@@ -102,30 +111,30 @@ function updateMonthlyDisplay(projectId, startDate) {
     displayElement.textContent = formattedMonthYear;
 }
 
+// --- Navigation ---
 function previousMonth(projectId) {
-    const prevMonthDate = new Date(currentPeriodStart.getFullYear(), currentPeriodStart.getMonth() - 1, 1);
-    currentPeriodStart = getLastMondayOfMonth(prevMonthDate);
+    const prevMonth = new Date(currentPeriodStart.getFullYear(), currentPeriodStart.getMonth() - 1, 1);
+    currentPeriodStart = getFirstISOWeekStartOfMonth(prevMonth);
 
     updateMonthlyDisplay(projectId, currentPeriodStart);
     updateMonthlyUrl(projectId, currentPeriodStart);
 }
 
 function nextMonth(projectId) {
-    const nextMonthDate = new Date(currentPeriodStart.getFullYear(), currentPeriodStart.getMonth() + 1, 1);
-    const proposedStart = getLastMondayOfMonth(nextMonthDate);
+    const nextMonth = new Date(currentPeriodStart.getFullYear(), currentPeriodStart.getMonth() + 1, 1);
+    const proposedStart = getFirstISOWeekStartOfMonth(nextMonth);
 
     const now = new Date();
-    if (proposedStart > now) {
-        return;
-    }
+    if (proposedStart > now) return;
 
     currentPeriodStart = proposedStart;
     updateMonthlyDisplay(projectId, currentPeriodStart);
     updateMonthlyUrl(projectId, currentPeriodStart);
 }
 
+// --- Update Download URLs ---
 function updateMonthlyUrl(projectId, startDate) {
-    const endDate = getLastSundayOfMonth(new Date(startDate.getFullYear(), startDate.getMonth() + 1, 1));
+    const endDate = getLastISOWeekEndOfMonth(new Date(startDate.getFullYear(), startDate.getMonth() + 1, 1));
 
     const pdfButton = document.getElementById(`generate-monthly-report-button-${projectId}-pdf`);
     const xlsxLink = document.getElementById(`generate-monthly-report-button-${projectId}-xlsx`);
@@ -142,13 +151,14 @@ function updateMonthlyUrl(projectId, startDate) {
     xlsxLink.href = xlsxUrl.toString();
 }
 
+// --- Formatting Helper ---
 function formatDate(date) {
     return date.toISOString().split('T')[0];
 }
 
+// --- Async Report Downloader ---
 async function downloadMonthlyReports(button) {
     const url = button.dataset.url;
-
     const data = await sendRequest(url, 'GET');
 
     if (data.success) {
@@ -165,3 +175,4 @@ async function downloadMonthlyReports(button) {
         showToast(data.error || 'Something went wrong.', 'danger');
     }
 }
+

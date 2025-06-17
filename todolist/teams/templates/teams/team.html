@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Team{% endblock title %}
+{% block title %}Company{% endblock title %}
 
 {% block styles %}
     <link rel="stylesheet" href="{% static 'css/teams.css' %}">
@@ -251,485 +251,541 @@
         </div>
     </div>
 
-    <!-- Employees header -->
-    <h3 class="mb-2 d-flex align-items-center justify-content-center">
-        Employees
-        
-        {% if user.is_employer %}
-            <!-- Employee Invitation Button -->
-            <button class="ms-3 btn btn-primary rounded-3 shadow-lg d-flex justify-content-center align-items-center"
-                style="width: 30px; height: 30px;"
-                data-bs-toggle="modal" 
-                data-bs-target="#inviteEmployeeModal">
-                <i class="bi bi-plus-lg" style="font-size: 20px; font-weight: bold;"></i>
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+
+            <button 
+                class="nav-link active" 
+                id="nav-employees-tab" 
+                data-bs-toggle="tab" 
+                data-bs-target="#nav-employees" 
+                type="button" 
+                role="tab" 
+                aria-controls="nav-employees" 
+                aria-selected="true">
+                Employees
             </button>
-        {% endif %}
-    </h3>
 
-    <!-- Modal -->
-    <div class="modal fade" id="inviteEmployeeModal" tabindex="-1" aria-labelledby="inviteEmployeeLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content bg-1">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="inviteEmployeeLabel">Invite an Employee</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form action="{% url 'teams:invite_employee' %}" method="POST">
-                    {% csrf_token %}
-                    <div class="modal-body d-flex flex-column">
-                        <input type="email" name="email" id="id_email" class="form-control mb-3" placeholder="Employee email" required>
-                        <button type="submit" class="btn btn-primary">Send Invitation</button>
-                    </div>
-                </form>
-            </div>
+            <button 
+                class="nav-link" 
+                id="nav-projects-tab" 
+                data-bs-toggle="tab" 
+                data-bs-target="#nav-projects" 
+                type="button" 
+                role="tab" 
+                aria-controls="nav-projects" 
+                aria-selected="false">
+                Projects
+            </button>
+
+            <button 
+                class="nav-link" 
+                id="nav-analytics-tab" 
+                data-bs-toggle="tab" 
+                data-bs-target="#nav-analytics" 
+                type="button" 
+                role="tab" 
+                aria-controls="nav-analytics" 
+                aria-selected="false">
+                Analytics
+            </button>
+
         </div>
-    </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
 
-    <!-- Employees list -->
-	<div class="d-flex flex-column align-items-center mb-4">
-        <div class="row py-2 w-100">
-            <div class="col">Name Surname</div>
-            <div class="col text-center">Email</div>
-            <div class="col text-center">Job Title</div>
-            {% if user.is_employer %}
-                <div class="col text-center">Billable Rate</div>
-            {% endif %}
-            <div class="col text-center">Actions</div>
-        </div>
-        {% for employee in company.employees.all %}
-            <div class="row py-2 w-100 list-item bg-2">
-                <div class="col">
-                    <i class="bi {% if employee.is_online %}bi-circle-fill{% else %}bi-circle{% endif %} me-2" {% if employee.is_online %}style="color: green;"{% endif %}></i>
-                    {{ employee.get_full_name }} {% if employee == user %}(You){% endif %}
-                </div>
+        <!-- Employees Tab -->
+        <div class="tab-pane show active fade pt-4" id="nav-employees" role="tabpanel" aria-labelledby="nav-employees-tab" tabindex="0">
 
-                <div class="col text-center">
-                    {{ employee.work_email|default_if_none:"" }}
-                </div>
-
-                <div class="col text-center">
-                    {{ employee.job_title|default_if_none:"" }}
-                </div>
-
+            <!-- Employees header -->
+            <h3 class="mb-2 d-flex align-items-center justify-content-center">
+                Employees
+                
                 {% if user.is_employer %}
-                    <div class="col text-center">{{ employee.rate }}</div>
+                    <!-- Employee Invitation Button -->
+                    <button class="ms-3 btn btn-primary rounded-3 shadow-lg d-flex justify-content-center align-items-center"
+                        style="width: 30px; height: 30px;"
+                        data-bs-toggle="modal" 
+                        data-bs-target="#inviteEmployeeModal">
+                        <i class="bi bi-plus-lg" style="font-size: 20px; font-weight: bold;"></i>
+                    </button>
                 {% endif %}
+            </h3>
 
-                <div class="col d-flex justify-content-center gap-3 action-icons">
-                    {% if user.is_employer or employee == user %}
-                        <!-- employee Details -->
-                        <a href="{% url 'teams:employee_detail' employee.id %}?tab=information">
-                            <i class="bi-info-circle" data-bs-toggle="tooltip" title="View employee Details"></i>
-                        </a>
+            <!-- Invite Employee Modal -->
+            <div class="modal fade" id="inviteEmployeeModal" tabindex="-1" aria-labelledby="inviteEmployeeLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content bg-1">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="inviteEmployeeLabel">Invite an Employee</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="{% url 'teams:invite_employee' %}" method="POST">
+                            {% csrf_token %}
+                            <div class="modal-body d-flex flex-column">
+                                <input type="email" name="email" id="id_email" class="form-control mb-3" placeholder="Employee email" required autocomplete="off">
+                                <button type="submit" class="btn btn-primary">Send Invitation</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employees list -->
+            <div class="d-flex flex-column align-items-center mb-4">
+                <div class="row py-2 w-100">
+                    <div class="col">Name Surname</div>
+                    <div class="col text-center">Email</div>
+                    <div class="col text-center">Job Title</div>
+                    {% if user.is_employer %}
+                        <div class="col text-center">Billable Rate</div>
                     {% endif %}
+                    <div class="col text-center">Actions</div>
+                </div>
+                {% for employee in company.employees.all %}
+                    <div class="row py-2 w-100 list-item bg-2">
+                        <div class="col">
+                            <i class="bi {% if employee.is_online %}bi-circle-fill{% else %}bi-circle{% endif %} me-2" {% if employee.is_online %}style="color: green;"{% endif %}></i>
+                            {{ employee.get_full_name }} {% if employee == user %}(You){% endif %}
+                        </div>
+
+                        <div class="col text-center">
+                            {{ employee.work_email|default_if_none:"" }}
+                        </div>
+
+                        <div class="col text-center">
+                            {{ employee.job_title|default_if_none:"" }}
+                        </div>
+
+                        {% if user.is_employer %}
+                            <div class="col text-center">{{ employee.rate }}</div>
+                        {% endif %}
+
+                        <div class="col d-flex justify-content-center gap-3 action-icons">
+                            {% if user.is_employer or employee == user %}
+                                <!-- employee Details -->
+                                <a href="{% url 'teams:employee_detail' employee.id %}?tab=information">
+                                    <i class="bi-info-circle" data-bs-toggle="tooltip" title="View employee Details"></i>
+                                </a>
+                            {% endif %}
+                            
+                            {% if user.is_employer %}
+                                <!-- Assign Task -->
+                                <a data-bs-toggle="offcanvas" data-bs-target="#assign-task-{{ employee.id }}">
+                                    <i class="bi bi-plus-square" data-bs-toggle="tooltip" title="Assign Task"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
                     
                     {% if user.is_employer %}
-                        <!-- Assign Task -->
-                        <a data-bs-toggle="offcanvas" data-bs-target="#assign-task-{{ employee.id }}">
-                            <i class="bi bi-plus-square" data-bs-toggle="tooltip" title="Assign Task"></i>
-                        </a>
+                        <!-- Assign Task Offcanvas -->
+                        <div class="offcanvas offcanvas-end" tabindex="-1" id="assign-task-{{ employee.id }}">
+                            <div class="offcanvas-header">
+                                <h5 class="offcanvas-title" id="offcanvasRightLabel">Assign task to: {{ user.get_full_name }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                            </div>
+                            <div class="offcanvas-body">
+                                <form method="post" class="d-flex flex-column gap-2 assign-task-form" data-employee-id="{{ employee.id }}">
+                                    {% csrf_token %}
+                                    
+                                    <!-- Title -->
+                                    <div class="d-flex flex-column align-items-center">
+                                        <label for="id_title">Title</label>
+                                        <input type="text" name="title" id="id_title" class="form-control" placeholder="Title" required maxlength="200">
+                                    </div>
+
+                                    <!-- Description -->
+                                    <div class="d-flex flex-column align-items-center">
+                                        <label for="id_text">Description</label>
+                                        <textarea name="text" id="id_text" class="form-control no-scrollbar" placeholder="Description" rows="5"></textarea>
+                                    </div>
+                                    
+                                    <!-- Project -->
+                                    <div class="d-flex flex-column align-items-center">
+                                        <label for="id_project">Project</label>
+                                        <select class="form-select" id="id_project" name="project" required>
+                                            <option value="" selected>Select a project</option>
+                                            {% for project in user.company_projects.all %}
+                                                <option value="{{ project.id }}">
+                                                    {{ project.title }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <!-- Due Date -->
+                                    <div class="d-flex flex-column align-items-center">
+                                        <label for="id_due_date">Due Date</label>
+                                        <input type="date" class="form-control" name="due_date" id="id_due_date" required>
+                                    </div>
+
+                                    <!-- High Priority checkbox -->
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <input 
+                                            class="form-check-input" 
+                                            type="checkbox"
+                                            name="is_high_priority" 
+                                            id="id_is_high_priority" 
+                                        >	
+                                        <label class="form-check-label d-flex" for="id_is_high_priority" style="white-space: nowrap;">
+                                            High Priority
+                                        </label>
+                                    </div>
+
+                                    <!-- Submit Button -->
+                                    <button type="submit" class="btn btn-primary px-3">Save</button>
+                                </form>                                
+                            </div>
+                        </div>
                     {% endif %}
-                </div>
+                {% endfor %}
+                
+                {% for invitation in company.invitations.all %}
+                    <div class="row py-2 w-100 list-item bg-2">
+                        <div class="col text-muted">
+                            <i class="bi bi-circle-fill me-2" style="color: orange;"></i>
+                            (pending invitation)
+                        </div>
+
+                        <div class="col text-center">
+                            {{ invitation.email }}
+                        </div>
+
+                        <div class="col text-center">—</div>
+
+                        {% if user.is_employer %}
+                            <div class="col text-center">—</div>
+                        {% endif %}
+
+                        <div class="col d-flex justify-content-center gap-3 action-icons">
+                            {% if user.is_employer %}
+                                <!-- Delete Invitation -->
+                                <a data-bs-toggle="modal" data-bs-target="#delete-invitation-{{ invitation.id }}">
+                                    <i class="bi bi-x-lg" data-bs-toggle="tooltip" title="Delete Invitation"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if user.is_employer %}
+                        <!-- Delete Invitation Modal -->
+                            <div class="modal fade" id="delete-invitation-{{ invitation.id }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content bg-1">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure you want to delete the invitation for {{ invitation.email }}?</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="button" class="btn btn-danger" onclick="deleteInvitation({{ invitation.id }})">Delete</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    {% endif %}
+                {% endfor %}
+                    
             </div>
-            
+        </div>
+
+        <!-- Projects Tab -->
+        <div class="tab-pane fade pt-4" id="nav-projects" role="tabpanel" aria-labelledby="nav-projects-tab" tabindex="0">
+
+            <!-- Project header -->
+            <h3 class="mb-2 d-flex align-items-center justify-content-center">
+                Projects
+                
+                {% if user.is_employer %}
+                    <!-- Project Creation Button -->
+                    <button class="ms-3 btn btn-primary rounded-3 shadow-lg d-flex justify-content-center align-items-center"
+                        style="width: 30px; height: 30px;"
+                        data-bs-toggle="offcanvas" 
+                        data-bs-target="#projectCreationOffcanvas">
+                        <i class="bi bi-plus-lg" style="font-size: 20px; font-weight: bold;"></i>
+                    </button>
+                {% endif %}
+            </h3>
+
             {% if user.is_employer %}
-                <!-- Assign Task Offcanvas -->
-                <div class="offcanvas offcanvas-end" tabindex="-1" id="assign-task-{{ employee.id }}">
+                <!-- Project Creation Offcanvas -->
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="projectCreationOffcanvas">
                     <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="offcanvasRightLabel">Assign task to: {{ user.get_full_name }}</h5>
+                        <h4 class="offcanvas-title text-center">Create Project</h4>
                         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                     </div>
                     <div class="offcanvas-body">
-                        <form method="post" class="d-flex flex-column gap-2 assign-task-form" data-employee-id="{{ employee.id }}">
+                        <form method="post" class="d-flex flex-column gap-2" id="create-project-form">
                             {% csrf_token %}
-                            
                             <!-- Title -->
-                            <div class="d-flex flex-column align-items-center">
-                                <label for="id_title">Title</label>
-                                <input type="text" name="title" id="id_title" class="form-control" placeholder="Title" required maxlength="200">
-                            </div>
+                            <input type="text" name="title" class="form-control" placeholder="Project title" required maxlength="50" value="{{ project.title|default_if_none:'' }}">
+
+                            <!-- Client -->
+                            <input type="text" name="client" class="form-control" placeholder="Client" maxlength="50" value="{{ project.client|default_if_none:'' }}">
 
                             <!-- Description -->
-                            <div class="d-flex flex-column align-items-center">
-                                <label for="id_text">Description</label>
-                                <textarea name="text" id="id_text" class="form-control no-scrollbar" placeholder="Description" rows="5"></textarea>
-                            </div>
-                            
-                            <!-- Project -->
-                            <div class="d-flex flex-column align-items-center">
-                                <label for="id_project">Project</label>
-                                <select class="form-select" id="id_project" name="project" required>
-                                    <option value="" selected>Select a project</option>
-                                    {% for project in user.company_projects.all %}
-                                        <option value="{{ project.id }}">
-                                            {{ project.title }}
-                                        </option>
-                                    {% endfor %}
+                            <textarea name="description" class="form-control" rows="4" placeholder="Project description">{{ project.description|default_if_none:"" }}</textarea>
+
+                            <!-- Status -->
+                            <div class="d-flex align-items-center gap-2">
+                                <label for="id_status">Status: </label>
+                                <select class="form-select" name="status" id="id_status">
+                                    <option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
+                                    <option value="archived" {% if project.status == 'archived' %}selected{% endif %}>Archived</option>
+                                    <option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
                                 </select>
                             </div>
 
-                            <!-- Due Date -->
-                            <div class="d-flex flex-column align-items-center">
-                                <label for="id_due_date">Due Date</label>
-                                <input type="date" class="form-control" name="due_date" id="id_due_date" required>
+                            <!-- Color -->
+                            <div class="d-flex align-items-center gap-2">
+                                <label for="id_color">Color:</label>
+                                <input type="color" name="color" id="id_color" class="form-control form-control-color w-100" value="{{ project.color|default:'#FFFF00' }}">
                             </div>
 
-                            <!-- High Priority checkbox -->
-                            <div class="d-flex justify-content-center gap-2">
-                                <input 
-                                    class="form-check-input" 
-                                    type="checkbox"
-                                    name="is_high_priority" 
-                                    id="id_is_high_priority" 
-                                >	
-                                <label class="form-check-label d-flex" for="id_is_high_priority" style="white-space: nowrap;">
-                                    High Priority
-                                </label>
-                            </div>
+                            <!-- Company -->
+                            <input type="hidden" name="company" value="{{ company.id }}">
 
                             <!-- Submit Button -->
-                            <button type="submit" class="btn btn-primary px-3">Save</button>
-                        </form>                                
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </form>                                 
                     </div>
                 </div>
             {% endif %}
-        {% endfor %}
-        
-        {% for invitation in company.invitations.all %}
-            <div class="row py-2 w-100 list-item bg-2">
-                <div class="col text-muted">
-                    <i class="bi bi-circle-fill me-2" style="color: orange;"></i>
-                    (pending invitation)
-                </div>
 
-                <div class="col text-center">
-                    {{ invitation.email }}
-                </div>
-
-                <div class="col text-center">—</div>
-
-                {% if user.is_employer %}
-                    <div class="col text-center">—</div>
-                {% endif %}
-
-                <div class="col d-flex justify-content-center gap-3 action-icons">
-                    {% if user.is_employer %}
-                        <!-- Delete Invitation -->
-                        <a data-bs-toggle="modal" data-bs-target="#delete-invitation-{{ invitation.id }}">
-                            <i class="bi bi-x-lg" data-bs-toggle="tooltip" title="Delete Invitation"></i>
-                        </a>
-                    {% endif %}
-                </div>
-            </div>
-
-            {% if user.is_employer %}
-                <!-- Delete Invitation Modal -->
-                    <div class="modal fade" id="delete-invitation-{{ invitation.id }}" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content bg-1">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure you want to delete the invitation for {{ invitation.email }}?</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="button" class="btn btn-danger" onclick="deleteInvitation({{ invitation.id }})">Delete</button>
-                                </div>
-                            </div>
+            <!-- Projects -->
+            <div class="d-flex flex-column align-items-center mb-5" id="projects">
+                {% if company.projects.count == 0 %}
+                    <h5 class="text-center p-3">No projects yet</h5>
+                {% else %}
+                    <!-- Table Header -->
+                    <div class="p-0 w-100 d-flex">
+                        <div style="width: 5px;"></div>
+                        <div class="row p-2 w-100 flex-grow-1">
+                            <div class="col">Project Name</div>
+                            <div class="col text-center">Client</div>
+                            <div class="col text-center">Status</div>
+                            <div class="col text-center">Tracked</div>
+                            {% if user.is_employer %}
+                                <div class="col text-center">Actions</div>
+                            {% endif %}
                         </div>
                     </div>
-            {% endif %}
-        {% endfor %}
-            
-	</div>
+                    {% for project in company.projects.all %}
+                        <div class="list-item d-flex w-100 bg-2" id="project-{{ project.id }}">
+                            <!-- Project Color -->
+                            <div style="width: 5px; background-color: {{ project.color }}"></div>
 
-    <!-- Project header -->
-    <h3 class="mb-2 d-flex align-items-center justify-content-center">
-        Projects
-        
-        {% if user.is_employer %}
-            <!-- Project Creation Button -->
-            <button class="ms-3 btn btn-primary rounded-3 shadow-lg d-flex justify-content-center align-items-center"
-                style="width: 30px; height: 30px;"
-                data-bs-toggle="offcanvas" 
-                data-bs-target="#projectCreationOffcanvas">
-                <i class="bi bi-plus-lg" style="font-size: 20px; font-weight: bold;"></i>
-            </button>
-        {% endif %}
-    </h3>
+                            <div class="row p-2 w-100 flex-grow-1">
+                                <div class="col">{{ project.title }}</div>
+                                <div class="col text-center">{% if project.client %}{{ project.client }}{% else %}N/A{% endif %}</div>
+                                <div class="col text-center">{{ project.get_status_display }}</div>
+                                <div class="col text-center">{{ project.total_tracked_time }}</div>
+                                {% if user.is_employer %}
+                                    <!-- Action icons -->
+                                    <div class="col d-flex gap-3 action-icons justify-content-center">
 
-    {% if user.is_employer %}
-        <!-- Project Creation Offcanvas -->
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="projectCreationOffcanvas">
-            <div class="offcanvas-header">
-                <h4 class="offcanvas-title text-center">Create Project</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body">
-                <form method="post" class="d-flex flex-column gap-2" id="create-project-form">
-                    {% csrf_token %}
-                    <!-- Title -->
-                    <input type="text" name="title" class="form-control" placeholder="Project title" required maxlength="50" value="{{ project.title|default_if_none:'' }}">
-
-                    <!-- Client -->
-                    <input type="text" name="client" class="form-control" placeholder="Client" maxlength="50" value="{{ project.client|default_if_none:'' }}">
-
-                    <!-- Description -->
-                    <textarea name="description" class="form-control" rows="4" placeholder="Project description">{{ project.description|default_if_none:"" }}</textarea>
-
-                    <!-- Status -->
-                    <div class="d-flex align-items-center gap-2">
-                        <label for="id_status">Status: </label>
-                        <select class="form-select" name="status" id="id_status">
-                            <option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
-                            <option value="archived" {% if project.status == 'archived' %}selected{% endif %}>Archived</option>
-                            <option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
-                        </select>
-                    </div>
-
-                    <!-- Color -->
-                    <div class="d-flex align-items-center gap-2">
-                        <label for="id_color">Color:</label>
-                        <input type="color" name="color" id="id_color" class="form-control form-control-color w-100" value="{{ project.color|default:'#FFFF00' }}">
-                    </div>
-
-                    <!-- Company -->
-                    <input type="hidden" name="company" value="{{ company.id }}">
-
-                    <!-- Submit Button -->
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </form>                                 
-            </div>
-        </div>
-    {% endif %}
-
-    <!-- Projects -->
-    <div class="d-flex flex-column align-items-center mb-5" id="projects">
-        {% if company.projects.count == 0 %}
-            <h5 class="text-center p-3">No projects yet</h5>
-        {% else %}
-            <!-- Table Header -->
-            <div class="p-0 w-100 d-flex">
-                <div style="width: 5px;"></div>
-                <div class="row p-2 w-100 flex-grow-1">
-                    <div class="col">Project Name</div>
-                    <div class="col text-center">Client</div>
-                    <div class="col text-center">Status</div>
-                    <div class="col text-center">Tracked</div>
-                    {% if user.is_employer %}
-                        <div class="col text-center">Actions</div>
-                    {% endif %}
-                </div>
-            </div>
-            {% for project in company.projects.all %}
-                <div class="list-item d-flex w-100 bg-2" id="project-{{ project.id }}">
-                    <!-- Project Color -->
-                    <div style="width: 5px; background-color: {{ project.color }}"></div>
-
-                    <div class="row p-2 w-100 flex-grow-1">
-                        <div class="col">{{ project.title }}</div>
-                        <div class="col text-center">{% if project.client %}{{ project.client }}{% else %}N/A{% endif %}</div>
-                        <div class="col text-center">{{ project.get_status_display }}</div>
-                        <div class="col text-center">{{ project.total_tracked_time }}</div>
+                                        <!-- Edit Project Button -->
+                                        <a data-bs-toggle="offcanvas" data-bs-target="#edit-project-{{ project.id }}">
+                                            <i class="bi bi-pencil" data-bs-toggle="tooltip" title="Edit"></i>
+                                        </a>
+                                        
+                                        <!-- Delete Project Button -->
+                                        <a data-bs-toggle="modal" data-bs-target="#delete-project-modal-{{ project.id }}">
+                                            <i class="bi bi-trash" data-bs-toggle="tooltip" title="Delete"></i>
+                                        </a>
+                                        
+                                        <!-- View Project Analytics Button -->
+                                        <a data-bs-toggle="offcanvas" data-bs-target="#generate-report-{{ project.id }}">
+                                            <i class="bi bi-file-earmark-bar-graph" data-bs-toggle="tooltip" title="Generate Report"></i>
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
                         {% if user.is_employer %}
-                            <!-- Action icons -->
-                            <div class="col d-flex gap-3 action-icons justify-content-center">
+                            <!-- Delete Project Modal -->
+                            <div class="modal fade" id="delete-project-modal-{{ project.id }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content bg-1">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure you want to delete {{ project.title }} project?</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="button" class="btn btn-danger" onclick="deleteProject({{ project.id }})">Delete</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Edit Project Offcanvas -->
+                            <div class="offcanvas offcanvas-end" tabindex="-1" id="edit-project-{{ project.id }}">
+                                <div class="offcanvas-header">
+                                    <h5 class="offcanvas-title" id="offcanvasRightLabel">Edit Project: {{ project.title }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                                </div>
+                                <div class="offcanvas-body">
+                                    <form method="post" class="d-flex flex-column gap-2 edit-project-form" data-id="{{ project.id }}">
+                                        {% csrf_token %}
+                                        <!-- Title -->
+                                        <input type="text" name="title" class="form-control" placeholder="Project title" required maxlength="50" value="{{ project.title|default_if_none:'' }}">
 
-                                <!-- Edit Project Button -->
-                                <a data-bs-toggle="offcanvas" data-bs-target="#edit-project-{{ project.id }}">
-                                    <i class="bi bi-pencil" data-bs-toggle="tooltip" title="Edit"></i>
-                                </a>
-                                
-                                <!-- Delete Project Button -->
-                                <a data-bs-toggle="modal" data-bs-target="#delete-project-modal-{{ project.id }}">
-                                    <i class="bi bi-trash" data-bs-toggle="tooltip" title="Delete"></i>
-                                </a>
-                                
-                                <!-- View Project Analytics Button -->
-                                <a data-bs-toggle="offcanvas" data-bs-target="#generate-report-{{ project.id }}">
-                                    <i class="bi bi-file-earmark-bar-graph" data-bs-toggle="tooltip" title="Generate Report"></i>
-                                </a>
+                                        <!-- Client -->
+                                        <input type="text" name="client" class="form-control" placeholder="Client" maxlength="50" value="{{ project.client|default_if_none:'' }}">
+
+                                        <!-- Description -->
+                                        <textarea name="description" class="form-control" rows="4" placeholder="Project description">{{ project.description|default_if_none:"" }}</textarea>
+
+                                        <!-- Status -->
+                                        <div class="d-flex align-items-center gap-2">
+                                            <label for="id_status">Status: </label>
+                                            <select class="form-select" name="status" id="id_status">
+                                                <option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
+                                                <option value="archived" {% if project.status == 'archived' %}selected{% endif %}>Archived</option>
+                                                <option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Color -->
+                                        <div class="d-flex align-items-center gap-2">
+                                            <label for="id_color">Color:</label>
+                                            <input type="color" name="color" id="id_color" class="form-control form-control-color w-100" value="{{ project.color|default:'#FFFF00' }}">
+                                        </div>
+
+                                        <!-- Submit Button -->
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </form>                                
+                                </div>
+                            </div>
+
+                            <!-- Generate Report Offcanvas -->
+                            <div class="offcanvas offcanvas-end" tabindex="-1" id="generate-report-{{ project.id }}">
+                                <div class="offcanvas-header ">
+                                    <h5 class="offcanvas-title" id="offcanvasRightLabel">Generate report for {{ project.title }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                                </div>
+                                <div class="offcanvas-body d-flex flex-column gap-3">
+                                    
+                                    <!-- Weekly -->
+                                    <h4 class="text-center">Weekly</h4>
+                                    <div class="btn-group w-100">
+                                        <button class="btn btn-dark w-100 bg-3" id="weekly-date-display-{{ project.id }}">This week</button>
+                                        <button class="btn btn-dark bg-3" onclick="previousWeek({{ project.id }})"><i class="bi bi-chevron-left"></i></button>
+                                        <button class="btn btn-dark bg-3" onclick="nextWeek({{ project.id }})"><i class="bi bi-chevron-right"></i></button>
+                                    </div>  
+                                    <a href="{% url 'teams:project_weekly_report' project.id %}" id="generate-weekly-report-button-{{ project.id }}" class="btn btn-primary w-100"><i class="bi bi-file-earmark-pdf"></i> Generate PDF</a>                    
+                                    
+                                    <!-- Monthly -->
+                                    <h4 class="text-center">Monthly</h4>
+                                    <div class="btn-group w-100">
+                                        <button class="btn btn-dark w-100 bg-3" id="monthly-date-display-{{ project.id }}">This month</button>
+                                        <button class="btn btn-dark bg-3" onclick="previousMonth({{ project.id }})"><i class="bi bi-chevron-left"></i></button>
+                                        <button class="btn btn-dark bg-3" onclick="nextMonth({{ project.id }})"><i class="bi bi-chevron-right"></i></button>
+                                    </div>  
+                                    <div class="d-flex gap-3">
+                                        <button id="generate-monthly-report-button-{{ project.id }}-pdf" class="btn btn-primary w-100" data-url="{% url 'teams:project_monthly_report_pdf' project.id %}" onclick="downloadMonthlyReports(this)"><i class="bi bi-file-earmark-pdf"></i> Generate PDF</button>                    
+                                        <a href="{% url 'teams:project_monthly_report_xlsx' project.id %}" id="generate-monthly-report-button-{{ project.id }}-xlsx" class="btn btn-primary w-100"><i class="bi bi-file-earmark-spreadsheet"></i> Generate Excel</a>                    
+                                    </div>
+                                </div>
                             </div>
                         {% endif %}
-                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div class="tab-pane fade pt-4" id="nav-analytics" role="tabpanel" aria-labelledby="nav-analytics-tab" tabindex="0">
+
+            <!-- Charts -->
+            <div class="d-flex flex-column gap-3">
+                <!-- Time range selection -->
+                <div class="btn-group btn-group-sm" role="group" aria-label="Time range selection">
+            
+                    <!-- This week -->
+                    <input type="radio" class="btn-check" name="timeRange" id="week" autocomplete="off" checked>
+                    <label 
+                        class="
+                        btn
+                        {% if user.theme == 'dark' %}
+                            btn-outline-light
+                        {% else %}
+                            btn-outline-dark
+                        {% endif %}"
+                        for="week">
+                    This week</label>
+            
+                    <!-- Last week -->
+                    <input type="radio" class="btn-check" name="timeRange" id="lastWeek" autocomplete="off">
+                    <label 
+                        class="
+                        btn
+                        {% if user.theme == 'dark' %}
+                            btn-outline-light
+                        {% else %}
+                            btn-outline-dark
+                        {% endif %}"
+                        for="lastWeek"
+                    >Last week</label>
+            
+                    <!-- This month -->
+                    <input type="radio" class="btn-check" name="timeRange" id="month" autocomplete="off">
+                    <label 
+                        class="
+                        btn
+                        {% if user.theme == 'dark' %}
+                            btn-outline-light
+                        {% else %}
+                            btn-outline-dark
+                        {% endif %}"
+                        for="month"
+                    >This month</label>
+            
+                    <!-- Last month -->
+                    <input type="radio" class="btn-check" name="timeRange" id="lastMonth" autocomplete="off">
+                    <label 
+                        class="
+                        btn
+                        {% if user.theme == 'dark' %}
+                            btn-outline-light
+                        {% else %}
+                            btn-outline-dark
+                        {% endif %}"
+                        for="lastMonth"
+                    >Last month</label>
+            
+                    <!-- All time -->
+                    <input type="radio" class="btn-check" name="timeRange" id="allTime" autocomplete="off">
+                    <label 
+                        class="
+                        btn
+                        {% if user.theme == 'dark' %}
+                            btn-outline-light
+                        {% else %}
+                            btn-outline-dark
+                        {% endif %}"
+                        for="allTime"
+                    >All time</label>
                 </div>
                 
-                {% if user.is_employer %}
-                    <!-- Delete Project Modal -->
-                    <div class="modal fade" id="delete-project-modal-{{ project.id }}" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content bg-1">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure you want to delete {{ project.title }} project?</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="button" class="btn btn-danger" onclick="deleteProject({{ project.id }})">Delete</button>
-                                </div>
-                            </div>
+                <div class="d-flex" style="height: 350px;">
+
+                    <!-- Donut time chart -->
+                    <div class="d-flex flex-column justify-content-between align-items-center" style="height: 350px; width: 350px;">
+                        <div style="height: 310px; width: 310px;">
+                            <canvas id="companyDonutChart"></canvas>
                         </div>
+                        <h4 class="text-center" id="totalTime"></h4>
                     </div>
                     
-                    <!-- Edit Project Offcanvas -->
-                    <div class="offcanvas offcanvas-end" tabindex="-1" id="edit-project-{{ project.id }}">
-                        <div class="offcanvas-header">
-                            <h5 class="offcanvas-title" id="offcanvasRightLabel">Edit Project: {{ project.title }}</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                        </div>
-                        <div class="offcanvas-body">
-                            <form method="post" class="d-flex flex-column gap-2 edit-project-form" data-id="{{ project.id }}">
-                                {% csrf_token %}
-                                <!-- Title -->
-                                <input type="text" name="title" class="form-control" placeholder="Project title" required maxlength="50" value="{{ project.title|default_if_none:'' }}">
-
-                                <!-- Client -->
-                                <input type="text" name="client" class="form-control" placeholder="Client" maxlength="50" value="{{ project.client|default_if_none:'' }}">
-
-                                <!-- Description -->
-                                <textarea name="description" class="form-control" rows="4" placeholder="Project description">{{ project.description|default_if_none:"" }}</textarea>
-
-                                <!-- Status -->
-                                <div class="d-flex align-items-center gap-2">
-                                    <label for="id_status">Status: </label>
-                                    <select class="form-select" name="status" id="id_status">
-                                        <option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
-                                        <option value="archived" {% if project.status == 'archived' %}selected{% endif %}>Archived</option>
-                                        <option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
-                                    </select>
-                                </div>
-
-                                <!-- Color -->
-                                <div class="d-flex align-items-center gap-2">
-                                    <label for="id_color">Color:</label>
-                                    <input type="color" name="color" id="id_color" class="form-control form-control-color w-100" value="{{ project.color|default:'#FFFF00' }}">
-                                </div>
-
-                                <!-- Submit Button -->
-                                <button type="submit" class="btn btn-primary">Save</button>
-                            </form>                                
-                        </div>
+                    <!-- Bar time chart -->
+                    <div class="flex-grow-1">
+                        <canvas id="companyStackedBarChart"></canvas>
                     </div>
-
-                    <!-- Generate Report Offcanvas -->
-                    <div class="offcanvas offcanvas-end" tabindex="-1" id="generate-report-{{ project.id }}">
-                        <div class="offcanvas-header ">
-                            <h5 class="offcanvas-title" id="offcanvasRightLabel">Generate report for {{ project.title }}</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                        </div>
-                        <div class="offcanvas-body d-flex flex-column gap-3">
-                            
-                            <!-- Weekly -->
-                            <h4 class="text-center">Weekly</h4>
-                            <div class="btn-group w-100">
-                                <button class="btn btn-dark w-100 bg-3" id="weekly-date-display-{{ project.id }}">This week</button>
-                                <button class="btn btn-dark bg-3" onclick="previousWeek({{ project.id }})"><i class="bi bi-chevron-left"></i></button>
-                                <button class="btn btn-dark bg-3" onclick="nextWeek({{ project.id }})"><i class="bi bi-chevron-right"></i></button>
-                            </div>  
-                            <a href="{% url 'teams:project_weekly_report' project.id %}" id="generate-weekly-report-button-{{ project.id }}" class="btn btn-primary w-100"><i class="bi bi-file-earmark-pdf"></i> Generate PDF</a>                    
-                            
-                            <!-- Monthly -->
-                            <h4 class="text-center">Monthly</h4>
-                            <div class="btn-group w-100">
-                                <button class="btn btn-dark w-100 bg-3" id="monthly-date-display-{{ project.id }}">This month</button>
-                                <button class="btn btn-dark bg-3" onclick="previousMonth({{ project.id }})"><i class="bi bi-chevron-left"></i></button>
-                                <button class="btn btn-dark bg-3" onclick="nextMonth({{ project.id }})"><i class="bi bi-chevron-right"></i></button>
-                            </div>  
-                            <div class="d-flex gap-3">
-                                <button id="generate-monthly-report-button-{{ project.id }}-pdf" class="btn btn-primary w-100" data-url="{% url 'teams:project_monthly_report_pdf' project.id %}" onclick="downloadMonthlyReports(this)"><i class="bi bi-file-earmark-pdf"></i> Generate PDF</button>                    
-                                <a href="{% url 'teams:project_monthly_report_xlsx' project.id %}" id="generate-monthly-report-button-{{ project.id }}-xlsx" class="btn btn-primary w-100"><i class="bi bi-file-earmark-spreadsheet"></i> Generate Excel</a>                    
-                            </div>
-                        </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-    </div>
-
-    <!-- Charts -->
-    <div class="d-flex flex-column gap-3">
-        <!-- Time range selection -->
-        <div class="btn-group btn-group-sm" role="group" aria-label="Time range selection">
-    
-            <!-- This week -->
-            <input type="radio" class="btn-check" name="timeRange" id="week" autocomplete="off" checked>
-            <label 
-                class="
-                btn
-                {% if user.theme == 'dark' %}
-                    btn-outline-light
-                {% else %}
-                    btn-outline-dark
-                {% endif %}"
-                for="week">
-            This week</label>
-    
-            <!-- Last week -->
-            <input type="radio" class="btn-check" name="timeRange" id="lastWeek" autocomplete="off">
-            <label 
-                class="
-                btn
-                {% if user.theme == 'dark' %}
-                    btn-outline-light
-                {% else %}
-                    btn-outline-dark
-                {% endif %}"
-                for="lastWeek"
-            >Last week</label>
-    
-            <!-- This month -->
-            <input type="radio" class="btn-check" name="timeRange" id="month" autocomplete="off">
-            <label 
-                class="
-                btn
-                {% if user.theme == 'dark' %}
-                    btn-outline-light
-                {% else %}
-                    btn-outline-dark
-                {% endif %}"
-                for="month"
-            >This month</label>
-    
-            <!-- Last month -->
-            <input type="radio" class="btn-check" name="timeRange" id="lastMonth" autocomplete="off">
-            <label 
-                class="
-                btn
-                {% if user.theme == 'dark' %}
-                    btn-outline-light
-                {% else %}
-                    btn-outline-dark
-                {% endif %}"
-                for="lastMonth"
-            >Last month</label>
-    
-            <!-- All time -->
-            <input type="radio" class="btn-check" name="timeRange" id="allTime" autocomplete="off">
-            <label 
-                class="
-                btn
-                {% if user.theme == 'dark' %}
-                    btn-outline-light
-                {% else %}
-                    btn-outline-dark
-                {% endif %}"
-                for="allTime"
-            >All time</label>
-        </div>
-        
-        <div class="d-flex" style="height: 350px;">
-
-            <!-- Donut time chart -->
-            <div class="d-flex flex-column justify-content-between align-items-center" style="height: 350px; width: 350px;">
-                <div style="height: 310px; width: 310px;">
-                    <canvas id="companyDonutChart"></canvas>
                 </div>
-                <h4 class="text-center" id="totalTime"></h4>
-            </div>
-            
-            <!-- Bar time chart -->
-            <div class="flex-grow-1">
-                <canvas id="companyStackedBarChart"></canvas>
             </div>
         </div>
     </div>

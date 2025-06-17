@@ -19,7 +19,7 @@
                 </div>
                 <div class="col d-flex justify-content-end align-items-center">
                     {% if project.company.logo %}
-                        <img src="{{ project.company.logo.url }}" alt="Company Logo" height="100px">
+                        <img src="{{ request.scheme }}://{{ request.get_host }}{{ project.company.logo.url }}" alt="Company Logo" height="100px">
                     {% endif %}
                 </div>
             </div>

@@ -94,9 +94,8 @@
             <div class="d-flex flex-column align-items-center" style="overflow: auto;">
                 <!-- Table Header -->
                 <div class="row py-2 w-100 m-0">
-                    <div class="col-3">User</div>
-                    <div class="col-3">Description</div>
-                    <div class="col-3">Type</div>
+                    <div class="col-5">Period</div>
+                    <div class="col-4 text-center">Type</div>
                     <div class="col-3 text-center">Status</div>
                 </div>
 
@@ -104,22 +103,15 @@
                 <div class="d-flex flex-column w-100" id="holiday-list">
                     {% for holiday in user_holidays %}
                         <div class="row py-2 w-100 mx-0 bg-2 list-item" {% if holiday.type != "bank_holiday" %}data-bs-toggle="offcanvas" data-bs-target="#edit-holiday-{{ holiday.id }}"{% else %}onclick="showToast('Bank holiday cannot be edited.', 'warning')"{% endif %}>
-                            <div class="col-3 text-truncate">{{ request.user.get_full_name }}</div>
-                            <div class="col-3 text-truncate">
-                                {% if holiday.status == "pending_edit" %}
-                                    {{ holiday.pending_reason }}
-                                {% else %}
-                                    {{ holiday.reason }}
-                                {% endif %}
-                            </div>
-                            <div class="col-3 text-truncate">
+                            <div class="col-5 text-truncate">{{ holiday.start_date|date:'d/m/Y' }} - {{ holiday.end_date|date:'d/m/Y' }}</div>
+                            <div class="col-4 text-center text-truncate">
                                 {% if holiday.status == "pending_edit" %}
                                     {{ holiday.get_pending_type_display }}
                                 {% else %}
                                     {{ holiday.get_type_display }}
                                 {% endif %}
                             </div>
-                            <div class="col-3 text-center">{{ holiday.get_status_display }}</div>
+                            <div class="col-3 text-center text-truncate">{{ holiday.get_status_display }}</div>
                         </div>
 
                         <!-- Edit Holiday Offcanvas -->

@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 
 # Third-party
@@ -58,6 +58,9 @@ def get_weekly_report_html(project, start_of_week, end_of_week):
             employee_total += total_seconds
             totals_by_day[i] += total_seconds
             daily_hours.append(seconds_to_hm(total_seconds))
+
+        if employee_total == 0:
+            continue
 
         employee_data.append({
             "employee_name": employee_full_name,
@@ -117,6 +120,9 @@ def project_weekly_report(request, project_id):
             totals_by_day[i] += total_seconds
             daily_hours.append(seconds_to_hm(total_seconds))
 
+        if employee_total == 0:
+            continue
+
         employee_data.append({
             "employee_name": employee_full_name,
             "employee_times": daily_hours,
@@ -136,7 +142,6 @@ def project_weekly_report(request, project_id):
         'start_date': start_of_week.strftime('%d/%m/%y'),
         'end_date': end_of_week.strftime('%d/%m/%y'),
     }
-
     html = render_to_string('teams/project_weekly_report.html', context)
 
     response = requests.post(
@@ -155,7 +160,7 @@ def project_weekly_report(request, project_id):
 
     pdf_bytes = response.content
 
-    filename = f"Weekly_Report_{project.title}_{start_of_week.strftime('%d-%m-%Y')}.pdf"
+    filename = f"TimeReport_{project.title}_Week-{start_of_week.isocalendar().week}_{start_of_week.strftime('%d.%m.%Y')}-{end_of_week.strftime('%d.%m.%Y')}.pdf"
     response = HttpResponse(pdf_bytes, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     return response
@@ -192,7 +197,7 @@ def project_monthly_report_pdf(request, project_id):
                 "html": html,
                 "format": "A3",
                 "landscape": True,
-                "filename": f"week_{start_of_week.strftime('%d-%m-%Y')}",
+                "filename": f"week_{start_of_week.isocalendar().week}",
                 "printBackground": True
             }
         )
@@ -200,7 +205,7 @@ def project_monthly_report_pdf(request, project_id):
         if api_response.status_code != 200:
             return JsonResponse({'success': False, 'error': 'PDF conversion failed'}, status=500)
 
-        filename = f"Weekly_Report_{project.title}_{start_of_week.strftime('%d-%m-%Y')}_to_{end_of_week.strftime('%d-%m-%Y')}.pdf"
+        filename = f"TimeReport_{project.title}_Week-{start_of_week.isocalendar().week}_{start_of_week.strftime('%d.%m.%Y')}-{end_of_week.strftime('%d.%m.%Y')}.pdf"
         path = os.path.join('tmp', 'reports', filename)
 
         default_storage.save(path, ContentFile(api_response.content))
@@ -229,18 +234,12 @@ def project_monthly_report_xlsx(request, project_id):
         _, last_day = calendar.monthrange(today.year, today.month)
         end_of_month = today.replace(day=last_day)
 
-    def get_week_number(date):
-        last_monday = datetime(date.year - 1, 12, 31)
-        while last_monday.weekday() != 0:
-            last_monday -= timedelta(days=1)
-        return ((date - last_monday).days // 7) + 1
-
     month_days = (end_of_month - start_of_month).days + 1
     month_dates = [start_of_month + timedelta(days=i) for i in range(month_days)]
 
     week_to_dates = defaultdict(list)
     for date in month_dates:
-        week_num = get_week_number(date)
+        week_num = date.isocalendar().week
         week_to_dates[week_num].append(date)
 
     job_week_data = defaultdict(float)
@@ -279,7 +278,7 @@ def project_monthly_report_xlsx(request, project_id):
     ws.append(["Period", f"{start_of_month.strftime('%d/%m/%Y')} - {end_of_month.strftime('%d/%m/%Y')}"])
     
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    filename = f"Monthly_Report_{project.title}_{end_of_month.strftime('%Y-%m')}.xlsx"
+    filename = f"TimeReport_{project.title}_{start_of_month.strftime('%d.%m.%Y')}-{end_of_month.strftime('%d.%m.%Y')}.xlsx"
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     wb.save(response)
     return response

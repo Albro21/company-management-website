@@ -37,11 +37,11 @@ document.addEventListener("DOMContentLoaded", function () {
                         label: function (context) {
                             const value = context.parsed.y;
                             const totalSeconds = Math.round(value * 3600);
-    
+
                             const hours = Math.floor(totalSeconds / 3600);
                             const minutes = Math.floor((totalSeconds % 3600) / 60);
                             const seconds = totalSeconds % 60;
-    
+
                             return `${context.dataset.label}: ${hours}h ${minutes}m ${seconds}s`;
                         }
                     }
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         const chart = context.chart;
                         const index = context.dataIndex;
                         const datasets = chart.data.datasets;
-    
+
                         let total = 0;
                         datasets.forEach(dataset => {
                             const v = dataset.data[index];
@@ -65,10 +65,10 @@ document.addEventListener("DOMContentLoaded", function () {
                                 total += v;
                             }
                         });
-    
+
                         const isTopDataset = context.datasetIndex === datasets.length - 1
                             || datasets.slice(context.datasetIndex + 1).every(ds => !ds.data[index]);
-    
+
                         return isTopDataset ? `${Math.floor(total)}h ${Math.round((total - Math.floor(total)) * 60)}m` : '';
                     }
                 }
@@ -233,10 +233,10 @@ async function assignTask(employeeId, formData) {
 document.querySelectorAll('.assign-task-form').forEach(form => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const employeeId = form.dataset.employeeId;
         const formData = new FormData(form);
-        
+
         await assignTask(employeeId, formData);
     });
 });
@@ -250,3 +250,23 @@ async function deleteInvitation(invitationId) {
         window.location.reload();
     }
 }
+
+// Tab activation on page load
+document.addEventListener("DOMContentLoaded", function () {
+    const savedTabId = localStorage.getItem("activeTabId");
+
+    if (savedTabId) {
+        const tabTriggerEl = document.querySelector(`#${savedTabId}`);
+        if (tabTriggerEl) {
+            const tab = new bootstrap.Tab(tabTriggerEl);
+            tab.show();
+        }
+    }
+
+    const tabButtons = document.querySelectorAll('#nav-tab button[data-bs-toggle="tab"]');
+    tabButtons.forEach((button) => {
+        button.addEventListener("shown.bs.tab", function (event) {
+            localStorage.setItem("activeTabId", event.target.id);
+        });
+    });
+});

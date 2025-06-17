@@ -1,5 +1,19 @@
+const checkboxes = document.querySelectorAll('.employee-checkbox');
+
+checkboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', function () {
+        const employeeEl = this.closest('.employee');
+        if (!employeeEl) return;
+
+        if (this.checked) {
+            employeeEl.classList.replace('bg-2', 'bg-3');
+        } else {
+            employeeEl.classList.replace('bg-3', 'bg-2');
+        }
+    });
+});
+
 document.getElementById('select-all-employees').addEventListener('change', function () {
-    const checkboxes = document.querySelectorAll('.employee-checkbox');
     checkboxes.forEach(cb => cb.checked = this.checked);
 });
 
