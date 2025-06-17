@@ -36,7 +36,7 @@ def seconds_to_hm(seconds):
 def round_to_half_hour(hours_float):
     return round(hours_float * 2) / 2
 
-def get_weekly_report_html(project, start_of_week, end_of_week):
+def get_weekly_report_html(request, project, start_of_week, end_of_week):
     week_dates = [start_of_week + timedelta(days=i) for i in range(7)]
     company_employees = project.company.employees.all()
 
@@ -70,6 +70,7 @@ def get_weekly_report_html(project, start_of_week, end_of_week):
         grand_total += employee_total
 
     context = {
+        'request': request,
         'project': project,
         'week_dates': week_dates,
         'project_row': [seconds_to_hm(s) for s in totals_by_day],
@@ -134,6 +135,7 @@ def project_weekly_report(request, project_id):
     project_total = seconds_to_hm(grand_total)
 
     context = {
+        'request': request,
         'project': project,
         'week_dates': week_dates,
         'project_row': project_row,
@@ -189,7 +191,7 @@ def project_monthly_report_pdf(request, project_id):
         start_of_week = current
         end_of_week = min(current + timedelta(days=6), end_of_month)
 
-        html = get_weekly_report_html(project, start_of_week, end_of_week)
+        html = get_weekly_report_html(request, project, start_of_week, end_of_week)
 
         api_response = requests.post(
             "https://html2pdf.fly.dev/api/generate",
