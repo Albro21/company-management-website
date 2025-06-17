@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 
 # Third-party
@@ -144,21 +144,22 @@ def project_weekly_report(request, project_id):
         'start_date': start_of_week.strftime('%d/%m/%y'),
         'end_date': end_of_week.strftime('%d/%m/%y'),
     }
-    html = render_to_string('teams/project_weekly_report.html', context)
 
+    html = render_to_string('teams/project_weekly_report.html', context)
+    
     response = requests.post(
         "https://html2pdf.fly.dev/api/generate",
         json={
             "html": html,
             "format": "A3",
             "landscape": True,
-            "filename": "project_weekly_report",
+            "filename": f"week_{start_of_week.isocalendar().week}",
             "printBackground": True
         }
     )
 
     if response.status_code != 200:
-        return HttpResponse("PDF conversion failed.", status=500)
+        return JsonResponse({'success': False, 'error': 'PDF conversion failed'}, status=500)
 
     pdf_bytes = response.content
 
@@ -193,7 +194,7 @@ def project_monthly_report_pdf(request, project_id):
 
         html = get_weekly_report_html(request, project, start_of_week, end_of_week)
 
-        api_response = requests.post(
+        response = requests.post(
             "https://html2pdf.fly.dev/api/generate",
             json={
                 "html": html,
@@ -204,20 +205,21 @@ def project_monthly_report_pdf(request, project_id):
             }
         )
 
-        if api_response.status_code != 200:
+        if response.status_code != 200:
             return JsonResponse({'success': False, 'error': 'PDF conversion failed'}, status=500)
-
+        
         filename = f"TimeReport_{project.title}_Week-{start_of_week.isocalendar().week}_{start_of_week.strftime('%d.%m.%Y')}-{end_of_week.strftime('%d.%m.%Y')}.pdf"
         path = os.path.join('tmp', 'reports', filename)
 
-        default_storage.save(path, ContentFile(api_response.content))
+        default_storage.save(path, ContentFile(response.content))
 
         file_url = default_storage.url(path)
         file_links.append(file_url)
 
         current += timedelta(days=7)
-
-    return JsonResponse({'success': True, 'links': file_links})
+    
+    file_links.sort()
+    return JsonResponse({'success': True, 'links': file_links}, status=200)
 
 @login_required
 @employer_required
