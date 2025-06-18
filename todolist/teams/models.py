@@ -13,8 +13,8 @@ from .choices import *
 User = get_user_model()
 
 def document_upload_path(instance, filename):
-    username = instance.user.username
-    return f'documents/{username}/{filename}'
+    full_name = instance.user.get_full_name().replace(' ', '_')
+    return f'documents/{full_name}/{filename}'
 
 def receipt_upload_path(instance, filename):
     company = instance.user.company.name
@@ -136,7 +136,7 @@ class Expense(models.Model):
         ordering = ['-created_at']
     
     def __str__(self):
-        return f"Expense for {self.user.username} on {self.date} ({self.amount}£)"
+        return f"Expense for {self.user.get_full_name()} on {self.date} ({self.amount}£)"
     
     def delete(self, *args, **kwargs):
         if self.receipt:
@@ -219,7 +219,7 @@ class JoinRequest(models.Model):
         unique_together = ('user', 'company')
     
     def __str__(self):
-        return f"Join Request for {self.user.username} → {self.company.name}"
+        return f"Join Request for {self.user.get_full_name()} → {self.company.name}"
 
 
 class Invitation(models.Model):

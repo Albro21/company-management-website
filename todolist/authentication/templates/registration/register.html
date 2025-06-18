@@ -10,42 +10,24 @@
                 <!-- Title -->
                 <h1 class="text-center mb-3">Register</h1>
 
-                <!-- Username & Email -->
-                <div class="d-flex flex-column flex-sm-row mb-3 justify-content-around">
-
-                    <!-- Username -->
-                    <div class="me-3 w-100 w-md-50">
-                        <label for="{{ form.username.id_for_label }}" class="form-label fs-5">{{ form.username.label }}:</label>
-                        {% if form.username.errors %}
-                            <div class="error bg-danger bg-opacity-25 border border-danger mb-3 p-1">
-                                {% for error in form.username.errors %}
-                                    {{ error }}
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                        <input type="{{ form.username.field.widget.input_type }}" class="form-control {% if form.username.errors %}is-invalid{% endif %}" id="{{ form.username.id_for_label }}" name="{{ form.username.html_name }}" value="{{ form.username.value|default:'' }}">
-                    </div>
-
-                    <!-- Email -->
-                    <div class="w-100 w-md-50 mt-3 mt-sm-0">
-                        <label for="{{ form.email.id_for_label }}" class="form-label fs-5">{{ form.email.label }}:</label>
-                        {% if form.email.errors %}
-                            <div class="error bg-danger bg-opacity-25 border border-danger mb-3 p-1">
-                                {% for error in form.email.errors %}
-                                    {{ error }}
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                        <input 
-                            type="email" 
-                            class="form-control {% if form.email.errors %}is-invalid{% endif %}" 
-                            id="{{ form.email.id_for_label }}" 
-                            name="{{ form.email.html_name }}" 
-                            value="{{ form.email.value|default:'' }}" 
-                            {% if invitation %}readonly{% endif %}
-                        >
-                    </div>
-
+                <!-- Email -->
+                <div class="w-100 w-md-50 mt-3 mt-sm-0 mb-3">
+                    <label for="{{ form.email.id_for_label }}" class="form-label fs-5">{{ form.email.label }}:</label>
+                    {% if form.email.errors %}
+                        <div class="error bg-danger bg-opacity-25 border border-danger mb-3 p-1">
+                            {% for error in form.email.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <input 
+                        type="email" 
+                        class="form-control {% if form.email.errors %}is-invalid{% endif %}" 
+                        id="{{ form.email.id_for_label }}" 
+                        name="{{ form.email.html_name }}" 
+                        value="{{ form.email.value|default:'' }}" 
+                        {% if invitation %}readonly{% endif %}
+                    >
                 </div>
 
                 <!-- First & Last Name -->

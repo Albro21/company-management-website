@@ -5,7 +5,7 @@ from users.models import CustomUser
 class EmployeeInline(admin.TabularInline):
     can_delete = False
     model = CustomUser
-    fields = ('username', 'work_email', 'role', 'employee_id', 'job_title', 'employee_status', 'contract_type')
+    fields = ('work_email', 'role', 'employee_id', 'job_title', 'employee_status', 'contract_type')
     extra = 0
 
 class JobTitleInline(admin.TabularInline):

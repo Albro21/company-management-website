@@ -1,11 +1,16 @@
 # Django
 from django.contrib.auth import login
+from django.contrib.auth.views import LoginView
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 
 # Local apps
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, CustomAuthenticationForm
 from teams.models import Invitation
+
+
+class EmailLoginView(LoginView):
+    authentication_form = CustomAuthenticationForm
 
 
 def register(request):

@@ -89,11 +89,11 @@ class HolidayEditView(LoginRequiredMixin, View):
         if diff > 0:
             for user in kept_users:
                 if not user.has_enough_holidays(diff):
-                    insufficient_users.append(f"{user.get_full_name() or user.username} ({user.remaining_holidays} left)")
+                    insufficient_users.append(f"{user.get_full_name() or user.email} ({user.remaining_holidays} left)")
 
         for user in added_users:
             if not user.has_enough_holidays(new_days):
-                insufficient_users.append(f"{user.get_full_name() or user.username} ({user.remaining_holidays} left)")
+                insufficient_users.append(f"{user.get_full_name() or user.email} ({user.remaining_holidays} left)")
 
         if insufficient_users:
             return JsonResponse({
@@ -245,7 +245,7 @@ def create_holiday(request):
         users = list(User.objects.filter(id__in=data.get('employees', []), company=request.user.company))
 
         insufficient_users = [
-            f"{user.get_full_name() or user.username} ({user.remaining_holidays} days left)"
+            f"{user.get_full_name() or user.email} ({user.remaining_holidays} days left)"
             for user in users if not user.has_enough_holidays(days_requested)
         ]
         if insufficient_users:

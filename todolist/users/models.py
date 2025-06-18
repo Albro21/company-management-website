@@ -4,20 +4,54 @@ import pytz
 from phonenumber_field.modelfields import PhoneNumberField
 
 # Django
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.forms import ValidationError
 from django.utils import timezone as tz
+from django.utils.translation import gettext_lazy as _
+
+# Local apps
 from .choices import *
 
 
 TIMEZONE_CHOICES = [(tz, tz) for tz in pytz.common_timezones]
+
+# Custom User Manager
+class CustomUserManager(BaseUserManager):
+    use_in_migrations = True
+
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError("Email must be set")
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
+
+        return self.create_user(email, password, **extra_fields)
+
 
 class CustomUser(AbstractUser):
     EMPLOYEE_STATUSES = EMPLOYEE_STATUSES
     CONTRACT_TYPES = CONTRACT_TYPES
     ROLES = ROLES
     THEMES = THEMES
+    
+    username = None
+    email = models.EmailField(_('email address'), unique=True)
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+    objects = CustomUserManager()
     
     # Personal
     profile_picture = models.ImageField(upload_to='profile_pics/', default='profile_pics/default.jpg')
@@ -72,14 +106,6 @@ class CustomUser(AbstractUser):
 
     def clean(self):
         super().clean()
-
-        # Ensure username is unique (excluding current instance)
-        if self.username and CustomUser.objects.exclude(pk=self.pk).filter(username=self.username).exists():
-            raise ValidationError({'username': 'This username is already taken.'})
-
-        # Ensure email is unique (excluding current instance)
-        if self.email and CustomUser.objects.exclude(pk=self.pk).filter(email=self.email).exists():
-            raise ValidationError({'email': 'This email is already taken.'})
 
     @property
     def active_time_entry(self):

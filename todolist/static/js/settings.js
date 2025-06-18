@@ -36,10 +36,6 @@ document.getElementById('edit-user-form').addEventListener('submit', async (e) =
         const errorElement = document.getElementById('error');
         let errors = data.error;
 
-        if (errors.some(msg => msg.includes("username"))) {
-            document.getElementById('username').classList.add('is-invalid');
-        }
-
         if (errors.some(msg => msg.includes("email"))) {
             document.getElementById('email').classList.add('is-invalid');
         }
