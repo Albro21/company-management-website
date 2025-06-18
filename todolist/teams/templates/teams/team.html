@@ -22,16 +22,6 @@
 
                 <!-- Expenses -->
                 <a href="{% url 'teams:expenses' %}" class="btn btn-primary">Expenses</a>
-                
-                <!-- Join Requests -->
-                <a class="btn btn-primary position-relative" style="white-space: nowrap;" data-bs-toggle="offcanvas" data-bs-target="#join-requests">
-                    Join requests
-                    {% if company.join_requests.all %}
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            {{ company.join_requests.all.count }}
-                        </span>
-                    {% endif %}
-                </a>
 
                 <!-- Holiday Requests -->
                 <a class="btn btn-primary position-relative" style="white-space: nowrap;" data-bs-toggle="offcanvas" data-bs-target="#holidays">
@@ -42,40 +32,6 @@
                         </span>
                     {% endif %}
                 </a>
-    
-                <!-- Join Requests Offcanvas -->
-                <div class="offcanvas offcanvas-end" tabindex="-1" id="join-requests">
-                    <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="offcanvasRightLabel">Join requests</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                    </div>
-                    <div class="offcanvas-body d-flex flex-column gap-3">
-                        {% if company.join_requests %}
-                            {% for join_request in company.join_requests.all %}
-                                <div class="bg-2 py-3 px-1 row rounded mx-0" id="join-request-{{ join_request.id }}">
-                                    <div class="col-8 d-flex flex-column">
-                                        <h5>{{ join_request.user.get_full_name }}</h5>
-                                        {{ join_request.user.email }} 
-                                        <br>
-                                        @{{ join_request.user.username }}
-                                    </div>
-                                    <div class="col-4 d-flex flex-column gap-2">
-                                        <form action="{% url 'teams:accept_join_request' join_request.id %}" method="post">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-primary w-100">Accept</button>
-                                        </form>
-                                        <form action="{% url 'teams:decline_join_request' join_request.id %}" method="post">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-danger w-100">Decline</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        {% else %}
-                            <p>No join requests</p>
-                        {% endif %}
-                    </div>
-                </div>
 
                 <!-- Holiday Requests Offcanvas -->
                 <div class="offcanvas offcanvas-end" tabindex="-1" id="holidays" style="width: 50vw;">
@@ -85,7 +41,7 @@
                     </div>
                     <div class="offcanvas-body d-flex flex-column">
                         {% if company.total_pending_holidays %}
-                            
+
                             <!-- Pending holidays -->
                             {% if company.pending_holidays.all %}
                                 <h3 class="mt-4">New holiday requests</h3>
@@ -120,15 +76,15 @@
                                                     </div>
                                                 </div>
                                                 <div class="d-flex gap-2">
-                                                    <button class="btn btn-primary w-100" onclick="acceptHolidayRequest({{ holiday.id }})">Accept</button>
-                                                    <button class="btn btn-danger w-100" onclick="declineHolidayRequest({{ holiday.id }})">Decline</button>
+                                                    <button class="btn btn-primary w-100" onclick="processHolidayRequest({{ holiday.id }}, 'accept')">Accept</button>
+                                                    <button class="btn btn-danger w-100" onclick="processHolidayRequest({{ holiday.id }}, 'decline')">Decline</button>
                                                 </div>
                                             </div>
                                         </div>
                                     {% endfor %}
                                 </div>
                             {% endif %}
-                            
+
                             <!-- Pending edits -->
                             {% if company.pending_edit_holidays.all %}
                                 <h3 class="mt-4">Edit holiday requests</h3>
@@ -192,13 +148,13 @@
                                             </div>
                                         </div>
                                         <div class="d-flex gap-2">
-                                            <button class="btn btn-primary w-100" onclick="acceptEditHolidayRequest({{ holiday.id }})">Accept</button>
-                                            <button class="btn btn-danger w-100" onclick="declineEditHolidayRequest({{ holiday.id }})">Decline</button>
+                                            <button class="btn btn-primary w-100" onclick="processHolidayRequest({{ holiday.id }}, 'accept_edit')">Accept</button>
+                                            <button class="btn btn-danger w-100" onclick="processHolidayRequest({{ holiday.id }}, 'decline_edit')">Decline</button>
                                         </div>
                                     </div>
                                 {% endfor %}
                             {% endif %}
-                            
+
                             <!-- Pending deletes -->
                             {% if company.pending_delete_holidays.all %}
                                 <h3 class="mt-4">Delete holiday requests</h3>
@@ -233,15 +189,15 @@
                                                     </div>
                                                 </div>
                                                 <div class="d-flex gap-2">
-                                                    <button class="btn btn-secondary w-100" onclick="declineDeleteHolidayRequest({{ holiday.id }})">Cancel</button>
-                                                    <button class="btn btn-danger w-100" onclick="acceptDeleteHolidayRequest({{ holiday.id }})">Delete</button>
+                                                    <button class="btn btn-secondary w-100" onclick="processHolidayRequest({{ holiday.id }}, 'decline_delete')">Cancel</button>
+                                                    <button class="btn btn-danger w-100" onclick="processHolidayRequest({{ holiday.id }}, 'accept_delete')">Delete</button>
                                                 </div>
                                             </div>
                                         </div>
                                     {% endfor %}
                                 </div>
                             {% endif %}
-                            
+
                         {% else %}
                             <p>No holiday requests</p>
                         {% endif %}
@@ -784,7 +740,6 @@
 
 {% block scripts %}
     <script src="{% static 'js/team.js' %}"></script>
-    <script src="{% static 'js/holiday_requests.js' %}"></script>
     <script src="{% static 'js/reports.js' %}"></script>
     <script src="{% static 'js/project.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

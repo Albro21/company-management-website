@@ -33,15 +33,10 @@ urlpatterns = [
     path('join-request/<int:request_id>/accept/', join_request.accept_join_request, name='accept_join_request'),
     path('join-request/<int:request_id>/decline/', join_request.decline_join_request, name='decline_join_request'),
     
-    path('holiday/create/', holiday.create_holiday, name='create_holiday'),
-    path('holiday/<int:request_id>/accept-delete/', holiday.accept_delete_holiday, name='accept_delete_holiday'),
-    path('holiday/<int:request_id>/decline-delete/', holiday.decline_delete_holiday, name='decline_delete_holiday'),
-    path('holiday/<int:request_id>/accept-edit/', holiday.accept_edit_holiday, name='accept_edit_holiday'),
-    path('holiday/<int:request_id>/decline-edit/', holiday.decline_edit_holiday, name='decline_edit_holiday'),
-    path('holiday/<int:request_id>/accept/', holiday.accept_holiday, name='accept_holiday'),
-    path('holiday/<int:request_id>/decline/', holiday.decline_holiday, name='decline_holiday'),
     path('holiday/<int:holiday_id>/edit/', holiday.HolidayEditView.as_view(), name='edit_holiday'),
     path('holiday/<int:holiday_id>/delete/', holiday.HolidayDeleteView.as_view(), name='delete_holiday'),
+    path('holiday/<int:holiday_id>/process/', holiday.process_holiday_request, name='process_holiday'),
+    path('holiday/create/', holiday.create_holiday, name='create_holiday'),
     path('bank-holidays/', holiday.bank_holidays, name='bank_holidays'),
     
     path('job-title/create/', job_title.create_job_title, name='create_job_title'),

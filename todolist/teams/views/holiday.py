@@ -118,6 +118,10 @@ class HolidayEditView(LoginRequiredMixin, View):
             }, status=400)
 
         if request.user.is_employer:
+            user = holiday.users.first()
+            user.adjust_holidays(diff)
+            user.save()
+            
             holiday.start_date = start_date
             holiday.end_date = end_date
             holiday.reason = data.get('reason', '').strip()
@@ -130,13 +134,9 @@ class HolidayEditView(LoginRequiredMixin, View):
             holiday.pending_reason = data.get('reason', '').strip()
             holiday.pending_type = data.get('type', holiday.type)
             holiday.status = 'pending_edit'
-        
+
         holiday.save()
-        
-        user = holiday.users.first()
-        user.adjust_holidays(diff)
-        user.save()
-        
+
         return JsonResponse({'success': True, 'id': holiday.id})
 
 
@@ -168,6 +168,52 @@ class HolidayDeleteView(LoginRequiredMixin, View):
         User.objects.bulk_update(users, ['used_holidays'])
         holiday.delete()
 
+
+@require_http_methods(["PATCH"])
+@login_required
+@parse_json_body
+@employer_required
+def process_holiday_request(request, holiday_id):
+    data = request.json_data
+    action = data.get("action")
+
+    holiday = get_object_or_404(Holiday, id=holiday_id, company=request.user.company)
+
+    if action == "accept_edit":
+        user = holiday.users.first()
+        diff = holiday.number_of_pending_days - holiday.number_of_days
+        user.adjust_holidays(diff)
+        user.save()
+        
+        holiday.apply_pending()
+        holiday.status = "approved"
+        holiday.save()
+    elif action == "decline_edit":
+        holiday.clear_pending()
+        holiday.status = "approved"
+        holiday.save()
+    elif action == "accept_delete":
+        user = holiday.users.first()
+        user.adjust_holidays(-holiday.number_of_days)
+        user.save()
+        holiday.delete()
+        return JsonResponse({'success': True})
+    elif action == "decline_delete":
+        holiday.status = "approved"
+        holiday.save()
+    elif action == "accept":
+        holiday.status = "approved"
+        holiday.save()
+    elif action == "decline":
+        user = holiday.users.first()
+        user.adjust_holidays(-holiday.number_of_days)
+        user.save()
+        holiday.delete()
+        return JsonResponse({'success': True})
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid action'}, status=400)
+
+    return JsonResponse({'success': True, 'id': holiday.id})
 
 @require_http_methods(["POST"])
 @login_required
@@ -223,65 +269,6 @@ def create_holiday(request):
     User.objects.bulk_update(users, ['used_holidays'])
 
     return JsonResponse({'success': True, 'id': holiday.id}, status=201)
-
-@require_http_methods(["PATCH"]) 
-@login_required
-@employer_required
-def accept_edit_holiday(request, request_id):
-    holiday = get_object_or_404(Holiday, id=request_id, company=request.user.company)
-    holiday.apply_pending()
-    holiday.status = "approved"
-    holiday.save()
-    return JsonResponse({'success': True, 'id': holiday.id}, status=200)
-
-@require_http_methods(["PATCH"])
-@login_required
-@employer_required
-def decline_edit_holiday(request, request_id):
-    holiday = get_object_or_404(Holiday, id=request_id, company=request.user.company)
-    holiday.clear_pending()
-    holiday.status = "approved"
-    holiday.save()
-    return JsonResponse({'success': True, 'id': holiday.id}, status=200)
-
-@require_http_methods(["PATCH"])
-@login_required
-@employer_required
-def accept_delete_holiday(request, request_id):
-    holiday = get_object_or_404(Holiday, id=request_id, company=request.user.company)
-    user = holiday.users.first()
-    user.adjust_holidays(-holiday.number_of_days)
-    user.save()
-    holiday.delete()
-    return JsonResponse({'success': True}, status=200)
-
-@require_http_methods(["PATCH"])
-@login_required
-@employer_required
-def decline_delete_holiday(request, request_id):
-    holiday = get_object_or_404(Holiday, id=request_id, company=request.user.company)
-    holiday.status = "approved"
-    holiday.save()
-    return JsonResponse({'success': True, 'id': holiday.id}, status=200)
-
-@require_http_methods(["PATCH"])
-@login_required
-@employer_required
-def accept_holiday(request, request_id):
-    holiday = get_object_or_404(Holiday, id=request_id, company=request.user.company)
-    holiday.status = "approved"
-    holiday.save()
-    return JsonResponse({'success': True, 'id': holiday.id}, status=200)
-
-@require_http_methods(["PATCH"])
-@login_required
-@employer_required
-def decline_holiday(request, request_id):
-    holiday = get_object_or_404(Holiday, id=request_id, company=request.user.company)
-    holiday.users.first().adjust_holidays(-holiday.number_of_days)
-    holiday.users.first().save()
-    holiday.delete()
-    return JsonResponse({'success': True, 'id': holiday.id}, status=200)
 
 @login_required
 @employer_required

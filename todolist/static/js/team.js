@@ -270,3 +270,28 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+// Process Holiday Requests
+async function processHolidayRequest(holidayId, action) {
+    const url = `/teams/holiday/${holidayId}/process/`;
+    const data = await sendRequest(url, 'PATCH', JSON.stringify({ action }));
+
+    if (data.success) {
+        const element = document.getElementById(`holiday-${holidayId}`);
+        if (element) element.remove();
+
+        let message = '';
+        switch (action) {
+            case 'accept': message = 'Holiday request accepted'; break;
+            case 'decline': message = 'Holiday request declined'; break;
+            case 'accept_edit': message = 'Holiday edit request accepted'; break;
+            case 'decline_edit': message = 'Holiday edit request declined'; break;
+            case 'accept_delete': message = 'Holiday delete request accepted'; break;
+            case 'decline_delete': message = 'Holiday delete request declined'; break;
+            default: message = 'Action completed';
+        }
+        showToast(message, 'success');
+    } else {
+        showToast(data.error || 'An error occurred', 'danger');
+    }
+}
