@@ -94,6 +94,7 @@ function openHolidayEditOffcanvas(holidayId) {
                 }
             });
 
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             offcanvas.show();
         });
 }
