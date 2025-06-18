@@ -1,5 +1,6 @@
 # Standard libs
 from datetime import datetime
+from datetime import timedelta
 
 # Django
 from django.contrib.auth import get_user_model
@@ -28,11 +29,18 @@ def get_validated_dates(data):
         raise ValueError("Start date must be before end date.")
     return start, end
 
-def calculate_days(start_date, end_date):
-    return (end_date - start_date).days + 1
+def calculate_weekdays(start_date, end_date):
+    delta = timedelta(days=1)
+    current = start_date
+    count = 0
+    while current <= end_date:
+        if current.weekday() < 5:
+            count += 1
+        current += delta
+    return count
 
 def get_days_diff(old_start, old_end, new_start, new_end):
-    return calculate_days(new_start, new_end) - calculate_days(old_start, old_end)
+    return calculate_weekdays(new_start, new_end) - calculate_weekdays(old_start, old_end)
 
 class HolidayEditView(LoginRequiredMixin, View):
     def get(self, request, holiday_id):
@@ -58,8 +66,8 @@ class HolidayEditView(LoginRequiredMixin, View):
         except ValueError as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
-        old_days = calculate_days(holiday.start_date, holiday.end_date)
-        new_days = calculate_days(start_date, end_date)
+        old_days = calculate_weekdays(holiday.start_date, holiday.end_date)
+        new_days = calculate_weekdays(start_date, end_date)
         diff = new_days - old_days
 
         if holiday.type == 'bank_holiday':
@@ -226,7 +234,7 @@ def create_holiday(request):
     except ValueError as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
-    days_requested = calculate_days(start_date, end_date)
+    days_requested = calculate_weekdays(start_date, end_date)
     holiday_type = data.get('type', 'other')
     reason = data.get('reason', '').strip()
 

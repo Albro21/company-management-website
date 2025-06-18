@@ -20,6 +20,15 @@ def receipt_upload_path(instance, filename):
     company = instance.user.company.name
     return f'receipts/{company}/{filename}'
 
+def calculate_weekdays(start_date, end_date):
+        delta = timedelta(days=1)
+        current = start_date
+        count = 0
+        while current <= end_date:
+            if current.weekday() < 5:
+                count += 1
+            current += delta
+        return count
 
 class Company(models.Model):
     COMPANY_TYPES = COMPANY_TYPES
@@ -178,12 +187,12 @@ class Holiday(models.Model):
 
     @property
     def number_of_days(self):
-        return (self.end_date - self.start_date).days + 1
-    
+        return calculate_weekdays(self.start_date, self.end_date)
+
     @property
     def number_of_pending_days(self):
-        return (self.pending_end_date - self.pending_start_date).days + 1
-    
+        return calculate_weekdays(self.pending_start_date, self.pending_end_date)
+
     def clear_pending(self):
         self.pending_start_date = None
         self.pending_end_date = None
