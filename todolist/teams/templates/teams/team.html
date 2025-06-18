@@ -13,85 +13,42 @@
     <div class="d-flex justify-content-between align-items-center bg-2 rounded p-3 mb-4">
         <h4>{{ company.name }}</h4> 
         <div class="d-flex gap-3">
-            {% if user.is_employer %}
-                <!-- Settings -->
-                <a href="{% url 'teams:settings' %}" class="btn btn-primary">Settings</a>
-                
-                <!-- Bank Holidays -->
-                <a href="{% url 'teams:bank_holidays' %}" class="btn btn-primary">Bank Holidays</a>
+            <!-- Settings -->
+            <a href="{% url 'teams:settings' %}" class="btn btn-primary">Settings</a>
+            
+            <!-- Bank Holidays -->
+            <a href="{% url 'teams:bank_holidays' %}" class="btn btn-primary">Bank Holidays</a>
 
-                <!-- Expenses -->
-                <a href="{% url 'teams:expenses' %}" class="btn btn-primary">Expenses</a>
+            <!-- Expenses -->
+            <a href="{% url 'teams:expenses' %}" class="btn btn-primary">Expenses</a>
 
-                <!-- Holiday Requests -->
-                <a class="btn btn-primary position-relative" style="white-space: nowrap;" data-bs-toggle="offcanvas" data-bs-target="#holidays">
-                    Holiday requests
+            <!-- Holiday Requests -->
+            <a class="btn btn-primary position-relative" style="white-space: nowrap;" data-bs-toggle="offcanvas" data-bs-target="#holidays">
+                Holiday requests
+                {% if company.total_pending_holidays %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        {{ company.total_pending_holidays }}
+                    </span>
+                {% endif %}
+            </a>
+
+            <!-- Holiday Requests Offcanvas -->
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="holidays" style="width: 50vw;">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasRightLabel">Holiday requests</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body d-flex flex-column">
                     {% if company.total_pending_holidays %}
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            {{ company.total_pending_holidays }}
-                        </span>
-                    {% endif %}
-                </a>
 
-                <!-- Holiday Requests Offcanvas -->
-                <div class="offcanvas offcanvas-end" tabindex="-1" id="holidays" style="width: 50vw;">
-                    <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="offcanvasRightLabel">Holiday requests</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                    </div>
-                    <div class="offcanvas-body d-flex flex-column">
-                        {% if company.total_pending_holidays %}
-
-                            <!-- Pending holidays -->
-                            {% if company.pending_holidays.all %}
-                                <h3 class="mt-4">New holiday requests</h3>
-                                <div class="row row-cols-2">
-                                    {% for holiday in company.pending_holidays.all %}
-                                        <div class="col">
-                                            <div class="d-flex flex-column bg-2 p-2 rounded mx-0 gap-2 mt-3" id="holiday-{{ holiday.id }}">
-                                                <div class="d-flex flex-column gap-2">
-                                                    <div class="row">
-                                                        <div class="col">
-                                                            Employee:
-                                                            <h5>{{ holiday.users.first.get_full_name }}</h5>
-                                                        </div>
-                                                        <div class="col">
-                                                            Type:
-                                                            <h5>{{ holiday.get_type_display }}</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col">
-                                                            Start Date: 
-                                                            <h5>{{ holiday.start_date|date:"d/m/y" }}</h5>
-                                                        </div>
-                                                        <div class="col">
-                                                            End Date: 
-                                                            <h5>{{ holiday.end_date|date:"d/m/y" }}</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div>
-                                                        Reason:
-                                                        <p class="mb-0">{{ holiday.reason }}</p>
-                                                    </div>
-                                                </div>
-                                                <div class="d-flex gap-2">
-                                                    <button class="btn btn-primary w-100" onclick="processHolidayRequest({{ holiday.id }}, 'accept')">Accept</button>
-                                                    <button class="btn btn-danger w-100" onclick="processHolidayRequest({{ holiday.id }}, 'decline')">Decline</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-
-                            <!-- Pending edits -->
-                            {% if company.pending_edit_holidays.all %}
-                                <h3 class="mt-4">Edit holiday requests</h3>
-                                {% for holiday in company.pending_edit_holidays.all %}
-                                    <div class="d-flex flex-column bg-2 p-2 rounded mx-0 gap-2 mt-3" id="holiday-{{ holiday.id }}">
-                                        <div class="row">
-                                            <div class="d-flex col-5 flex-column gap-2">
+                        <!-- Pending holidays -->
+                        {% if company.pending_holidays.all %}
+                            <h3 class="mt-4">New holiday requests</h3>
+                            <div class="row row-cols-2">
+                                {% for holiday in company.pending_holidays.all %}
+                                    <div class="col">
+                                        <div class="d-flex flex-column bg-2 p-2 rounded mx-0 gap-2 mt-3" id="holiday-{{ holiday.id }}">
+                                            <div class="d-flex flex-column gap-2">
                                                 <div class="row">
                                                     <div class="col">
                                                         Employee:
@@ -117,10 +74,94 @@
                                                     <p class="mb-0">{{ holiday.reason }}</p>
                                                 </div>
                                             </div>
-                                            <div class="col d-flex align-items-center justify-content-center">
-                                                <i class="bi bi-arrow-bar-right fs-1"></i>
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-primary w-100" onclick="processHolidayRequest({{ holiday.id }}, 'accept')">Accept</button>
+                                                <button class="btn btn-danger w-100" onclick="processHolidayRequest({{ holiday.id }}, 'decline')">Decline</button>
                                             </div>
-                                            <div class="d-flex col-5 flex-column gap-2">
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <!-- Pending edits -->
+                        {% if company.pending_edit_holidays.all %}
+                            <h3 class="mt-4">Edit holiday requests</h3>
+                            {% for holiday in company.pending_edit_holidays.all %}
+                                <div class="d-flex flex-column bg-2 p-2 rounded mx-0 gap-2 mt-3" id="holiday-{{ holiday.id }}">
+                                    <div class="row">
+                                        <div class="d-flex col-5 flex-column gap-2">
+                                            <div class="row">
+                                                <div class="col">
+                                                    Employee:
+                                                    <h5>{{ holiday.users.first.get_full_name }}</h5>
+                                                </div>
+                                                <div class="col">
+                                                    Type:
+                                                    <h5>{{ holiday.get_type_display }}</h5>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    Start Date: 
+                                                    <h5>{{ holiday.start_date|date:"d/m/y" }}</h5>
+                                                </div>
+                                                <div class="col">
+                                                    End Date: 
+                                                    <h5>{{ holiday.end_date|date:"d/m/y" }}</h5>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                Reason:
+                                                <p class="mb-0">{{ holiday.reason }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="col d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-arrow-bar-right fs-1"></i>
+                                        </div>
+                                        <div class="d-flex col-5 flex-column gap-2">
+                                            <div class="row">
+                                                <div class="col">
+                                                    Employee:
+                                                    <h5>{{ holiday.users.first.get_full_name }}</h5>
+                                                </div>
+                                                <div class="col">
+                                                    Type:
+                                                    <h5>{{ holiday.get_pending_type_display }}</h5>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    Start Date: 
+                                                    <h5>{{ holiday.pending_start_date|date:"d/m/y" }}</h5>
+                                                </div>
+                                                <div class="col">
+                                                    End Date: 
+                                                    <h5>{{ holiday.pending_end_date|date:"d/m/y" }}</h5>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                Reason:
+                                                <p class="mb-0">{{ holiday.pending_reason }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-primary w-100" onclick="processHolidayRequest({{ holiday.id }}, 'accept_edit')">Accept</button>
+                                        <button class="btn btn-danger w-100" onclick="processHolidayRequest({{ holiday.id }}, 'decline_edit')">Decline</button>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <!-- Pending deletes -->
+                        {% if company.pending_delete_holidays.all %}
+                            <h3 class="mt-4">Delete holiday requests</h3>
+                            <div class="row row-cols-2">
+                                {% for holiday in company.pending_delete_holidays.all %}
+                                    <div class="col">
+                                        <div class="d-flex flex-column bg-2 p-2 rounded mx-0 gap-2 mt-3" id="holiday-{{ holiday.id }}">
+                                            <div class="d-flex flex-column gap-2">
                                                 <div class="row">
                                                     <div class="col">
                                                         Employee:
@@ -128,82 +169,39 @@
                                                     </div>
                                                     <div class="col">
                                                         Type:
-                                                        <h5>{{ holiday.get_pending_type_display }}</h5>
+                                                        <h5>{{ holiday.get_type_display }}</h5>
                                                     </div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col">
                                                         Start Date: 
-                                                        <h5>{{ holiday.pending_start_date|date:"d/m/y" }}</h5>
+                                                        <h5>{{ holiday.start_date|date:"d/m/y" }}</h5>
                                                     </div>
                                                     <div class="col">
                                                         End Date: 
-                                                        <h5>{{ holiday.pending_end_date|date:"d/m/y" }}</h5>
+                                                        <h5>{{ holiday.end_date|date:"d/m/y" }}</h5>
                                                     </div>
                                                 </div>
                                                 <div>
                                                     Reason:
-                                                    <p class="mb-0">{{ holiday.pending_reason }}</p>
+                                                    <p class="mb-0">{{ holiday.reason }}</p>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="d-flex gap-2">
-                                            <button class="btn btn-primary w-100" onclick="processHolidayRequest({{ holiday.id }}, 'accept_edit')">Accept</button>
-                                            <button class="btn btn-danger w-100" onclick="processHolidayRequest({{ holiday.id }}, 'decline_edit')">Decline</button>
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-secondary w-100" onclick="processHolidayRequest({{ holiday.id }}, 'decline_delete')">Cancel</button>
+                                                <button class="btn btn-danger w-100" onclick="processHolidayRequest({{ holiday.id }}, 'accept_delete')">Delete</button>
+                                            </div>
                                         </div>
                                     </div>
                                 {% endfor %}
-                            {% endif %}
-
-                            <!-- Pending deletes -->
-                            {% if company.pending_delete_holidays.all %}
-                                <h3 class="mt-4">Delete holiday requests</h3>
-                                <div class="row row-cols-2">
-                                    {% for holiday in company.pending_delete_holidays.all %}
-                                        <div class="col">
-                                            <div class="d-flex flex-column bg-2 p-2 rounded mx-0 gap-2 mt-3" id="holiday-{{ holiday.id }}">
-                                                <div class="d-flex flex-column gap-2">
-                                                    <div class="row">
-                                                        <div class="col">
-                                                            Employee:
-                                                            <h5>{{ holiday.users.first.get_full_name }}</h5>
-                                                        </div>
-                                                        <div class="col">
-                                                            Type:
-                                                            <h5>{{ holiday.get_type_display }}</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col">
-                                                            Start Date: 
-                                                            <h5>{{ holiday.start_date|date:"d/m/y" }}</h5>
-                                                        </div>
-                                                        <div class="col">
-                                                            End Date: 
-                                                            <h5>{{ holiday.end_date|date:"d/m/y" }}</h5>
-                                                        </div>
-                                                    </div>
-                                                    <div>
-                                                        Reason:
-                                                        <p class="mb-0">{{ holiday.reason }}</p>
-                                                    </div>
-                                                </div>
-                                                <div class="d-flex gap-2">
-                                                    <button class="btn btn-secondary w-100" onclick="processHolidayRequest({{ holiday.id }}, 'decline_delete')">Cancel</button>
-                                                    <button class="btn btn-danger w-100" onclick="processHolidayRequest({{ holiday.id }}, 'accept_delete')">Delete</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-
-                        {% else %}
-                            <p>No holiday requests</p>
+                            </div>
                         {% endif %}
-                    </div>
+
+                    {% else %}
+                        <p>No holiday requests</p>
+                    {% endif %}
                 </div>
-            {% endif %}
+            </div>
         </div>
     </div>
 
@@ -245,7 +243,6 @@
                 aria-selected="false">
                 Analytics
             </button>
-
         </div>
     </nav>
     <div class="tab-content" id="nav-tabContent">
@@ -257,15 +254,13 @@
             <h3 class="mb-2 d-flex align-items-center justify-content-center">
                 Employees
                 
-                {% if user.is_employer %}
-                    <!-- Employee Invitation Button -->
-                    <button class="ms-3 btn btn-primary rounded-3 shadow-lg d-flex justify-content-center align-items-center"
-                        style="width: 30px; height: 30px;"
-                        data-bs-toggle="modal" 
-                        data-bs-target="#inviteEmployeeModal">
-                        <i class="bi bi-plus-lg" style="font-size: 20px; font-weight: bold;"></i>
-                    </button>
-                {% endif %}
+                <!-- Employee Invitation Button -->
+                <button class="ms-3 btn btn-primary rounded-3 shadow-lg d-flex justify-content-center align-items-center"
+                    style="width: 30px; height: 30px;"
+                    data-bs-toggle="modal" 
+                    data-bs-target="#inviteEmployeeModal">
+                    <i class="bi bi-plus-lg" style="font-size: 20px; font-weight: bold;"></i>
+                </button>
             </h3>
 
             <!-- Invite Employee Modal -->
@@ -313,83 +308,78 @@
                         </div>
 
                         <div class="col d-flex justify-content-center gap-3 action-icons">
-                            {% if user.is_employer or employee == user %}
-                                <!-- employee Details -->
-                                <a href="{% url 'teams:employee_detail' employee.id %}?tab=information">
-                                    <i class="bi-info-circle" data-bs-toggle="tooltip" title="View employee Details"></i>
-                                </a>
-                            {% endif %}
-                            
-                            {% if user.is_employer %}
-                                <!-- Assign Task -->
-                                <a data-bs-toggle="offcanvas" data-bs-target="#assign-task-{{ employee.id }}">
-                                    <i class="bi bi-plus-square" data-bs-toggle="tooltip" title="Assign Task"></i>
-                                </a>
-                            {% endif %}
+
+                            <!-- Employee Details -->
+                            <a href="{% url 'teams:employee_detail' employee.id %}?tab=information">
+                                <i class="bi-info-circle" data-bs-toggle="tooltip" title="View employee Details"></i>
+                            </a>
+
+                            <!-- Assign Task -->
+                            <a data-bs-toggle="offcanvas" data-bs-target="#assign-task-{{ employee.id }}">
+                                <i class="bi bi-plus-square" data-bs-toggle="tooltip" title="Assign Task"></i>
+                            </a>
                         </div>
                     </div>
-                    
-                    {% if user.is_employer %}
-                        <!-- Assign Task Offcanvas -->
-                        <div class="offcanvas offcanvas-end" tabindex="-1" id="assign-task-{{ employee.id }}">
-                            <div class="offcanvas-header">
-                                <h5 class="offcanvas-title" id="offcanvasRightLabel">Assign task to: {{ user.get_full_name }}</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                            </div>
-                            <div class="offcanvas-body">
-                                <form method="post" class="d-flex flex-column gap-2 assign-task-form" data-employee-id="{{ employee.id }}">
-                                    {% csrf_token %}
-                                    
-                                    <!-- Title -->
-                                    <div class="d-flex flex-column align-items-center">
-                                        <label for="id_title">Title</label>
-                                        <input type="text" name="title" id="id_title" class="form-control" placeholder="Title" required maxlength="200">
-                                    </div>
 
-                                    <!-- Description -->
-                                    <div class="d-flex flex-column align-items-center">
-                                        <label for="id_text">Description</label>
-                                        <textarea name="text" id="id_text" class="form-control no-scrollbar" placeholder="Description" rows="5"></textarea>
-                                    </div>
-                                    
-                                    <!-- Project -->
-                                    <div class="d-flex flex-column align-items-center">
-                                        <label for="id_project">Project</label>
-                                        <select class="form-select" id="id_project" name="project" required>
-                                            <option value="" selected>Select a project</option>
-                                            {% for project in user.company_projects.all %}
-                                                <option value="{{ project.id }}">
-                                                    {{ project.title }}
-                                                </option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-
-                                    <!-- Due Date -->
-                                    <div class="d-flex flex-column align-items-center">
-                                        <label for="id_due_date">Due Date</label>
-                                        <input type="date" class="form-control" name="due_date" id="id_due_date" required>
-                                    </div>
-
-                                    <!-- High Priority checkbox -->
-                                    <div class="d-flex justify-content-center gap-2">
-                                        <input 
-                                            class="form-check-input" 
-                                            type="checkbox"
-                                            name="is_high_priority" 
-                                            id="id_is_high_priority" 
-                                        >	
-                                        <label class="form-check-label d-flex" for="id_is_high_priority" style="white-space: nowrap;">
-                                            High Priority
-                                        </label>
-                                    </div>
-
-                                    <!-- Submit Button -->
-                                    <button type="submit" class="btn btn-primary px-3">Save</button>
-                                </form>                                
-                            </div>
+                    <!-- Assign Task Offcanvas -->
+                    <div class="offcanvas offcanvas-end" tabindex="-1" id="assign-task-{{ employee.id }}">
+                        <div class="offcanvas-header">
+                            <h5 class="offcanvas-title" id="offcanvasRightLabel">Assign task to: {{ user.get_full_name }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                         </div>
-                    {% endif %}
+                        <div class="offcanvas-body">
+                            <form method="post" class="d-flex flex-column gap-2 assign-task-form" data-employee-id="{{ employee.id }}">
+                                {% csrf_token %}
+                                
+                                <!-- Title -->
+                                <div class="d-flex flex-column align-items-center">
+                                    <label for="id_title">Title</label>
+                                    <input type="text" name="title" id="id_title" class="form-control" placeholder="Title" required maxlength="200">
+                                </div>
+
+                                <!-- Description -->
+                                <div class="d-flex flex-column align-items-center">
+                                    <label for="id_text">Description</label>
+                                    <textarea name="text" id="id_text" class="form-control no-scrollbar" placeholder="Description" rows="5"></textarea>
+                                </div>
+                                
+                                <!-- Project -->
+                                <div class="d-flex flex-column align-items-center">
+                                    <label for="id_project">Project</label>
+                                    <select class="form-select" id="id_project" name="project" required>
+                                        <option value="" selected>Select a project</option>
+                                        {% for project in user.company_projects.all %}
+                                            <option value="{{ project.id }}">
+                                                {{ project.title }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <!-- Due Date -->
+                                <div class="d-flex flex-column align-items-center">
+                                    <label for="id_due_date">Due Date</label>
+                                    <input type="date" class="form-control" name="due_date" id="id_due_date" required>
+                                </div>
+
+                                <!-- High Priority checkbox -->
+                                <div class="d-flex justify-content-center gap-2">
+                                    <input 
+                                        class="form-check-input" 
+                                        type="checkbox"
+                                        name="is_high_priority" 
+                                        id="id_is_high_priority" 
+                                    >	
+                                    <label class="form-check-label d-flex" for="id_is_high_priority" style="white-space: nowrap;">
+                                        High Priority
+                                    </label>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <button type="submit" class="btn btn-primary px-3">Save</button>
+                            </form>                                
+                        </div>
+                    </div>
                 {% endfor %}
                 
                 {% for invitation in company.invitations.all %}
@@ -406,34 +396,29 @@
                         <div class="col text-center">—</div>
 
                         <div class="col d-flex justify-content-center gap-3 action-icons">
-                            {% if user.is_employer %}
-                                <!-- Delete Invitation -->
-                                <a data-bs-toggle="modal" data-bs-target="#delete-invitation-{{ invitation.id }}">
-                                    <i class="bi bi-x-lg" data-bs-toggle="tooltip" title="Delete Invitation"></i>
-                                </a>
-                            {% endif %}
+                            <!-- Delete Invitation -->
+                            <a data-bs-toggle="modal" data-bs-target="#delete-invitation-{{ invitation.id }}">
+                                <i class="bi bi-x-lg" data-bs-toggle="tooltip" title="Delete Invitation"></i>
+                            </a>
                         </div>
                     </div>
 
-                    {% if user.is_employer %}
-                        <!-- Delete Invitation Modal -->
-                            <div class="modal fade" id="delete-invitation-{{ invitation.id }}" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content bg-1">
-                                        <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure you want to delete the invitation for {{ invitation.email }}?</h1>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                            <button type="button" class="btn btn-danger" onclick="deleteInvitation({{ invitation.id }})">Delete</button>
-                                        </div>
-                                    </div>
+                    <!-- Delete Invitation Modal -->
+                    <div class="modal fade" id="delete-invitation-{{ invitation.id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content bg-1">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure you want to delete the invitation for {{ invitation.email }}?</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-danger" onclick="deleteInvitation({{ invitation.id }})">Delete</button>
                                 </div>
                             </div>
-                    {% endif %}
+                        </div>
+                    </div>
                 {% endfor %}
-                    
             </div>
         </div>
 
@@ -444,61 +429,57 @@
             <h3 class="mb-2 d-flex align-items-center justify-content-center">
                 Projects
                 
-                {% if user.is_employer %}
-                    <!-- Project Creation Button -->
-                    <button class="ms-3 btn btn-primary rounded-3 shadow-lg d-flex justify-content-center align-items-center"
-                        style="width: 30px; height: 30px;"
-                        data-bs-toggle="offcanvas" 
-                        data-bs-target="#projectCreationOffcanvas">
-                        <i class="bi bi-plus-lg" style="font-size: 20px; font-weight: bold;"></i>
-                    </button>
-                {% endif %}
+                <!-- Project Creation Button -->
+                <button class="ms-3 btn btn-primary rounded-3 shadow-lg d-flex justify-content-center align-items-center"
+                    style="width: 30px; height: 30px;"
+                    data-bs-toggle="offcanvas" 
+                    data-bs-target="#projectCreationOffcanvas">
+                    <i class="bi bi-plus-lg" style="font-size: 20px; font-weight: bold;"></i>
+                </button>
             </h3>
 
-            {% if user.is_employer %}
-                <!-- Project Creation Offcanvas -->
-                <div class="offcanvas offcanvas-end" tabindex="-1" id="projectCreationOffcanvas">
-                    <div class="offcanvas-header">
-                        <h4 class="offcanvas-title text-center">Create Project</h4>
-                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                    </div>
-                    <div class="offcanvas-body">
-                        <form method="post" class="d-flex flex-column gap-2" id="create-project-form">
-                            {% csrf_token %}
-                            <!-- Title -->
-                            <input type="text" name="title" class="form-control" placeholder="Project title" required maxlength="50" value="{{ project.title|default_if_none:'' }}">
-
-                            <!-- Client -->
-                            <input type="text" name="client" class="form-control" placeholder="Client" maxlength="50" value="{{ project.client|default_if_none:'' }}">
-
-                            <!-- Description -->
-                            <textarea name="description" class="form-control" rows="4" placeholder="Project description">{{ project.description|default_if_none:"" }}</textarea>
-
-                            <!-- Status -->
-                            <div class="d-flex align-items-center gap-2">
-                                <label for="id_status">Status: </label>
-                                <select class="form-select" name="status" id="id_status">
-                                    <option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
-                                    <option value="archived" {% if project.status == 'archived' %}selected{% endif %}>Archived</option>
-                                    <option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
-                                </select>
-                            </div>
-
-                            <!-- Color -->
-                            <div class="d-flex align-items-center gap-2">
-                                <label for="id_color">Color:</label>
-                                <input type="color" name="color" id="id_color" class="form-control form-control-color w-100" value="{{ project.color|default:'#FFFF00' }}">
-                            </div>
-
-                            <!-- Company -->
-                            <input type="hidden" name="company" value="{{ company.id }}">
-
-                            <!-- Submit Button -->
-                            <button type="submit" class="btn btn-primary">Save</button>
-                        </form>                                 
-                    </div>
+            <!-- Project Creation Offcanvas -->
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="projectCreationOffcanvas">
+                <div class="offcanvas-header">
+                    <h4 class="offcanvas-title text-center">Create Project</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
-            {% endif %}
+                <div class="offcanvas-body">
+                    <form method="post" class="d-flex flex-column gap-2" id="create-project-form">
+                        {% csrf_token %}
+                        <!-- Title -->
+                        <input type="text" name="title" class="form-control" placeholder="Project title" required maxlength="50" value="{{ project.title|default_if_none:'' }}">
+
+                        <!-- Client -->
+                        <input type="text" name="client" class="form-control" placeholder="Client" maxlength="50" value="{{ project.client|default_if_none:'' }}">
+
+                        <!-- Description -->
+                        <textarea name="description" class="form-control" rows="4" placeholder="Project description">{{ project.description|default_if_none:"" }}</textarea>
+
+                        <!-- Status -->
+                        <div class="d-flex align-items-center gap-2">
+                            <label for="id_status">Status: </label>
+                            <select class="form-select" name="status" id="id_status">
+                                <option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
+                                <option value="archived" {% if project.status == 'archived' %}selected{% endif %}>Archived</option>
+                                <option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
+                            </select>
+                        </div>
+
+                        <!-- Color -->
+                        <div class="d-flex align-items-center gap-2">
+                            <label for="id_color">Color:</label>
+                            <input type="color" name="color" id="id_color" class="form-control form-control-color w-100" value="{{ project.color|default:'#FFFF00' }}">
+                        </div>
+
+                        <!-- Company -->
+                        <input type="hidden" name="company" value="{{ company.id }}">
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </form>                                 
+                </div>
+            </div>
 
             <!-- Projects -->
             <div class="d-flex flex-column align-items-center mb-5" id="projects">
@@ -513,9 +494,7 @@
                             <div class="col text-center">Client</div>
                             <div class="col text-center">Status</div>
                             <div class="col text-center">Tracked</div>
-                            {% if user.is_employer %}
-                                <div class="col text-center">Actions</div>
-                            {% endif %}
+                            <div class="col text-center">Actions</div>
                         </div>
                     </div>
                     {% for project in company.projects.all %}
@@ -528,117 +507,114 @@
                                 <div class="col text-center">{% if project.client %}{{ project.client }}{% else %}N/A{% endif %}</div>
                                 <div class="col text-center">{{ project.get_status_display }}</div>
                                 <div class="col text-center">{{ project.total_tracked_time }}</div>
-                                {% if user.is_employer %}
-                                    <!-- Action icons -->
-                                    <div class="col d-flex gap-3 action-icons justify-content-center">
 
-                                        <!-- Edit Project Button -->
-                                        <a data-bs-toggle="offcanvas" data-bs-target="#edit-project-{{ project.id }}">
-                                            <i class="bi bi-pencil" data-bs-toggle="tooltip" title="Edit"></i>
-                                        </a>
-                                        
-                                        <!-- Delete Project Button -->
-                                        <a data-bs-toggle="modal" data-bs-target="#delete-project-modal-{{ project.id }}">
-                                            <i class="bi bi-trash" data-bs-toggle="tooltip" title="Delete"></i>
-                                        </a>
-                                        
-                                        <!-- View Project Analytics Button -->
-                                        <a data-bs-toggle="offcanvas" data-bs-target="#generate-report-{{ project.id }}">
-                                            <i class="bi bi-file-earmark-bar-graph" data-bs-toggle="tooltip" title="Generate Report"></i>
-                                        </a>
-                                    </div>
-                                {% endif %}
+                                <!-- Action icons -->
+                                <div class="col d-flex gap-3 action-icons justify-content-center">
+
+                                    <!-- Edit Project Button -->
+                                    <a data-bs-toggle="offcanvas" data-bs-target="#edit-project-{{ project.id }}">
+                                        <i class="bi bi-pencil" data-bs-toggle="tooltip" title="Edit"></i>
+                                    </a>
+                                    
+                                    <!-- Delete Project Button -->
+                                    <a data-bs-toggle="modal" data-bs-target="#delete-project-modal-{{ project.id }}">
+                                        <i class="bi bi-trash" data-bs-toggle="tooltip" title="Delete"></i>
+                                    </a>
+                                    
+                                    <!-- View Project Analytics Button -->
+                                    <a data-bs-toggle="offcanvas" data-bs-target="#generate-report-{{ project.id }}">
+                                        <i class="bi bi-file-earmark-bar-graph" data-bs-toggle="tooltip" title="Generate Report"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                        
-                        {% if user.is_employer %}
-                            <!-- Delete Project Modal -->
-                            <div class="modal fade" id="delete-project-modal-{{ project.id }}" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content bg-1">
-                                        <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure you want to delete {{ project.title }} project?</h1>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                            <button type="button" class="btn btn-danger" onclick="deleteProject({{ project.id }})">Delete</button>
-                                        </div>
+
+                        <!-- Delete Project Modal -->
+                        <div class="modal fade" id="delete-project-modal-{{ project.id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content bg-1">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure you want to delete {{ project.title }} project?</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="button" class="btn btn-danger" onclick="deleteProject({{ project.id }})">Delete</button>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <!-- Edit Project Offcanvas -->
-                            <div class="offcanvas offcanvas-end" tabindex="-1" id="edit-project-{{ project.id }}">
-                                <div class="offcanvas-header">
-                                    <h5 class="offcanvas-title" id="offcanvasRightLabel">Edit Project: {{ project.title }}</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                                </div>
-                                <div class="offcanvas-body">
-                                    <form method="post" class="d-flex flex-column gap-2 edit-project-form" data-id="{{ project.id }}">
-                                        {% csrf_token %}
-                                        <!-- Title -->
-                                        <input type="text" name="title" class="form-control" placeholder="Project title" required maxlength="50" value="{{ project.title|default_if_none:'' }}">
+                        </div>
 
-                                        <!-- Client -->
-                                        <input type="text" name="client" class="form-control" placeholder="Client" maxlength="50" value="{{ project.client|default_if_none:'' }}">
-
-                                        <!-- Description -->
-                                        <textarea name="description" class="form-control" rows="4" placeholder="Project description">{{ project.description|default_if_none:"" }}</textarea>
-
-                                        <!-- Status -->
-                                        <div class="d-flex align-items-center gap-2">
-                                            <label for="id_status">Status: </label>
-                                            <select class="form-select" name="status" id="id_status">
-                                                <option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
-                                                <option value="archived" {% if project.status == 'archived' %}selected{% endif %}>Archived</option>
-                                                <option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
-                                            </select>
-                                        </div>
-
-                                        <!-- Color -->
-                                        <div class="d-flex align-items-center gap-2">
-                                            <label for="id_color">Color:</label>
-                                            <input type="color" name="color" id="id_color" class="form-control form-control-color w-100" value="{{ project.color|default:'#FFFF00' }}">
-                                        </div>
-
-                                        <!-- Submit Button -->
-                                        <button type="submit" class="btn btn-primary">Save</button>
-                                    </form>                                
-                                </div>
+                        <!-- Edit Project Offcanvas -->
+                        <div class="offcanvas offcanvas-end" tabindex="-1" id="edit-project-{{ project.id }}">
+                            <div class="offcanvas-header">
+                                <h5 class="offcanvas-title" id="offcanvasRightLabel">Edit Project: {{ project.title }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                             </div>
+                            <div class="offcanvas-body">
+                                <form method="post" class="d-flex flex-column gap-2 edit-project-form" data-id="{{ project.id }}">
+                                    {% csrf_token %}
+                                    <!-- Title -->
+                                    <input type="text" name="title" class="form-control" placeholder="Project title" required maxlength="50" value="{{ project.title|default_if_none:'' }}">
 
-                            <!-- Generate Report Offcanvas -->
-                            <div class="offcanvas offcanvas-end" tabindex="-1" id="generate-report-{{ project.id }}">
-                                <div class="offcanvas-header ">
-                                    <h5 class="offcanvas-title" id="offcanvasRightLabel">Generate report for {{ project.title }}</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                                </div>
-                                <div class="offcanvas-body d-flex flex-column gap-3">
-                                    
-                                    <!-- Weekly -->
-                                    <h4 class="text-center">Weekly</h4>
-                                    <div class="btn-group w-100">
-                                        <button class="btn btn-dark w-100 bg-3" id="weekly-date-display-{{ project.id }}">This week</button>
-                                        <button class="btn btn-dark bg-3" onclick="previousWeek({{ project.id }})"><i class="bi bi-chevron-left"></i></button>
-                                        <button class="btn btn-dark bg-3" onclick="nextWeek({{ project.id }})"><i class="bi bi-chevron-right"></i></button>
-                                    </div>  
-                                    <a href="{% url 'teams:project_weekly_report' project.id %}" id="generate-weekly-report-button-{{ project.id }}" class="btn btn-primary w-100"><i class="bi bi-file-earmark-pdf"></i> Generate PDF</a>                    
-                                    
-                                    <!-- Monthly -->
-                                    <h4 class="text-center">Monthly</h4>
-                                    <div class="btn-group w-100">
-                                        <button class="btn btn-dark w-100 bg-3" id="monthly-date-display-{{ project.id }}">This month</button>
-                                        <button class="btn btn-dark bg-3" onclick="previousMonth({{ project.id }})"><i class="bi bi-chevron-left"></i></button>
-                                        <button class="btn btn-dark bg-3" onclick="nextMonth({{ project.id }})"><i class="bi bi-chevron-right"></i></button>
-                                    </div>  
-                                    <div class="d-flex gap-3">
-                                        <button id="generate-monthly-report-button-{{ project.id }}-pdf" class="btn btn-primary w-100" data-url="{% url 'teams:project_monthly_report_pdf' project.id %}" onclick="downloadMonthlyReports(this)"><i class="bi bi-file-earmark-pdf"></i> Generate PDF</button>                    
-                                        <a href="{% url 'teams:project_monthly_report_xlsx' project.id %}" id="generate-monthly-report-button-{{ project.id }}-xlsx" class="btn btn-primary w-100"><i class="bi bi-file-earmark-spreadsheet"></i> Generate Excel</a>                    
+                                    <!-- Client -->
+                                    <input type="text" name="client" class="form-control" placeholder="Client" maxlength="50" value="{{ project.client|default_if_none:'' }}">
+
+                                    <!-- Description -->
+                                    <textarea name="description" class="form-control" rows="4" placeholder="Project description">{{ project.description|default_if_none:"" }}</textarea>
+
+                                    <!-- Status -->
+                                    <div class="d-flex align-items-center gap-2">
+                                        <label for="id_status">Status: </label>
+                                        <select class="form-select" name="status" id="id_status">
+                                            <option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
+                                            <option value="archived" {% if project.status == 'archived' %}selected{% endif %}>Archived</option>
+                                            <option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
+                                        </select>
                                     </div>
+
+                                    <!-- Color -->
+                                    <div class="d-flex align-items-center gap-2">
+                                        <label for="id_color">Color:</label>
+                                        <input type="color" name="color" id="id_color" class="form-control form-control-color w-100" value="{{ project.color|default:'#FFFF00' }}">
+                                    </div>
+
+                                    <!-- Submit Button -->
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </form>                                
+                            </div>
+                        </div>
+
+                        <!-- Generate Report Offcanvas -->
+                        <div class="offcanvas offcanvas-end" tabindex="-1" id="generate-report-{{ project.id }}">
+                            <div class="offcanvas-header ">
+                                <h5 class="offcanvas-title" id="offcanvasRightLabel">Generate report for {{ project.title }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                            </div>
+                            <div class="offcanvas-body d-flex flex-column gap-3">
+                                
+                                <!-- Weekly -->
+                                <h4 class="text-center">Weekly</h4>
+                                <div class="btn-group w-100">
+                                    <button class="btn btn-dark w-100 bg-3" id="weekly-date-display-{{ project.id }}">This week</button>
+                                    <button class="btn btn-dark bg-3" onclick="previousWeek({{ project.id }})"><i class="bi bi-chevron-left"></i></button>
+                                    <button class="btn btn-dark bg-3" onclick="nextWeek({{ project.id }})"><i class="bi bi-chevron-right"></i></button>
+                                </div>  
+                                <a href="{% url 'teams:project_weekly_report' project.id %}" id="generate-weekly-report-button-{{ project.id }}" class="btn btn-primary w-100"><i class="bi bi-file-earmark-pdf"></i> Generate PDF</a>                    
+                                
+                                <!-- Monthly -->
+                                <h4 class="text-center">Monthly</h4>
+                                <div class="btn-group w-100">
+                                    <button class="btn btn-dark w-100 bg-3" id="monthly-date-display-{{ project.id }}">This month</button>
+                                    <button class="btn btn-dark bg-3" onclick="previousMonth({{ project.id }})"><i class="bi bi-chevron-left"></i></button>
+                                    <button class="btn btn-dark bg-3" onclick="nextMonth({{ project.id }})"><i class="bi bi-chevron-right"></i></button>
+                                </div>  
+                                <div class="d-flex gap-3">
+                                    <button id="generate-monthly-report-button-{{ project.id }}-pdf" class="btn btn-primary w-100" data-url="{% url 'teams:project_monthly_report_pdf' project.id %}" onclick="downloadMonthlyReports(this)"><i class="bi bi-file-earmark-pdf"></i> Generate PDF</button>                    
+                                    <a href="{% url 'teams:project_monthly_report_xlsx' project.id %}" id="generate-monthly-report-button-{{ project.id }}-xlsx" class="btn btn-primary w-100"><i class="bi bi-file-earmark-spreadsheet"></i> Generate Excel</a>                    
                                 </div>
                             </div>
-                        {% endif %}
+                        </div>
                     {% endfor %}
                 {% endif %}
             </div>

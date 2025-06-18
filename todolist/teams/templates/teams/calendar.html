@@ -28,7 +28,7 @@
                     </div>
                 </div>
                 <button class="btn btn-primary h-100" data-bs-toggle="offcanvas" data-bs-target="#holiday-{{ user.id }}">
-                    {% if request.user.is_employer %}
+                    {% if user.is_employer %}
                         Add Holiday
                     {% else %}
                         Request Holiday
@@ -39,7 +39,7 @@
                 <div class="offcanvas offcanvas-end" tabindex="-1" id="holiday-{{ user.id }}">
                     <div class="offcanvas-header">
                         <h5 class="offcanvas-title" id="offcanvasRightLabel">
-                            {% if request.user.is_employer %}
+                            {% if user.is_employer %}
                                 Add Holiday
                             {% else %}
                                 Request Holiday
@@ -79,7 +79,7 @@
                             
                             <!-- Submit Button -->
                             <button type="submit" class="btn btn-primary mb-2">
-                                {% if request.user.is_employer %}
+                                {% if user.is_employer %}
                                     Save
                                 {% else %}
                                     Request Holiday
@@ -142,7 +142,7 @@
         const holidays = {{ holidays|safe }};
         const bankHolidays = {{ bank_holidays|safe }};
         const sickDays = {{ sick_days|safe }};
-        const isEmployer = {{ request.user.is_employer|yesno:"true,false" }};
+        const isEmployer = {{ user.is_employer|yesno:"true,false" }};
     </script>
     <script src="{% static 'js/calendar.js' %}"></script>
 {% endblock scripts %}

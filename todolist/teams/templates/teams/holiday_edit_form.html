@@ -37,7 +37,7 @@
     </div>
 
     <button type="submit" class="btn btn-primary">
-        {% if request.user.is_employer %}
+        {% if user.is_employer %}
             Save
         {% else %}
             Request Edition
@@ -46,7 +46,7 @@
 </form>
 
 <button type="button" class="btn btn-danger" onclick="deleteHoliday({{ holiday.id }})">
-    {% if request.user.is_employer %}
+    {% if user.is_employer %}
         Delete
     {% else %}
         Request Deletion

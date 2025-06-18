@@ -8,13 +8,14 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render
 
 # Local apps
 from teams.models import Holiday
 from main.forms import ProjectForm, TaskForm
 from timetracker.models import TimeEntry
 from teams.choices import HOLIDAY_TYPES
+from teams.decorators import employer_required
 
 
 def get_date_range_from_filter(filter_option, all_time_first_entry):
@@ -158,6 +159,7 @@ def process_company_charts(request):
     }, status=200)
 
 @login_required
+@employer_required
 def team(request):
     if not request.user.company:
         return render(request, 'teams/no_company.html')
@@ -166,17 +168,14 @@ def team(request):
         if request.user.company.projects.exists():
             return process_company_charts(request)
 
-    if request.user.is_employer:
-        task_form = TaskForm(prefix="task")
-        project_form = ProjectForm(prefix="project")
-        context = {
-            'company': request.user.company,
-            'task_form': task_form,
-            'project_form': project_form,
-        }
-        return render(request, 'teams/team.html', context)
-    
-    return render(request, 'teams/team.html', {'company': request.user.company})
+    task_form = TaskForm(prefix="task")
+    project_form = ProjectForm(prefix="project")
+    context = {
+        'company': request.user.company,
+        'task_form': task_form,
+        'project_form': project_form,
+    }
+    return render(request, 'teams/team.html', context)
 
 color_map_self = {
     'holiday': '#99d1ff',

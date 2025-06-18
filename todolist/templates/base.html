@@ -59,16 +59,18 @@
 					<!-- <a href="{% url 'archive' %}" class="nav-link">
 						<i class="bi bi-tags me-2"></i>Projects & Categories
 					</a> -->
-					<a href="{% url 'teams:team' %}" class="nav-link">
-						<i class="bi bi-people me-2"></i>Company
-						{% if user.is_employer %}
-							{% with total_requests=user.company.total_pending_holidays|add:user.company.join_requests.count %}
-								{% if total_requests > 0 %}
-									<span class="badge rounded-circle bg-danger ms-3">{{ total_requests }}</span>
-								{% endif %}
-							{% endwith %}
-						{% endif %}
-					</a>
+					{% if user.is_employer %}
+						<a href="{% url 'teams:team' %}" class="nav-link">
+							<i class="bi bi-people me-2"></i>Company
+							{% if user.is_employer %}
+								{% with total_requests=user.company.total_pending_holidays|add:user.company.join_requests.count %}
+									{% if total_requests > 0 %}
+										<span class="badge rounded-circle bg-danger ms-3">{{ total_requests }}</span>
+									{% endif %}
+								{% endwith %}
+							{% endif %}
+						</a>
+					{% endif %}
 					<a href="{% url 'teams:calendar' %}" class="nav-link">
 						<i class="bi bi-calendar me-2"></i>Calendar
 					</a>
@@ -131,16 +133,18 @@
 				<!-- <a href="{% url 'archive' %}" class="nav-link py-2 px-4 rounded">
 					<i class="bi bi-tags me-2"></i>Archive
 				</a> -->
-				<a href="{% url 'teams:team' %}" class="nav-link py-2 px-4 rounded">
-					<i class="bi bi-people me-2"></i>Company
-					{% if user.is_employer %}
-						{% with total_requests=user.company.total_pending_holidays|add:user.company.join_requests.count %}
-							{% if total_requests > 0 %}
-								<span class="badge rounded-circle bg-danger ms-3">{{ total_requests }}</span>
-							{% endif %}
-						{% endwith %}
-					{% endif %}
-				</a>
+				{% if user.is_employer %}
+					<a href="{% url 'teams:team' %}" class="nav-link py-2 px-4 rounded">
+						<i class="bi bi-people me-2"></i>Company
+						{% if user.is_employer %}
+							{% with total_requests=user.company.total_pending_holidays|add:user.company.join_requests.count %}
+								{% if total_requests > 0 %}
+									<span class="badge rounded-circle bg-danger ms-3">{{ total_requests }}</span>
+								{% endif %}
+							{% endwith %}
+						{% endif %}
+					</a>
+				{% endif %}
 				<a href="{% url 'teams:calendar' %}" class="nav-link py-2 px-4 rounded">
 					<i class="bi bi-calendar me-2"></i>Calendar
 				</a>
