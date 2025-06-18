@@ -335,11 +335,8 @@
             <div class="d-flex flex-column align-items-center mb-4">
                 <div class="row py-2 w-100">
                     <div class="col">Name Surname</div>
-                    <div class="col text-center">Email</div>
+                    <div class="col text-center">Working on</div>
                     <div class="col text-center">Job Title</div>
-                    {% if user.is_employer %}
-                        <div class="col text-center">Billable Rate</div>
-                    {% endif %}
                     <div class="col text-center">Actions</div>
                 </div>
                 {% for employee in company.employees.all %}
@@ -349,17 +346,15 @@
                             {{ employee.get_full_name }} {% if employee == user %}(You){% endif %}
                         </div>
 
-                        <div class="col text-center">
-                            {{ employee.work_email|default_if_none:"" }}
+                        <div class="col text-center" style="color: greenyellow;">
+                            {% if employee.is_online %}
+                                Working on {{ employee.active_time_entry.project.title }} {{ employee.active_time_entry.duration_formatted|slice:":-3" }}
+                            {% endif %}
                         </div>
 
                         <div class="col text-center">
                             {{ employee.job_title|default_if_none:"" }}
                         </div>
-
-                        {% if user.is_employer %}
-                            <div class="col text-center">{{ employee.rate }}</div>
-                        {% endif %}
 
                         <div class="col d-flex justify-content-center gap-3 action-icons">
                             {% if user.is_employer or employee == user %}
@@ -453,10 +448,6 @@
                         </div>
 
                         <div class="col text-center">—</div>
-
-                        {% if user.is_employer %}
-                            <div class="col text-center">—</div>
-                        {% endif %}
 
                         <div class="col d-flex justify-content-center gap-3 action-icons">
                             {% if user.is_employer %}

@@ -82,6 +82,10 @@ class CustomUser(AbstractUser):
             raise ValidationError({'email': 'This email is already taken.'})
 
     @property
+    def active_time_entry(self):
+        return self.time_entries.filter(end_time__isnull=True).first()
+    
+    @property
     def age(self):
         if not self.date_of_birth:
             return None
@@ -106,7 +110,7 @@ class CustomUser(AbstractUser):
     
     @property
     def is_online(self):
-        return self.time_entries.filter(end_time__isnull=True).exists()
+        return self.active_time_entry
     
     @property
     def is_employer(self):

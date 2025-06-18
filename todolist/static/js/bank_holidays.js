@@ -6,8 +6,10 @@ function updateEmployeeHighlight(checkbox) {
 
     if (checkbox.checked) {
         employeeEl.classList.replace('bg-2', 'bg-3');
+        employeeEl.style.color = 'orange';
     } else {
         employeeEl.classList.replace('bg-3', 'bg-2');
+        employeeEl.style.color = '';
     }
 }
 
@@ -24,35 +26,77 @@ document.getElementById('select-all-employees').addEventListener('change', funct
     });
 });
 
-document.querySelectorAll('.holiday').forEach(holidayEl => {
-    const userIds = holidayEl.dataset.userIds.trim().split(/\s+/);
-    const offcanvasId = holidayEl.dataset.bsTarget || holidayEl.getAttribute('data-bs-target');
-    const offcanvasEl = document.querySelector(offcanvasId);
+// Edit Holiday
+function openHolidayEditOffcanvas(holidayId) {
+    fetch(`/teams/holiday/${holidayId}/edit/`)
+        .then(res => res.text())
+        .then(html => {
+            const body = document.getElementById("holiday-edit-body");
+            body.innerHTML = html;
 
-    if (!offcanvasEl) return;
+            const form = body.querySelector('#edit-holiday-form');
+            const offcanvasEl = document.getElementById("holidayEditOffcanvas");
+            const offcanvas = new bootstrap.Offcanvas(offcanvasEl);
 
-    offcanvasEl.addEventListener('show.bs.offcanvas', () => {
-        userIds.forEach(id => {
-            const userCheckbox = document.querySelector(`.employee[data-id="${id}"] input[type="checkbox"]`);
-            if (userCheckbox) {
-                userCheckbox.checked = true;
-                userCheckbox.dataset.autoChecked = "true";
-                updateEmployeeHighlight(userCheckbox);
-            }
+            // Parse user IDs for the holiday
+            const userIds = document.getElementById(`holiday-${holidayId}`)
+                .dataset.userIds.trim().split(/\s+/) || [];
+
+            // Auto-select employees now (instead of on show)
+            userIds.forEach(id => {
+                const checkbox = document.querySelector(`.employee[data-id="${id}"] input[type="checkbox"]`);
+                if (checkbox) {
+                    checkbox.checked = true;
+                    checkbox.dataset.autoChecked = "true";
+                    updateEmployeeHighlight(checkbox);
+                }
+            });
+
+            // Clean-up on offcanvas close
+            const onHidden = () => {
+                userIds.forEach(id => {
+                    const checkbox = document.querySelector(`.employee[data-id="${id}"] input[type="checkbox"]`);
+                    if (checkbox && checkbox.dataset.autoChecked === "true") {
+                        checkbox.checked = false;
+                        delete checkbox.dataset.autoChecked;
+                        updateEmployeeHighlight(checkbox);
+                    }
+                });
+                offcanvasEl.removeEventListener('hidden.bs.offcanvas', onHidden);
+            };
+            offcanvasEl.addEventListener('hidden.bs.offcanvas', onHidden);
+
+            // Set up form submit
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const formData = new FormData(form);
+                const formObj = Object.fromEntries(formData.entries());
+
+                const employeeIds = Array.from(document.querySelectorAll('input[name="employees"]:checked'))
+                    .map(cb => parseInt(cb.value, 10));
+
+                if (employeeIds.length === 0) {
+                    showToast('Please select at least one employee for a bank holiday.', 'danger');
+                    return;
+                }
+
+                formObj.type = 'bank_holiday';
+                formObj.employees = employeeIds;
+
+                const data = await sendRequest(`/teams/holiday/${holidayId}/edit/`, 'PATCH', JSON.stringify(formObj));
+
+                if (data.success) {
+                    queueToast('Holiday updated', 'success');
+                    window.location.reload();
+                } else {
+                    showToast(data.error || 'An error occurred.', 'danger');
+                }
+            });
+
+            offcanvas.show();
         });
-    });
-
-    offcanvasEl.addEventListener('hidden.bs.offcanvas', () => {
-        userIds.forEach(id => {
-            const userCheckbox = document.querySelector(`.employee[data-id="${id}"] input[type="checkbox"]`);
-            if (userCheckbox && userCheckbox.dataset.autoChecked === "true") {
-                userCheckbox.checked = false;
-                delete userCheckbox.dataset.autoChecked;
-                updateEmployeeHighlight(userCheckbox);
-            }
-        });
-    });
-});
+}
 
 // Create Holiday
 const createHolidayForm = document.getElementById('create-holiday-form');
@@ -89,43 +133,6 @@ if (createHolidayForm) {
         }
     });
 }
-
-// Select all forms with class 'edit-holiday-form'
-const editHolidayForms = document.querySelectorAll('.edit-holiday-form');
-editHolidayForms.forEach(form => {
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const holidayId = form.dataset.id;
-        const url = `/teams/holiday/${holidayId}/edit/`;
-        const formData = new FormData(form);
-        const formObj = Object.fromEntries(formData.entries());
-
-        // Parse employee checkboxes
-        const employeeIds = Array.from(document.querySelectorAll('input[name="employees"]:checked'))
-            .map(cb => parseInt(cb.value, 10));
-
-        // If no employees selected, block submission
-        if (employeeIds.length === 0) {
-            showToast('Please select at least one employee for a bank holiday.', 'danger');
-            return;
-        }
-
-        formObj.type = 'bank_holiday';
-        formObj.employees = employeeIds;
-
-        const requestBody = JSON.stringify(formObj);
-
-        const data = await sendRequest(url, 'PATCH', requestBody);
-
-        if (data.success) {
-            queueToast('Holiday updated', 'success');
-            window.location.reload();
-        } else if (data.error) {
-            showToast(data.error, 'danger');
-        }
-    });
-});
 
 // Delete Holiday
 async function deleteHoliday(holidayId) {

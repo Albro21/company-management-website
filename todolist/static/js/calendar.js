@@ -2,7 +2,7 @@ function createTooltip(info) {
     const tooltip = new bootstrap.Tooltip(info.el, {
         title: `
         <div class="d-flex flex-column">
-            <h5 class="text-center border-bottom py-1">${info.event.extendedProps.type}</h5>
+            <h5 class="text-center border-bottom py-1">${info.event.extendedProps.type_display}</h5>
             <div class="row pt-3">
                 <div class="col-4 text-start">Employees:</div>
                 <div class="col-8 text-start">
@@ -38,6 +38,12 @@ document.addEventListener('DOMContentLoaded', function () {
         initialView: 'dayGridMonth',
         dayHeaderFormat: { weekday: 'long' },
         events: allHolidaysJson,
+        eventClick: function(info) {
+            if (!isEmployer) return;
+            const type = info.event.extendedProps.type;
+            const holidayId = info.event.id;
+            openHolidayEditOffcanvas(holidayId, type);
+        },
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
@@ -135,28 +141,40 @@ document.getElementById('holiday-form').addEventListener('submit', async (e) => 
 });
 
 // Edit Holiday
-const editHolidayForms = document.querySelectorAll('.edit-holiday-form');
-editHolidayForms.forEach(form => {
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
+function openHolidayEditOffcanvas(holidayId, type) {
+    if (type === 'bank_holiday') {
+        showToast("Bank holidays can be edited on bank holiday page", 'warning');
+        return;
+    }
 
-        const holidayId = form.dataset.id;
-        const url = `/teams/holiday/${holidayId}/request-edit/`;
+    fetch(`/teams/holiday/${holidayId}/edit/`)
+        .then(res => res.text())
+        .then(html => {
+            const body = document.getElementById("holiday-edit-body");
+            body.innerHTML = html;
 
-        const formData = new FormData(form);
-        const formObj = Object.fromEntries(formData.entries());
-        const requestBody = JSON.stringify(formObj);
+            const form = body.querySelector('#edit-holiday-form');
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
 
-        const data = await sendRequest(url, 'PATCH', requestBody);
+                const url = `/teams/holiday/${holidayId}/edit/`;
+                const formData = new FormData(form);
+                const requestBody = JSON.stringify(Object.fromEntries(formData.entries()));
 
-        if (data.success) {
-            queueToast('Requested holiday edit', 'success');
-            window.location.reload();
-        } else if (data.error) {
-            showToast(data.error, 'danger');
-        }
-    });
-});
+                const data = await sendRequest(url, 'PATCH', requestBody);
+
+                if (data.success) {
+                    queueToast('Requested holiday edit', 'success');
+                    window.location.reload();
+                } else if (data.error) {
+                    showToast(data.error, 'danger');
+                }
+            });
+
+            const offcanvas = new bootstrap.Offcanvas(document.getElementById("holidayEditOffcanvas"));
+            offcanvas.show();
+        });
+}
 
 // Delete Holiday
 async function deleteHoliday(holidayId) {

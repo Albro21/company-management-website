@@ -34,7 +34,6 @@ urlpatterns = [
     path('join-request/<int:request_id>/decline/', join_request.decline_join_request, name='decline_join_request'),
     
     path('holiday/create/', holiday.create_holiday, name='create_holiday'),
-    path('holiday/<int:holiday_id>/request-edit/', holiday.request_edit, name='request_edit'),
     path('holiday/<int:holiday_id>/request-delete/', holiday.request_delete, name='request_delete'),
     path('holiday/<int:request_id>/accept-delete/', holiday.accept_delete_holiday, name='accept_delete_holiday'),
     path('holiday/<int:request_id>/decline-delete/', holiday.decline_delete_holiday, name='decline_delete_holiday'),
@@ -42,7 +41,7 @@ urlpatterns = [
     path('holiday/<int:request_id>/decline-edit/', holiday.decline_edit_holiday, name='decline_edit_holiday'),
     path('holiday/<int:request_id>/accept/', holiday.accept_holiday, name='accept_holiday'),
     path('holiday/<int:request_id>/decline/', holiday.decline_holiday, name='decline_holiday'),
-    path('holiday/<int:holiday_id>/edit/', holiday.edit_holiday, name='edit_holiday'),
+    path('holiday/<int:holiday_id>/edit/', holiday.HolidayEditView.as_view(), name='edit_holiday'),
     path('holiday/<int:holiday_id>/delete/', holiday.delete_holiday, name='delete_holiday'),
     path('bank-holidays/', holiday.bank_holidays, name='bank_holidays'),
     

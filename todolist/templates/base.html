@@ -50,15 +50,15 @@
 
 				<!-- Navbar -->
 				<ul class="nav navbar-nav flex-column w-100 h5">
-					<a href="{% url 'todolist' %}" class="nav-link">
+					<!-- <a href="{% url 'todolist' %}" class="nav-link">
 						<i class="bi bi-house me-2"></i>To-Do List
-					</a>
+					</a> -->
 					<a href="{% url 'timetracker:timetracker' %}" class="nav-link">
 						<i class="bi bi-stopwatch me-2"></i>Timetracker
 					</a>
-					<a href="{% url 'archive' %}" class="nav-link">
+					<!-- <a href="{% url 'archive' %}" class="nav-link">
 						<i class="bi bi-tags me-2"></i>Projects & Categories
-					</a>
+					</a> -->
 					<a href="{% url 'teams:team' %}" class="nav-link">
 						<i class="bi bi-people me-2"></i>Company
 						{% if user.is_employer %}
@@ -74,9 +74,6 @@
 					</a>
 					<a href="{% url 'teams:employee_detail' user.id %}?tab=information" class="nav-link">
 						<i class="bi bi-person me-2"></i>Profile
-					</a>
-					<a href="{% url 'settings' %}" class="nav-link">
-						<i class="bi bi-gear me-2"></i>Settings
 					</a>
 				</ul>
 
@@ -125,15 +122,15 @@
 
 			<!-- Navbar -->
 			<ul class="nav navbar-nav flex-column w-100 h5 p-2 pt-4 gap-1">
-				<a href="{% url 'todolist' %}" class="nav-link py-2 px-4 rounded">
+				<!-- <a href="{% url 'todolist' %}" class="nav-link py-2 px-4 rounded">
 					<i class="bi bi-card-checklist me-2"></i>To-Do List
-				</a>
+				</a> -->
 				<a href="{% url 'timetracker:timetracker' %}" class="nav-link py-2 px-4 rounded">
 					<i class="bi bi-stopwatch me-2"></i>Timetracker
 				</a>
-				<a href="{% url 'archive' %}" class="nav-link py-2 px-4 rounded">
+				<!-- <a href="{% url 'archive' %}" class="nav-link py-2 px-4 rounded">
 					<i class="bi bi-tags me-2"></i>Archive
-				</a>
+				</a> -->
 				<a href="{% url 'teams:team' %}" class="nav-link py-2 px-4 rounded">
 					<i class="bi bi-people me-2"></i>Company
 					{% if user.is_employer %}
@@ -149,9 +146,6 @@
 				</a>
 				<a href="{% url 'teams:employee_detail' user.id %}?tab=information" class="nav-link py-2 px-4 rounded">
 					<i class="bi bi-person me-2"></i>Profile
-				</a>
-				<a href="{% url 'settings' %}" class="nav-link py-2 px-4 rounded">
-					<i class="bi bi-gear me-2"></i>Settings
 				</a>
 			</ul>
 

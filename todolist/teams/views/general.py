@@ -8,7 +8,7 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 
 # Local apps
 from teams.models import Holiday
@@ -219,13 +219,15 @@ def calendar(request):
             color = color_map_others.get(holiday.type, '#cccccc')
         
         all_holidays.append({
+            'id': holiday.id,
             'title': title,
             'start': str(holiday.start_date),
             'end': str(holiday.end_date + timedelta(days=1)),
             'color': color,
             'textColor': 'black',
             'extendedProps': {
-                'type': holiday.get_type_display(),
+                'type': holiday.type,
+                'type_display': holiday.get_type_display(),
                 'reason': holiday.reason,
                 'users': ', '.join([user.get_full_name() for user in holiday.users.all()]),
                 'start_date': holiday.start_date.strftime('%d/%m/%y'),

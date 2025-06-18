@@ -95,78 +95,41 @@
                 <!-- Table Header -->
                 <div class="row py-2 w-100 m-0">
                     <div class="col-5">Period</div>
-                    <div class="col-4 text-center">Type</div>
+                    <div class="col-4 text-center">Reason</div>
                     <div class="col-3 text-center">Status</div>
                 </div>
 
                 <!-- Holiday List -->
                 <div class="d-flex flex-column w-100" id="holiday-list">
                     {% for holiday in user_holidays %}
-                        <div class="row py-2 w-100 mx-0 bg-2 list-item" {% if holiday.type != "bank_holiday" %}data-bs-toggle="offcanvas" data-bs-target="#edit-holiday-{{ holiday.id }}"{% else %}onclick="showToast('Bank holiday cannot be edited.', 'warning')"{% endif %}>
+                        <div class="row py-2 w-100 mx-0 bg-2 list-item" onclick="openHolidayEditOffcanvas({{ holiday.id }}, '{{ holiday.type }}')">
                             <div class="col-5 text-truncate">{{ holiday.start_date|date:'d/m/Y' }} - {{ holiday.end_date|date:'d/m/Y' }}</div>
                             <div class="col-4 text-center text-truncate">
                                 {% if holiday.status == "pending_edit" %}
-                                    {{ holiday.get_pending_type_display }}
+                                    {{ holiday.pending_reason }}
                                 {% else %}
-                                    {{ holiday.get_type_display }}
+                                    {{ holiday.reason }}
                                 {% endif %}
                             </div>
                             <div class="col-3 text-center text-truncate">{{ holiday.get_status_display }}</div>
                         </div>
-
-                        <!-- Edit Holiday Offcanvas -->
-                        {% if holiday.type != "bank_holiday" %}
-                            <div class="offcanvas offcanvas-end" tabindex="-1" id="edit-holiday-{{ holiday.id }}">
-                                <div class="offcanvas-header">
-                                    <h5 class="offcanvas-title" id="offcanvasRightLabel">Edit Holiday:</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                                </div>
-                                <div class="offcanvas-body d-flex flex-column justify-content-between">
-                                    <form method="PATCH" class="d-flex flex-column gap-3 mb-4 edit-holiday-form" data-id="{{ holiday.id }}">
-                                        {% csrf_token %}
-                                        <textarea name="reason" placeholder="Reason" class="form-control" rows="4">{% if holiday.status == "pending_edit" %}{{ holiday.pending_reason }}{% else %}{{ holiday.reason }}{% endif %}</textarea>
-                                        <select name="type" class="form-select">
-                                            {% for key, value in holiday_types %}
-                                                {% if not key == "bank_holiday" %}
-                                                    <option value="{{ key }}" {% if holiday.status == "pending_edit" %}{% if holiday.pending_type == key %}selected{% endif %}{% else %}{% if holiday.type == key %}selected{% endif %}{% endif %}>{{ value }}</option>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </select>
-                                        <div class="d-flex gap-3">
-                                            <div class="d-flex flex-column w-100">
-                                                <label for="start_date" class="form-label">Start date:</label>
-                                                <input type="date" name="start_date" class="form-control" value="{% if holiday.status == 'pending_edit' %}{{ holiday.pending_start_date|date:'Y-m-d' }}{% else %}{{ holiday.start_date|date:'Y-m-d' }}{% endif %}">
-                                            </div>
-                                            <div class="d-flex flex-column w-100">
-                                                <label for="end_date" class="form-label">End date:</label>
-                                                <input type="date" name="end_date" class="form-control" value="{% if holiday.status == 'pending_edit' %}{{ holiday.pending_end_date|date:'Y-m-d' }}{% else %}{{ holiday.end_date|date:'Y-m-d' }}{% endif %}">
-                                            </div>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">
-                                            {% if request.user.is_employer %}
-                                                Save
-                                            {% else %}
-                                                Request Edition
-                                            {% endif %}
-                                        </button>
-                                    </form>
-
-                                    <button type="button" class="btn btn-danger" onclick="deleteHoliday({{ holiday.id }})">
-                                        {% if request.user.is_employer %}
-                                            Delete
-                                        {% else %}
-                                            Request Deletion
-                                        {% endif %}
-                                    </button>
-                                </div>
-                            </div>
-                        {% endif %}
                     {% endfor %}
                 </div>
             </div>
         </div>
         <div class="col-8 ps-0 pe-3">
             <div id='calendar'></div>
+        </div>
+    </div>
+
+    <!-- Edit Holiday Offcanvas -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="holidayEditOffcanvas">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasRightLabel">Edit Holiday:</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column justify-content-between" id="holiday-edit-body">
+            <!-- Form will be injected here -->
         </div>
     </div>
 {% endblock content %}
@@ -179,6 +142,7 @@
         const holidays = {{ holidays|safe }};
         const bankHolidays = {{ bank_holidays|safe }};
         const sickDays = {{ sick_days|safe }};
+        const isEmployer = {{ request.user.is_employer|yesno:"true,false" }};
     </script>
     <script src="{% static 'js/calendar.js' %}"></script>
 {% endblock scripts %}
