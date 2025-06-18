@@ -178,7 +178,7 @@ function openHolidayEditOffcanvas(holidayId, type) {
 
 // Delete Holiday
 async function deleteHoliday(holidayId) {
-    const url = `/teams/holiday/${holidayId}/request-delete/`;
+    const url = `/teams/holiday/${holidayId}/delete/`;
     const data = await sendRequest(url, 'PATCH');
     if (data.success) {
         queueToast('Requested holiday deletion', 'success');
@@ -187,4 +187,3 @@ async function deleteHoliday(holidayId) {
         showToast(data.error, 'danger');
     }
 }
-

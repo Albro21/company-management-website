@@ -65,11 +65,11 @@ class HolidayEditView(LoginRequiredMixin, View):
         if holiday.type == 'bank_holiday':
             if not request.user.is_employer:
                 return JsonResponse({'success': False, 'error': 'Bank holidays cannot be edited by employees.'}, status=403)
-            return self.process_bank_holiday(request, holiday, data, start_date, end_date, old_days, new_days, diff)
+            return self._process_bank_holiday(request, holiday, data, start_date, end_date, old_days, new_days, diff)
         else:
-            return self.process_normal_holiday(request, holiday, data, start_date, end_date, diff)
+            return self._process_normal_holiday(request, holiday, data, start_date, end_date, diff)
 
-    def process_bank_holiday(self, request, holiday, data, start_date, end_date, old_days, new_days, diff):
+    def _process_bank_holiday(self, request, holiday, data, start_date, end_date, old_days, new_days, diff):
         new_user_ids = data.get('employees', [])
         new_users = set(User.objects.filter(id__in=new_user_ids, company=request.user.company))
         old_users = set(holiday.users.all())
@@ -110,7 +110,7 @@ class HolidayEditView(LoginRequiredMixin, View):
 
         return JsonResponse({'success': True, 'id': holiday.id})
 
-    def process_normal_holiday(self, request, holiday, data, start_date, end_date, diff):
+    def _process_normal_holiday(self, request, holiday, data, start_date, end_date, diff):
         if diff > 0 and not request.user.has_enough_holidays(diff):
             return JsonResponse({
                 'success': False,
@@ -118,10 +118,6 @@ class HolidayEditView(LoginRequiredMixin, View):
             }, status=400)
 
         if request.user.is_employer:
-            user = holiday.users.first()
-            user.adjust_holidays(diff)
-            user.save()
-
             holiday.start_date = start_date
             holiday.end_date = end_date
             holiday.reason = data.get('reason', '').strip()
@@ -134,9 +130,43 @@ class HolidayEditView(LoginRequiredMixin, View):
             holiday.pending_reason = data.get('reason', '').strip()
             holiday.pending_type = data.get('type', holiday.type)
             holiday.status = 'pending_edit'
-
+        
         holiday.save()
+        
+        user = holiday.users.first()
+        user.adjust_holidays(diff)
+        user.save()
+        
         return JsonResponse({'success': True, 'id': holiday.id})
+
+
+class HolidayDeleteView(LoginRequiredMixin, View):
+    def delete(self, request, holiday_id):
+        holiday = get_object_or_404(Holiday, id=holiday_id, company=request.user.company)
+        self._delete_holiday_and_restore_days(holiday)
+        return JsonResponse({'success': True, 'id': holiday_id}, status=200)
+
+    def patch(self, request, holiday_id):
+        if request.user.is_employer:
+            holiday = get_object_or_404(Holiday, id=holiday_id, company=request.user.company)
+            return self.delete(request, holiday_id)
+        else:
+            holiday = get_object_or_404(Holiday, id=holiday_id, users__in=[request.user], company=request.user.company)
+            
+            if holiday.type == 'bank_holiday':
+                return JsonResponse({'success': False, 'error': 'Bank holidays cannot be deleted by employees.'}, status=403)
+            
+            holiday.status = 'pending_delete'
+            holiday.save()
+            return JsonResponse({'success': True, 'id': holiday.id}, status=200)
+
+    def _delete_holiday_and_restore_days(self, holiday):
+        days_to_return = holiday.number_of_days
+        users = list(holiday.users.all())
+        for user in users:
+            user.adjust_holidays(-days_to_return)
+        User.objects.bulk_update(users, ['used_holidays'])
+        holiday.delete()
 
 
 @require_http_methods(["POST"])
@@ -194,59 +224,14 @@ def create_holiday(request):
 
     return JsonResponse({'success': True, 'id': holiday.id}, status=201)
 
-@require_http_methods(["DELETE"])
-@login_required
-@employer_required
-def delete_holiday(request, holiday_id):
-    holiday = get_object_or_404(Holiday, id=holiday_id, company=request.user.company)
-
-    days_to_return = holiday.number_of_days
-
-    users = list(holiday.users.all())
-    for user in users:
-        user.adjust_holidays(-days_to_return)
-
-    User.objects.bulk_update(users, ['used_holidays'])
-
-    holiday.delete()
-    return JsonResponse({'success': True, 'id': holiday_id}, status=200)
-
-@require_http_methods(["PATCH"])
-@login_required
-def request_delete(request, holiday_id):
-    holiday = Holiday.objects.filter(id=holiday_id, users=request.user).first()
-    if not holiday:
-        return JsonResponse({'success': False, 'error': 'Holiday not found or access denied.'}, status=404)
-    if holiday.type == 'bank_holiday':
-        return JsonResponse({'success': False, 'error': 'Bank holidays cannot be deleted by employees.'}, status=403)
-
-    if request.user.is_employer:
-        user = holiday.users.first()
-        user.adjust_holidays(-holiday.number_of_days)
-        user.save()
-        holiday.delete()
-    else:
-        holiday.status = 'pending_delete'
-        holiday.save()
-
-    return JsonResponse({'success': True, 'id': holiday.id})
-
 @require_http_methods(["PATCH"]) 
 @login_required
 @employer_required
 def accept_edit_holiday(request, request_id):
     holiday = get_object_or_404(Holiday, id=request_id, company=request.user.company)
-
-    diff = get_days_diff(holiday.start_date, holiday.end_date, holiday.pending_start_date, holiday.pending_end_date)
-    
-    user = holiday.users.first()
-    user.adjust_holidays(diff)
-    user.save()
-    
     holiday.apply_pending()
     holiday.status = "approved"
     holiday.save()
-    
     return JsonResponse({'success': True, 'id': holiday.id}, status=200)
 
 @require_http_methods(["PATCH"])
