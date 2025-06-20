@@ -5,7 +5,7 @@ from . import views
 
 
 urlpatterns = [
-    path('', lambda request: redirect('teams:team', permanent=True)),
+    path('', lambda request: redirect('timetracker:timetracker', permanent=True)),
     
     path('todolist', views.todolist, name='todolist'),
     path('archive/', views.archive, name='archive'),

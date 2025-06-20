@@ -79,7 +79,7 @@ DATABASES = {
 
 # Authentication
 AUTH_USER_MODEL = 'users.CustomUser'
-LOGIN_REDIRECT_URL = '/todolist'
+LOGIN_REDIRECT_URL = '/timetracker/'
 LOGOUT_REDIRECT_URL = 'login' 
 AUTH_PASSWORD_VALIDATORS = [
     {
