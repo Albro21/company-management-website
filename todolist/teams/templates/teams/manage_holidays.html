@@ -41,8 +41,24 @@
             <!-- Create Holiday Form -->
             <form method="POST" class="d-flex flex-column gap-3 mb-4" id="create-holiday-form">
                 {% csrf_token %}
-                <textarea name="reason" placeholder="Reason" class="form-control" rows="4"></textarea>
+                <div class="d-flex align-items-center">
+                    <!-- Type Select -->
+                    <select name="type" class="form-select me-3" id="type">
+                        {% for key, value in holiday_types %}
+                            <option value="{{ key }}" {% if key == "bank_holiday" %}selected{% endif %}>{{ value }}</option>
+                        {% endfor %}
+                    </select>
+                    <!-- Paid/Unpaid Holiday Switch -->
+                    Paid
+                    <div class="form-check form-switch d-flex justify-content-center mx-2">
+                        <input class="form-check-input" type="checkbox" role="switch" id="paid" name="paid">
+                    </div>
+                    Unpaid
+                </div>
+                <!-- Reason -->
+                <textarea name="reason" placeholder="Reason" class="form-control" rows="4" required></textarea>
                 <div class="d-flex gap-3">
+                    <!-- Dates -->
                     <div class="d-flex flex-column w-100">
                         <label for="start_date" class="form-label">Start date:</label>
                         <input type="date" name="start_date" id="start_date" class="form-control">
@@ -96,5 +112,5 @@
 {% endblock content %}
 
 {% block scripts %}
-    <script src="{% static 'js/bank_holidays.js' %}"></script>
+    <script src="{% static 'js/manage_holidays.js' %}"></script>
 {% endblock scripts %}

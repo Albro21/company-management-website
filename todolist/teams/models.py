@@ -162,7 +162,8 @@ class Holiday(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     reason = models.TextField(max_length=255)
-    type = models.CharField(max_length=50, choices=HOLIDAY_TYPES, default='other') 
+    type = models.CharField(max_length=50, choices=HOLIDAY_TYPES, default='other')
+    paid = models.BooleanField(default=True)
     
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     requested_at = models.DateTimeField(default=timezone.now)
@@ -172,6 +173,7 @@ class Holiday(models.Model):
     pending_end_date = models.DateField(null=True, blank=True)
     pending_reason = models.TextField(max_length=255, null=True, blank=True)
     pending_type = models.CharField(max_length=50, choices=HOLIDAY_TYPES, null=True, blank=True)
+    pending_paid = models.BooleanField(default=True, null=True, blank=True)
 
     class Meta:
         ordering = ['-requested_at']
@@ -198,6 +200,7 @@ class Holiday(models.Model):
         self.pending_end_date = None
         self.pending_reason = None
         self.pending_type = None
+        self.pending_paid = None
         self.save()
 
     def apply_pending(self):
@@ -205,6 +208,7 @@ class Holiday(models.Model):
         self.end_date = self.pending_end_date
         self.reason = self.pending_reason
         self.type = self.pending_type
+        self.paid = self.pending_paid
         self.clear_pending()
 
     def __str__(self):

@@ -37,7 +37,7 @@ urlpatterns = [
     path('holiday/<int:holiday_id>/delete/', holiday.HolidayDeleteView.as_view(), name='delete_holiday'),
     path('holiday/<int:holiday_id>/process/', holiday.process_holiday_request, name='process_holiday'),
     path('holiday/create/', holiday.create_holiday, name='create_holiday'),
-    path('bank-holidays/', holiday.bank_holidays, name='bank_holidays'),
+    path('bank-holidays/', holiday.manage_holidays, name='manage_holidays'),
     
     path('job-title/create/', job_title.create_job_title, name='create_job_title'),
     path('job-title/<int:job_title_id>/delete/', job_title.delete_job_title, name='delete_job_title'),

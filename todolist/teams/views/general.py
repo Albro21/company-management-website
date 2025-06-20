@@ -217,6 +217,8 @@ def calendar(request):
         else:
             color = color_map_others.get(holiday.type, '#cccccc')
         
+        type_display = f"({'paid' if holiday.paid else 'unpaid'}) {holiday.get_type_display()}"
+        
         all_holidays.append({
             'id': holiday.id,
             'title': title,
@@ -226,7 +228,7 @@ def calendar(request):
             'textColor': 'black',
             'extendedProps': {
                 'type': holiday.type,
-                'type_display': holiday.get_type_display(),
+                'type_display': type_display,
                 'reason': holiday.reason,
                 'users': ', '.join([user.get_full_name() for user in holiday.users.all()]),
                 'start_date': holiday.start_date.strftime('%d/%m/%y'),

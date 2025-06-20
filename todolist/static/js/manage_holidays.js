@@ -81,7 +81,6 @@ function openHolidayEditOffcanvas(holidayId) {
                     return;
                 }
 
-                formObj.type = 'bank_holiday';
                 formObj.employees = employeeIds;
 
                 const data = await sendRequest(`/teams/holiday/${holidayId}/edit/`, 'PATCH', JSON.stringify(formObj));
@@ -119,9 +118,7 @@ if (createHolidayForm) {
             return;
         }
 
-        formObj.type = 'bank_holiday';
         formObj.employees = employeeIds;
-
         const requestBody = JSON.stringify(formObj);
 
         const data = await sendRequest(url, 'POST', requestBody);
