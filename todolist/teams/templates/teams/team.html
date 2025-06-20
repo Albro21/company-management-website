@@ -286,24 +286,34 @@
             <div class="d-flex flex-column align-items-center mb-4">
                 <div class="row py-2 w-100">
                     <div class="col">Name Surname</div>
-                    <div class="col text-center">Working on</div>
-                    <div class="col text-center">Job Title</div>
+                    <div class="col-3">Task</div>
+                    <div class="col">Project</div>
+                    <div class="col text-center">Time 24h</div>
+                    <div class="col">Job Title</div>
                     <div class="col text-center">Actions</div>
                 </div>
                 {% for employee in company.employees.all %}
                     <div class="row py-2 w-100 list-item bg-2">
-                        <div class="col">
-                            <i class="bi {% if employee.is_online %}bi-circle-fill{% else %}bi-circle{% endif %} me-2" {% if employee.is_online %}style="color: green;"{% endif %}></i>
+                        <div class="col text-truncate">
+                            <i class="bi {% if employee.is_online %}bi-circle-fill{% else %}bi-circle{% endif %} me-2" {% if employee.is_online %}style="color: greenyellow;"{% endif %}></i>
                             {{ employee.get_full_name }} {% if employee == user %}(You){% endif %}
                         </div>
 
-                        <div class="col text-center" style="color: greenyellow;">
+                        <div class="col-3 text-truncate" style="color: greenyellow;">
                             {% if employee.is_online %}
-                                Working on {{ employee.active_time_entry.project.title }} {{ employee.active_time_entry.duration_formatted|slice:":-3" }}
+                                {{ employee.active_time_entry.name }}
                             {% endif %}
                         </div>
+                        <div class="col" style="color: {{ employee.active_time_entry.project.color }};">
+                            {% if employee.is_online %}
+                                {{ employee.active_time_entry.project.title }}
+                            {% endif %}
+                        </div>
+                        <div class="col text-center" {% if employee.is_online %}style="color: greenyellow;"{% endif %}>
+                            {{ employee.total_worked_today }}
+                        </div>
 
-                        <div class="col text-center">
+                        <div class="col">
                             {{ employee.job_title|default_if_none:"" }}
                         </div>
 
@@ -389,11 +399,13 @@
                             (pending invitation)
                         </div>
 
-                        <div class="col text-center">
+                        <div class="col-3">
                             {{ invitation.email }}
                         </div>
 
-                        <div class="col text-center">—</div>
+                        <div class="col"></div>
+                        <div class="col"></div>
+                        <div class="col"></div>
 
                         <div class="col d-flex justify-content-center gap-3 action-icons">
                             <!-- Delete Invitation -->

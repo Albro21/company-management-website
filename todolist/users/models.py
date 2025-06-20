@@ -1,12 +1,13 @@
 # Standard libs
 from collections import defaultdict
+from datetime import timedelta
 import pytz
 from phonenumber_field.modelfields import PhoneNumberField
 
 # Django
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
-from django.forms import ValidationError
+from django.db.models import Sum
 from django.utils import timezone as tz
 from django.utils.translation import gettext_lazy as _
 
@@ -133,6 +134,19 @@ class CustomUser(AbstractUser):
         if not self.company or not self.company.projects.exists():
             return self.personal_projects
         return self.personal_projects.union(self.company.projects.all())
+    
+    @property
+    def total_worked_today(self):
+        entries = self.time_entries.filter(start_time__date=tz.now().date())
+        total = timedelta()
+
+        for entry in entries:
+            total += entry.duration
+
+        total_seconds = int(total.total_seconds())
+        hours = total_seconds // 3600
+        minutes = (total_seconds % 3600) // 60
+        return f"{hours:02}:{minutes:02}"
     
     @property
     def is_online(self):
